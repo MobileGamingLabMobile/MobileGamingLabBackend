@@ -1,21 +1,20 @@
 // app/models/action.js
 var mongoose = require('mongoose');
-var bcrypt   = require('bcrypt-nodejs');
 
-var player = rquire('./player.js');
-var item = rquire('./item.js');
-var resource = rquire('./resource.js');
-var group = rquire('./group.js');
-var scene = rquire('./scene.js');
-var quest = rquire('./quest.js');
-var interaction = rquire('./interaction.js');
+var player = require('./player.js');
+var item = require('./item.js');
+var resource = require('./resource.js');
+var group = require('./group.js');
+var scene = require('./scene.js');
+var quest = require('./quest.js');
+var interaction = require('./interaction.js');
 
 // define the schema for action model
 var actionSchema = mongoose.Schema({
 
 	timeAction				:{
 		wait				:Boolean,
-		countdown			:int,
+		countdown			:Number,
 		startTime			:Boolean,
 		stopTime			:Boolean
 	},
@@ -25,25 +24,49 @@ var actionSchema = mongoose.Schema({
 		unlock				:Boolean,
 		finish				:Boolean,
 		update				:Boolean,
-		scene				:scene.id,
-		quest				:quest.id,
-		interaction			:interaction.id
+		scene				:{
+			type:  mongoose.Schema.Types.ObjectId,
+			ref: 'Scene'
+		},
+		quest				:{
+			type:  mongoose.Schema.Types.ObjectId,
+			ref: 'Quest'
+		},
+		interaction			:{
+			type:  mongoose.Schema.Types.ObjectId,
+			ref: 'Interaction'
+		}
 	},
 
 	objectAction			:{
-		add 				:int,
-		resource			:resource.id,
-		decreaseResource	:int,
-		item 				:item.id,
+		add 				:Number,
+		resource			:{
+			type:  mongoose.Schema.Types.ObjectId,
+			ref: 'Resource'
+		},
+		decreaseResource	:Number,
+		item 				:{
+			type:  mongoose.Schema.Types.ObjectId,
+			ref: 'Item'
+		},
 		addItem				:Boolean,
-		player 				:player.id,
+		player 				:{
+			type:  mongoose.Schema.Types.ObjectId,
+			ref: 'Player'
+		},
 		removeItem			:Boolean,
 		placeItemOnMap		:Boolean
 	},
 
 	groupAction				:{
-		group 				:group.id,
-		showPlayers			:group.member,
+		group 				:{
+			type:  mongoose.Schema.Types.ObjectId,
+			ref: 'Group'
+		},
+		showPlayers			:[{
+			type:  mongoose.Schema.Types.ObjectId,
+			ref: 'Player'
+		}],
 		setVisibility		:Boolean
 	}//,
 

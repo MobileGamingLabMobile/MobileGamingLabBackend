@@ -2,14 +2,17 @@
 var mongoose = require('mongoose');
 var bcrypt   = require('bcrypt-nodejs');
 
-var functions = rquire('./functions.js');
+var functions = require('./functions.js');
 
 // define the schema for item model
 var itemSchema = mongoose.Schema({
 
-	functions		:[functions.id],
+	functions		:[{
+		type:  mongoose.Schema.Types.ObjectId,
+		ref: 'GameFunction'
+	}],
 	name			:String,
-	position		:[double, double],
+	position		:[Number, Number],
 	icon			:String
 
 });

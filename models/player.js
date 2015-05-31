@@ -1,29 +1,45 @@
 // app/models/player.js
 var mongoose = require('mongoose');
-var bcrypt   = require('bcrypt-nodejs');
 
-var item = rquire('./item.js');
-var role = rquire('./role.js');
-var group = rquire('./group.js');
-var resource = rquire('./resource.js');
-var properties = rquire('./properties.js');
+var item = require('./item.js');
+var role = require('./role.js');
+var group = require('./group.js');
+var resource = require('./resource.js');
+var properties = require('./properties.js');
 
 // define the schema for player model
 var playerSchema = mongoose.Schema({
 
 	inventar		:{
 		enabled		:Boolean,
-		capacity	:[item.id]
+		slot	:[{
+			type:  mongoose.Schema.Types.ObjectId,
+			ref: 'Item'
+		}]
 	},
 
-	role			:{
-		roleName	:role.id
-	},
+	role			:[{
+		type:  mongoose.Schema.Types.ObjectId,
+		ref: 'Role'
+	}],
 
-	position		:[double, double], //GPS postion
-	resource		:[resource.id],
-	groups			:[group.id],
-	properties		:properties.id
+	position		:{
+		x:Number, //GPS postion
+		y: Number,
+		z: Number 
+	},
+	resource		:[{
+		type:  mongoose.Schema.Types.ObjectId,
+		ref: 'Resource'
+	}],
+	groups			:[{
+		type:  mongoose.Schema.Types.ObjectId,
+		ref: 'Group'
+	}],
+	properties		: {
+		type:  mongoose.Schema.Types.ObjectId,
+		ref: 'ObjectProperty'
+	}
 });
 
 // methods ======================

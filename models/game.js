@@ -1,12 +1,11 @@
 // app/models/game.js
 var mongoose = require('mongoose');
-var bcrypt   = require('bcrypt-nodejs');
-var user = rquire('./user.js');
+var user = require('./user.js');
 
-var quest = rquire('./quest.js');
-var questCollection = rquire('./questCollection.js');
-var scene = rquire('./scene.js');
-var plot = rquire('./plot.js');
+var quest = require('./quest.js');
+var questCollection = require('./questCollection.js');
+var scene = require('./scene.js');
+var plot = require('./plot.js');
 
 // define the schema for our game model
 var gameSchema = mongoose.Schema({
@@ -15,18 +14,33 @@ var gameSchema = mongoose.Schema({
 		name			: String, //nessasary to publish the game and be unique
 		description		: String, //nessasary to publish the game
 		category		: [String], //nessasary to publish the game, can be multiple
-		owner			: user.id, // set on creation of the game
+		owner			: {
+			type:  mongoose.Schema.Types.ObjectId,
+			ref: 'User'
+		}, // set on creation of the game
 		published		: Boolean, // only if its true the game can be found in the store
 		publishedDate	: Date
 	},
 
 	components	:{ //game components
-		quest			:[quest.id],
-		questCollection	:[questCollection.id],
-		scene			:[scene.id],
-		plot			:[plot.id],
+		quest			:[{
+			type:  mongoose.Schema.Types.ObjectId,
+			ref: 'Quest'
+		}],
+		questCollection	:[{
+			type:  mongoose.Schema.Types.ObjectId,
+			ref: 'QuestCollection'
+		}],
+		scene			:[{
+			type:  mongoose.Schema.Types.ObjectId,
+			ref: 'Scene'
+		}],
+		plot			:[{
+			type:  mongoose.Schema.Types.ObjectId,
+			ref: 'Plot'
+		}],
 
-		boundary		:[double, double, double, double] //upper left corner, down right corner
+		boundary		:[Number, Number, Number, Number] //upper left corner, down right corner
 	}
 
 });

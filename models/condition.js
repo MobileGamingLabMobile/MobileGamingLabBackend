@@ -1,24 +1,30 @@
 // app/models/condition.js
 var mongoose = require('mongoose');
-var bcrypt   = require('bcrypt-nodejs');
 
-var object = rquire('./object.js');
-var item = rquire('./item.js');
-var player = rquire('./player.js');
-var group = rquire('./group.js');
-var input = rquire('./input.js');
-var role = rquire('./role.js');
-var trigger = rquire('./trigger.js');
+var object = require('./object.js');
+var item = require('./item.js');
+var player = require('./player.js');
+var group = require('./group.js');
+var input = require('./input.js');
+var role = require('./role.js');
+var trigger = require('./trigger.js');
 
 // define the schema for condition model
 var conditionSchema = mongoose.Schema({
 
 	name					:String,
-	object 					:object.id,
+	source 					:{
+		type:  mongoose.Schema.Types.ObjectId,
+		ref: 'Object'
+	},
+	target: {
+		type:  mongoose.Schema.Types.ObjectId,
+		ref: 'Player'
+	},
 	available				:Boolean,
 
 	timeCondition			:{
-		countdown			:double,
+		countdown			:Number,
 		beforeTime			:Date,
 		betweenTime			:[Date, Date],
 		afterTime			:Date
@@ -30,11 +36,17 @@ var conditionSchema = mongoose.Schema({
 	},
 
 	locationCondition		:{
-		coord				:[double, double],
-		minSpeed			:double,
-		minDistance			:double,
-		item				:[item.id],
-		player 				:player.id
+		coord				:[Number, Number],
+		minSpeed			:Number,
+		minDistance			:Number,
+		item				:[{
+			type:  mongoose.Schema.Types.ObjectId,
+			ref: 'Item'
+		}],
+		player 				:{
+			type:  mongoose.Schema.Types.ObjectId,
+			ref: 'Player'
+		}
 	},
 
 	objectConditon			:{
@@ -42,33 +54,51 @@ var conditionSchema = mongoose.Schema({
 		activated			:Boolean,
 		used				:Boolean,
 		spent				:Boolean,
-		amount				:int,
+		amount				:Number,
 	},
 
 	groupCondition			:{
 		formed				:Boolean,
-		numberOfPlayers		:int,
-		groupID				:group.id
+		numberOfPlayers		:Number,
+		groupID				:{
+			type:  mongoose.Schema.Types.ObjectId,
+			ref: 'Group'
+		}
 	},
 
 	inputCondition			:{
-		value				:input.id,
+		value				: {
+			type:  mongoose.Schema.Types.ObjectId,
+			ref: 'Input'
+		},
 		validated			:Boolean,
 		performed			:Boolean
 	},
 
 	playerCondition			:{
-		playerID			:[player.id],
-		groupID				:group.id,
-		roleID 				:role.id,
+		player			:[{
+			type:  mongoose.Schema.Types.ObjectId,
+			ref: 'Player'
+		}],
+		group				:{
+			type:  mongoose.Schema.Types.ObjectId,
+			ref: 'Group'
+		},
+		role				:{
+			type:  mongoose.Schema.Types.ObjectId,
+			ref: 'Role'
+		},
 		playsRole			:Boolean,
 		roleAssigned		:Boolean,
 		visibile			:Boolean
 	},
 
 	triggerCondition		:{
-		trigger 			:[trigger.id],
-		relation			:String
+		trigger 			:[{
+			type:  mongoose.Schema.Types.ObjectId,
+			ref: 'Trigger'
+		}],
+		relation			:String //fixed to AND OR XOR NOT
 	}
 
 });

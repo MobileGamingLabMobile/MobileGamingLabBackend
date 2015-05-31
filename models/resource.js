@@ -1,11 +1,10 @@
 // app/models/resource.js
 var mongoose = require('mongoose');
-var bcrypt   = require('bcrypt-nodejs');
 
 // define the schema for resource model
 var resourceSchema = mongoose.Schema({
 
-	value		: int,
+	value		: Number,
 	name		: String,
 	description	: String
 	

@@ -2,12 +2,15 @@
 var mongoose = require('mongoose');
 var bcrypt   = require('bcrypt-nodejs');
 
-var condition = rquire('./condition.js');
+var condition = require('./condition.js');
 
 // define the schema for trigger model
 var triggerSchema = mongoose.Schema({
 
-	condition	:[condition.id],
+	condition	:[{
+		type:  mongoose.Schema.Types.ObjectId,
+		ref: 'Condition'
+	}],
 	triggered	:Boolean
 	
 });

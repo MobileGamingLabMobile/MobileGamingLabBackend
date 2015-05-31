@@ -31,8 +31,14 @@ var userSchema = mongoose.Schema({
     },
 
     games           :{
-        owned       : [game.id], // array of the games the user has product or is producing
-        subscribed  : [game.id], // array of the games the user has subscribed
+        owned       : [{
+			type:  mongoose.Schema.Types.ObjectId,
+			ref: 'Game'
+		}], // array of the games the user has product or is producing
+        subscribed  : [{
+			type:  mongoose.Schema.Types.ObjectId,
+			ref: 'Game'
+		}], // array of the games the user has subscribed
     }
 
 });

@@ -1,13 +1,16 @@
 // app/models/plot.js
 var mongoose = require('mongoose');
 var bcrypt   = require('bcrypt-nodejs');
-var user = rquire('./user.js');
+var user = require('./user.js');
 
-var quest = rquire('./quest.js');
+var quest = require('./quest.js');
 
 // define the schema for our plot model
 var plotSchema = mongoose.Schema({
-	quests	:[quest.id] //one quest leads to the next one
+	quests	:[{
+		type:  mongoose.Schema.Types.ObjectId,
+		ref: 'Quest'
+	}] //one quest leads to the next one
 });
 
 // methods ======================

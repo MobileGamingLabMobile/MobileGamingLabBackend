@@ -1,6 +1,5 @@
 // app/models/input.js
 var mongoose = require('mongoose');
-var bcrypt   = require('bcrypt-nodejs');
 
 // define the schema for input model
 var inputSchema = mongoose.Schema({

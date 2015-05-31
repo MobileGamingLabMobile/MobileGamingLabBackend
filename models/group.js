@@ -1,19 +1,27 @@
 // app/models/group.js
 var mongoose = require('mongoose');
-var bcrypt   = require('bcrypt-nodejs');
 
-var player = rquire('./player.js');
-var item = rquire('./item.js');
-var properties = rquire('./properties.js');
+var player = require('./player.js');
+var item = require('./item.js');
+var properties = require('./properties.js');
 
 // define the schema for group model
 var groupSchema = mongoose.Schema({
-	member		:[player.id],
-	properties	:properties.id,
+	member		:[{
+		type:  mongoose.Schema.Types.ObjectId,
+		ref: 'Player'
+	}],
+	properties	: [{
+		type:  mongoose.Schema.Types.ObjectId,
+		ref: 'ObjectProperty'
+	}],
 
 	inventar		:{
 		enabled		:Boolean,
-		solts		:[item.id]
+		slots		:[{
+			type:  mongoose.Schema.Types.ObjectId,
+			ref: 'Item'
+		}]
 	}
 });
 

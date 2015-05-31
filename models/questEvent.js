@@ -1,14 +1,18 @@
 // app/models/questEvent.js
 var mongoose = require('mongoose');
-var bcrypt   = require('bcrypt-nodejs');
-
-var functions = rquire('./functions.js');
-var sequence = rquire('./sequence.js');
+var functions = require('./functions.js');
+var sequence = require('./sequence.js');
 
 // define the schema for questEvent model
 var questEventSchema = mongoose.Schema({
-	functions	:[functions.id],
-	sequence	:sequence.id
+	functions	:[{
+		type:  mongoose.Schema.Types.ObjectId,
+		ref: 'GameFunction'
+	}],
+	sequence	: [{
+		type:  mongoose.Schema.Types.ObjectId,
+		ref: 'Sequence'
+	}]
 });
 
 // methods ======================

@@ -1,15 +1,21 @@
 // app/models/questCollection.js
 var mongoose = require('mongoose');
 var bcrypt   = require('bcrypt-nodejs');
-var user = rquire('./user.js');
+var user = require('./user.js');
 
-var quest = rquire('./quest.js');
-var plot = rquire('./plot.js');
+var quest = require('./quest.js');
+var plot = require('./plot.js');
 
 // define the schema for our questCollection model
 var questCollectionSchema = mongoose.Schema({
-	quests 	:[quest.id],
-	plot	:[plot.id]
+	quests 	:[{
+		type:  mongoose.Schema.Types.ObjectId,
+		ref: 'Quest'
+	}],
+	plot	:[{
+		type:  mongoose.Schema.Types.ObjectId,
+		ref: 'Plot'
+	}]
 });
 
 // methods ======================
