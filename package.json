@@ -1,9 +1,9 @@
 {
   "name": "mgl-backend",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "private": true,
   "scripts": {
-    "start": "node app.js"
+    "start": "nodejs app.js"
   },
   "dependencies" : {
 	    "express" : "~4.0.0",           
