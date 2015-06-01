@@ -1,4 +1,5 @@
 var User = require('../models/user');
+var Game = require("../models/game");
 
 var userController = {};
 
@@ -118,13 +119,13 @@ userController.logout = function(id, res) {
 }
 
 userController.getOwnedGames = function(user_id, res) {
-	User.findById(user_id).populate("games.owned").exec(function(err, user) {
+	Game.find().where('metadata.owner').equals(user_id).select("-components").exec(function(err, games){
 		res.json({
 			success: true,
 			message: "Own games successfully loaded.",
-			games: user.games.owned
+			games: games
 		});
-	});
+	})
 }
 
 userController.getSubscribedGames = function(user_id,res) {
@@ -135,6 +136,34 @@ userController.getSubscribedGames = function(user_id,res) {
 			games: user.games.subscribed
 		});
 	});
+}
+
+userController.subscribe = function(user_id, game_id, res) {
+	//TODO check if already subscribed
+	User.findById(user.id, function(err, user) {
+		user.games.subscribed.push(game_id);
+		user.save();
+		
+		return res.json({
+			success: true,
+			message: "User successfully subscribed to game."
+		});
+	})
+}
+
+userController.unsubscribe = function(user_id, game_id, res) {
+	//TODO check if subscribed
+	User.findById(user.id, function(err, user) {
+		var pos = user.games.subscribed.indexOf(game_id);
+		
+		user.games.subscribed.splice(pos,1);
+		user.save();
+		
+		return res.json({
+			success: true,
+			message: "User successfully unsubscribed from game."
+		});
+	})
 }
 
 module.exports = userController;

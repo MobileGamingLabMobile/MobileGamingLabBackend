@@ -6,7 +6,7 @@ var game = require('./game.js');
 
 // define the schema for our comment model
 // multiple comments for one game possible also by the same user
-var commentSchema = mogoose.Schema({
+var commentSchema = mongoose.Schema({
 
 	user	: {
 		type:  mongoose.Schema.Types.ObjectId,

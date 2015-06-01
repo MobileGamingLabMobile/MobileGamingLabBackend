@@ -1,11 +1,12 @@
 var Game = require("../models/game.js");
 var User = require("../models/user.js");
+var Comment = require("../models/comment.js");
 
 var gameController = {};
 
 
 
-newGame = function(id,res) {
+gameController.newGame = function(id,res) {
 	var newGame = new Game({
 		metadata: {
 			owner: id
@@ -35,7 +36,7 @@ newGame = function(id,res) {
 	});
 }
 
-delGame = function(game_id, user_id, res) {
+gameController.deleteGame = function(game_id, user_id, res) {
 	Game.findById(game_id, function(err, game){
 		if (err) {
 			return res.json({
@@ -52,7 +53,7 @@ delGame = function(game_id, user_id, res) {
 		}
 		User.findById(game.metadata.owner, function(err, user){
 			var index = user.games.owned.indexOf(game_owner);
-			user.games.owned = user.games.owned.splice(1,index);
+			user.games.owned.splice(index,1);
 			user.save();
 		});
 		Game.remove({_id: game_id}, null).exec();
@@ -66,7 +67,7 @@ delGame = function(game_id, user_id, res) {
 }
 
 
-pubGame = function(game_id, user_id, res) {
+gameController.publishGame = function(game_id, user_id, res) {
 	Game.findById(game_id, function(err, game){
 		if(err) return res.json({
 			succes: false,
@@ -89,7 +90,7 @@ pubGame = function(game_id, user_id, res) {
 	});
 }
 
-editGameData = function(game_id, user_id, meta_data,res) {
+gameController.editGame = function(game_id, user_id, meta_data,res) {
 	Game.findById(game_id, function(err, game){
 		if(err) { 
 			return res.json({
@@ -131,8 +132,19 @@ editGameData = function(game_id, user_id, meta_data,res) {
 	});
 }
 
-getAllPublishedGames = function(res) {
-	Game.find({"metadata.published":true}, function(err, games){
+gameController.loadGame = function(game_id, res) {
+	Game.findById(game_id, function(err, game){
+		return res.json({
+			succes: true,
+			message: "Success",
+			game : game
+		});
+	})
+}
+
+gameController.getAllPublishedGames = function(skip, limit, res) {
+	
+	Game.find({"metadata.published":true}, "-components").limit(limit).skip(skip).exec(function(err, games){
 		return res.json({
 			succes: true,
 			message: "Success",
@@ -141,9 +153,16 @@ getAllPublishedGames = function(res) {
 	})
 }
 
-gameController.newGame = newGame;
-gameController.deleteGame = delGame;
-gameController.publishGame = pubGame;
-gameController.editGame = editGameData;
-gameController.getAllPublishedGames = getAllPublishedGames;
+gameController.getPublishedGameProfile = function(game_id,res) {
+	Game.find({$and: [{"_id" : game_id}, 
+	                  {"metadata.published": true}]
+	},"-components", function(err, game){
+		res.json({
+			success: true,
+			message: "Successfully loaded game.",
+			game: game
+		});
+	})
+}
+
 module.exports = gameController;

@@ -59,7 +59,8 @@ module.exports = function(app, passport,jwtauth) {
     	
     //public profile view with condition to be logged in
     app.get('/profile/:uid', jwtauth.auth, function(req, res){
-    	userController.getProfile(req.user._id, res);
+    	user_id = req.params[0];
+    	userController.getProfile(user_id, res);
     });
     // =====================================
     // Edit Profile ========================
@@ -100,11 +101,11 @@ module.exports = function(app, passport,jwtauth) {
     	}
     });
     
-    app.get("/user/ogames", jwtauth.auth,function(req, res) {
+    app.get("/user/games/owned", jwtauth.auth,function(req, res) {
     	userController.getOwnedGames(req.user.id, res);
     });
     
-    app.get("/user/sgames", jwtauth.auth,function(req, res) {
+    app.get("/user/games/subscribed", jwtauth.auth,function(req, res) {
     	userController.getSubscribedGames(req.user.id, res);
     });
     

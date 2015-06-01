@@ -25,5 +25,9 @@ module.exports = function(app,jwtauth) {
 		if (operation == "publish") {
 			gameController.publishGame(req.body.game_id,req.user.id,res)
 		}
+		
+		if (operation == "load") {
+			gameController.loadGame(req.body.game_id,res)
+		}
 	});
 };

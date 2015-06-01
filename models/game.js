@@ -19,7 +19,12 @@ var gameSchema = mongoose.Schema({
 			ref: 'User'
 		}, // set on creation of the game
 		published		: Boolean, // only if its true the game can be found in the store
-		publishedDate	: Date
+		publishedDate	: Date,
+		comments: [{
+			type:  mongoose.Schema.Types.ObjectId,
+			ref: 'Comment'
+		}],
+		rating: Number
 	},
 
 	components	:{ //game components
