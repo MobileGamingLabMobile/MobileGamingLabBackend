@@ -1,0 +1,16 @@
+[
+{"id":120,
+"exists":false,
+"name": "Group A",
+"description":"Die Gruppe A ist eine Gruppe für das aufsammeln von Waren und gehört den Händlern an"
+},
+{"ID":112,
+"exists":false,
+"name": "Group B",
+"description":"Die Gruppe B ist eine Gruppe für das Angeln von Fisch und gehört den Fischern an"
+},
+{"ID":183,
+"exists":true
+}
+]
+
