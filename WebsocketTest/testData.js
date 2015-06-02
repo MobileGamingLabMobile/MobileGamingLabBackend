@@ -5,7 +5,7 @@ var port=3035;
 
 var files = require("fs");
 var server=require("http").createServer(app);
-server.listen(8080,'localhost');
+server.listen(port);
 
 console.log("Server gestarted");
 app.get('/', function (req, res) {
