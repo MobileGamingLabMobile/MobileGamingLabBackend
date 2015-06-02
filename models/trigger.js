@@ -7,7 +7,7 @@ var condition = require('./condition.js');
 // define the schema for trigger model
 var triggerSchema = mongoose.Schema({
 
-	condition	:[{
+	conditions	:[{
 		type:  mongoose.Schema.Types.ObjectId,
 		ref: 'Condition'
 	}],

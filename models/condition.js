@@ -13,15 +13,8 @@ var trigger = require('./trigger.js');
 var conditionSchema = mongoose.Schema({
 
 	name					:String,
-	source 					:{
-		type:  mongoose.Schema.Types.ObjectId,
-		ref: 'Object'
-	},
-	target: {
-		type:  mongoose.Schema.Types.ObjectId,
-		ref: 'Player'
-	},
 	available				:Boolean,
+	type: String,
 
 	timeCondition			:{
 		countdown			:Number,
@@ -31,6 +24,10 @@ var conditionSchema = mongoose.Schema({
 	},
 
 	progressCondition		:{
+		quest:	{
+			type:  mongoose.Schema.Types.ObjectId,
+			ref: 'Quest'
+		},
 		started				:Boolean,
 		finished			:Boolean,
 	},
@@ -39,10 +36,10 @@ var conditionSchema = mongoose.Schema({
 		coord				:[Number, Number],
 		minSpeed			:Number,
 		minDistance			:Number,
-		item				:[{
+		item				:{
 			type:  mongoose.Schema.Types.ObjectId,
 			ref: 'Item'
-		}],
+		},
 		player 				:{
 			type:  mongoose.Schema.Types.ObjectId,
 			ref: 'Player'
@@ -50,6 +47,14 @@ var conditionSchema = mongoose.Schema({
 	},
 
 	objectConditon			:{
+		object				:{
+			type:  mongoose.Schema.Types.ObjectId,
+			ref: 'Object'
+		},
+		player 				:{
+			type:  mongoose.Schema.Types.ObjectId,
+			ref: 'Player'
+		},
 		collected			:Boolean,
 		activated			:Boolean,
 		used				:Boolean,

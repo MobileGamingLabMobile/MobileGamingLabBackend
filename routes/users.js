@@ -59,7 +59,7 @@ module.exports = function(app, passport,jwtauth) {
     	
     //public profile view with condition to be logged in
     app.get('/profile/:uid', jwtauth.auth, function(req, res){
-    	user_id = req.params[0];
+    	user_id = req.params.uid;
     	userController.getProfile(user_id, res);
     });
     // =====================================

@@ -28,19 +28,19 @@ var gameSchema = mongoose.Schema({
 	},
 
 	components	:{ //game components
-		quest			:[{
+		quests			:[{
 			type:  mongoose.Schema.Types.ObjectId,
 			ref: 'Quest'
 		}],
-		questCollection	:[{
+		questCollections	:[{
 			type:  mongoose.Schema.Types.ObjectId,
 			ref: 'QuestCollection'
 		}],
-		scene			:[{
+		scenes			:[{
 			type:  mongoose.Schema.Types.ObjectId,
 			ref: 'Scene'
 		}],
-		plot			:[{
+		plots			:[{
 			type:  mongoose.Schema.Types.ObjectId,
 			ref: 'Plot'
 		}],

@@ -68,6 +68,7 @@ gameController.deleteGame = function(game_id, user_id, res) {
 
 
 gameController.publishGame = function(game_id, user_id, res) {
+	//TODO check if all neccessary fields are filled in
 	Game.findById(game_id, function(err, game){
 		if(err) return res.json({
 			succes: false,
