@@ -13,7 +13,7 @@ var questSchema = mongoose.Schema({
 		type:  mongoose.Schema.Types.ObjectId,
 		ref: 'Trigger'
 	}],
-	questDescription	: {//wollten wir evtl als HTML realisieren, innerhalb von Content
+	description	: {//wollten wir evtl als HTML realisieren, innerhalb von Content
 		type:  mongoose.Schema.Types.ObjectId,
 		ref: 'Content'
 	}, 

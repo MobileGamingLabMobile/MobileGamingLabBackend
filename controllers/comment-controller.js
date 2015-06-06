@@ -6,6 +6,12 @@ var commentController = {};
 commentController.getComments = function(game_id,skip, limit ,res) {
 	Comment.find({game: game_id}).sort("-time").skip(skip).limit(limit).exec(
 	function(err, comments) {
+		if (err) {
+			return res.json({
+				success:false,
+				message:"Error while collecting comments"
+			})
+		}
 		res.json({
 			success: true,
 			message: "Successfully fetched comments.",

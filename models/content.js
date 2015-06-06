@@ -6,7 +6,7 @@ var contentSchema = mongoose.Schema({
 
 	name		:String,
 	url			:String, //oder auch input?
-	type		:Buffer,
+	type		:String,
 	html		: String
 
 });

@@ -5,13 +5,14 @@ var sequence = require('./sequence.js');
 
 // define the schema for questEvent model
 var questEventSchema = mongoose.Schema({
+	title : String,
 	functions	:[{
 		type:  mongoose.Schema.Types.ObjectId,
 		ref: 'GameFunction'
 	}],
 	sequence	: [{
 		type:  mongoose.Schema.Types.ObjectId,
-		ref: 'Sequence'
+		ref: 'Content'
 	}]
 });
 

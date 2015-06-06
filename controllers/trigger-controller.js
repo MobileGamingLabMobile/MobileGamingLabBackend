@@ -2,6 +2,13 @@ var Quest = require("../models/quest");
 var Trigger = require("../models/trigger");
 var triggerController = {};
 
+error = function(res, message) {
+	return res.json({
+		success: false,
+		message: message
+	});
+}
+
 triggerController.newTrigger = function(res) {
 	t = new Trigger();
 	t.save(function(err, trigger) {
@@ -16,6 +23,18 @@ triggerController.newTrigger = function(res) {
 			message: "An empty trigger was created.",
 			trigger: trigger
 		});
+	});
+}
+
+triggerController.getAllTrigger = function(quest_id,res) {
+	Quest.findById(quest_id).select("requirements").populate("requirements").exec(function(err, quest){
+		if (err) return error(res, "Can't find and populate quest");
+		
+		res.json({
+			succes: true,
+			message: "Trigger for quest successfully fetched.",
+			trigger: quest.requirements
+		})
 	});
 }
 

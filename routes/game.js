@@ -1,5 +1,6 @@
 var gameController = require('../controllers/game-controller.js');
 var commentController = require("../controllers/comment-controller.js");
+var userController = require("../controllers/user-controller.js")
 
 module.exports = function(app,jwtauth) {
 	/**
@@ -31,16 +32,18 @@ module.exports = function(app,jwtauth) {
 	 * game_id: STRING
 	 */
 	app.post("/games/:gid", jwtauth.auth, function(req,res){
-		operation = req.body.operation
+		operation = req.body.operation;
+		game_id = req.params.gid;
 		switch(operation.toLowerCase()) {
 		case "subscribe":
-			userController.subscribe(req.user.id, req.body.game_id, res)
+			userController.subscribe(req.user.id, game_id, res)
 			break;
 		case "unsubscribe":
-			userController.unsubscribe(req.user.id, req.body.game_id, res)
+			userController.unsubscribe(req.user.id, game_id, res)
 			break;
 		}
 	});
+	
 	
 	/**
 	 * Parameters in body:
@@ -55,25 +58,31 @@ module.exports = function(app,jwtauth) {
 	 * rating: Number
 	 * time: Date
 	 */
-	app.post("/games/comment", jwtauth.auth, function(req, res) {
-		DEFAULT_LIMIT = 20;
-		DEFAULT_SKIP = 0;
+	app.post("/comment", jwtauth.auth, function(req, res) {
+		var DEFAULT_LIMIT = 20;
+		var DEFAULT_SKIP = 0;
 		operation = req.body.operation.toLowerCase();
-		if (operation == "get") {
-			limit = req.body.limit
-			skip = req.body.skip
-			if (!limit || typeof limit != "number") limit = DEFAULT_LIMIT;
-			if (!skip || typeof skip != "number") skip = DEFAULT_SKIP;
-			commentController.getComments(req.body.game_id,skip,limit, res);
-		}
-		if (operation == "new") {
-			commentController.newComment(
+
+		switch(operation) {
+		case "get":
+			limit = req.body.limit;
+			skip = req.body.skip;
+			if (!limit) limit = DEFAULT_LIMIT;
+			if (!skip) skip = DEFAULT_SKIP;
+			return commentController.getComments(req.body.game_id,skip,limit, res);
+		case "new":
+			return commentController.newComment(
 					req.body.game_id, 
 					req.user.id,
 					req.body.time,
 					req.body.text,
 					req.body.rating,
 					res);
-		}
-	})
+		default:
+			return res.json({
+				success: false,
+				message: "Non supported operation."
+			})
+		}	
+	});
 }

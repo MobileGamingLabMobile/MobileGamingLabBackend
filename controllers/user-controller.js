@@ -140,7 +140,7 @@ userController.getSubscribedGames = function(user_id,res) {
 
 userController.subscribe = function(user_id, game_id, res) {
 	//TODO check if already subscribed
-	User.findById(user.id, function(err, user) {
+	User.findById(user_id, function(err, user) {
 		user.games.subscribed.push(game_id);
 		user.save();
 		
@@ -153,7 +153,7 @@ userController.subscribe = function(user_id, game_id, res) {
 
 userController.unsubscribe = function(user_id, game_id, res) {
 	//TODO check if subscribed
-	User.findById(user.id, function(err, user) {
+	User.findById(user_id, function(err, user) {
 		var pos = user.games.subscribed.indexOf(game_id);
 		
 		user.games.subscribed.splice(pos,1);
