@@ -8,10 +8,15 @@ var group = require('./group.js');
 var scene = require('./scene.js');
 var quest = require('./quest.js');
 var interaction = require('./interaction.js');
+var game = require("./game")
 
 // define the schema for action model
 var actionSchema = mongoose.Schema({
-
+	type: String,
+	game: {
+		type:  mongoose.Schema.Types.ObjectId,
+		ref: 'Game'
+	},
 	timeAction				:{
 		wait				:Boolean,
 		countdown			:Number,
@@ -74,6 +79,8 @@ var actionSchema = mongoose.Schema({
 
 	//}
 
+}, {
+	toJSON: {minimize: false}
 });
 
 // methods ======================

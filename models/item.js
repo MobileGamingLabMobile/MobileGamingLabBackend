@@ -1,15 +1,14 @@
 // app/models/item.js
 var mongoose = require('mongoose');
-var bcrypt   = require('bcrypt-nodejs');
 
-var functions = require('./functions.js');
+var functions = require('./action.js');
 
 // define the schema for item model
 var itemSchema = mongoose.Schema({
 
-	functions		:[{
+	actions		:[{
 		type:  mongoose.Schema.Types.ObjectId,
-		ref: 'GameFunction'
+		ref: 'Action'
 	}],
 	name			:String,
 	position		:[Number, Number],

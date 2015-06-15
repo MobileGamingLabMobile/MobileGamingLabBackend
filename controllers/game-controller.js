@@ -1,6 +1,8 @@
 var Game = require("../models/game.js");
 var User = require("../models/user.js");
 var Comment = require("../models/comment.js");
+var Action = require("../models/action");
+var actionController = require ("./action-controller");
 
 var gameController = {};
 
@@ -12,6 +14,7 @@ gameController.newGame = function(id,res) {
 			owner: id
 		}
 	});
+	
 	newGame.save(function(err, game) {
 		if (err) return res.json({
 			success: false,
@@ -62,16 +65,13 @@ gameController.deleteGame = function(game_id, user_id, res) {
 			message: "Game successfully deleted."
 		});
 	});
-	
-	
 }
-
 
 gameController.publishGame = function(game_id, user_id, res) {
 	//TODO check if all neccessary fields are filled in
 	Game.findById(game_id, function(err, game){
 		if(err) return res.json({
-			succes: false,
+			success: false,
 			message: "failed to publish game"
 		});
 		if (game.metadata.owner != user_id) {
@@ -95,7 +95,7 @@ gameController.editGame = function(game_id, user_id, meta_data,res) {
 	Game.findById(game_id, function(err, game){
 		if(err) { 
 			return res.json({
-				succes: false,
+				success: false,
 				message: "Failed to edit game"
 			});
 		}
@@ -136,7 +136,7 @@ gameController.editGame = function(game_id, user_id, meta_data,res) {
 gameController.loadGame = function(game_id, res) {
 	Game.findById(game_id, function(err, game){
 		return res.json({
-			succes: true,
+			success: true,
 			message: "Success",
 			game : game
 		});
@@ -147,7 +147,7 @@ gameController.getAllPublishedGames = function(skip, limit, res) {
 	
 	Game.find({"metadata.published":true}, "-components").limit(limit).skip(skip).exec(function(err, games){
 		return res.json({
-			succes: true,
+			success: true,
 			message: "Success",
 			games : games
 		});
@@ -164,6 +164,18 @@ gameController.getPublishedGameProfile = function(game_id,res) {
 			game: game
 		});
 	})
+}
+
+gameController.listActions = function(game_id, res) {
+	Action.find({"game": game_id}).exec(function(err, actions){
+		if (err) return error(res, "DB problem while creating the list of actions for game "+game_id);
+		
+		res.json({
+			success: true,
+			message: "Actions successfully fetched",
+			actions: actionController.prepareOutput(actions)
+		});
+	});
 }
 
 module.exports = gameController;

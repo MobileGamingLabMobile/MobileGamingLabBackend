@@ -1,7 +1,6 @@
 var Quest = require("../models/quest");
 var Content = require("../models/content");
-var Sequence = require("../models/sequence");
-var GameFunction = require("../models/functions");
+var Action = require("../models/action");
 var QuestEvent = require("../models/questEvent");
 
 error = function(res, message) {
@@ -51,7 +50,7 @@ eventController.deleteEvent = function(event_id, res) {
 				quest.questEvent = null;
 				quest.save();
 				res.json({
-					succes:true,
+					success:true,
 					message:"Event was successfully deleted."
 				});
 			});

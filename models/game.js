@@ -6,25 +6,32 @@ var quest = require('./quest.js');
 var questCollection = require('./questCollection.js');
 var scene = require('./scene.js');
 var plot = require('./plot.js');
+var action = require("./action.js");
 
 // define the schema for our game model
 var gameSchema = mongoose.Schema({
 
 	metadata			:{ // general information about the game and its published status
-		name			: String, //nessasary to publish the game and be unique
-		description		: String, //nessasary to publish the game
-		category		: [String], //nessasary to publish the game, can be multiple
+		name			: String, //necessary to publish the game and be unique
+		description		: String, //necessary to publish the game
+		category		: [String], //necessary to publish the game, can be multiple
 		owner			: {
 			type:  mongoose.Schema.Types.ObjectId,
 			ref: 'User'
 		}, // set on creation of the game
-		published		: Boolean, // only if its true the game can be found in the store
+		published		: {
+			type: Boolean, // only if its true the game can be found in the store
+			default: false
+		},
 		publishedDate	: Date,
 		comments: [{
 			type:  mongoose.Schema.Types.ObjectId,
 			ref: 'Comment'
 		}],
-		rating: Number
+		rating: {
+			type: Number,
+			default: 0
+		}
 	},
 
 	components	:{ //game components
@@ -32,6 +39,7 @@ var gameSchema = mongoose.Schema({
 			type:  mongoose.Schema.Types.ObjectId,
 			ref: 'Quest'
 		}],
+		actions:	[action],
 		questCollections	:[{
 			type:  mongoose.Schema.Types.ObjectId,
 			ref: 'QuestCollection'

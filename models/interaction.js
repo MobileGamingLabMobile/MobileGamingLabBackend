@@ -2,7 +2,7 @@
 var mongoose = require('mongoose');
 
 var trigger = require('./trigger.js');
-var functions = require('./functions.js');
+var action = require('./action.js');
 
 // define the schema for interaction model
 var interactionSchema = mongoose.Schema({
@@ -10,9 +10,9 @@ var interactionSchema = mongoose.Schema({
 		type:  mongoose.Schema.Types.ObjectId,
 		ref: 'Trigger'
 	}],
-	functions	:[{
+	actions	:[{
 		type:  mongoose.Schema.Types.ObjectId,
-		ref: 'GameFunction'
+		ref: 'Action'
 	}]
 });
 

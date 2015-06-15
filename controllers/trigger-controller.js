@@ -31,7 +31,7 @@ triggerController.getAllTrigger = function(quest_id,res) {
 		if (err) return error(res, "Can't find and populate quest");
 		
 		res.json({
-			succes: true,
+			success: true,
 			message: "Trigger for quest successfully fetched.",
 			trigger: quest.requirements
 		})
@@ -47,7 +47,7 @@ triggerController.getTrigger = function(trigger_id, res) {
 			});
 		}
 		res.json({
-			succes: true,
+			success: true,
 			message: "Trigger successfully loaded."
 		});
 	});

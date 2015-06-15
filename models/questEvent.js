@@ -1,14 +1,14 @@
 // app/models/questEvent.js
 var mongoose = require('mongoose');
-var functions = require('./functions.js');
-var sequence = require('./sequence.js');
+var Action = require('./action.js');
+
 
 // define the schema for questEvent model
 var questEventSchema = mongoose.Schema({
 	title : String,
-	functions	:[{
+	actions	:[{
 		type:  mongoose.Schema.Types.ObjectId,
-		ref: 'GameFunction'
+		ref: 'Action'
 	}],
 	sequence	: [{
 		type:  mongoose.Schema.Types.ObjectId,

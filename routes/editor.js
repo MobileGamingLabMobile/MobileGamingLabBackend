@@ -3,8 +3,18 @@ var questController = require('../controllers/quest-controller');
 var conditionController = require('../controllers/condition-controller');
 var triggerController = require('../controllers/trigger-controller');
 var eventController = require('../controllers/event-controller');
+var actionController = require('../controllers/action-controller');
 
 module.exports = function(app,jwtauth) {
+	
+	app.get("/", function(req,res){
+		res.render("login.html");
+	});
+	
+	app.get("/editor",jwtauth.auth,function(req,res){
+		res.render("editor.html");
+	});
+	
 	/**
 	 * endpoint to create, modify, publish or delete games
 	 * 
@@ -164,6 +174,8 @@ module.exports = function(app,jwtauth) {
 	});
 	
 	/**
+	 * Creates a new Condition object
+	 * 
 	 * access_token : STRING
 	 * type : STRING
 	 */
@@ -189,6 +201,8 @@ module.exports = function(app,jwtauth) {
 	});
 	
 	/**
+	 * Creates new Event
+	 * 
 	 * access_token
 	 */
 	app.put("/editor/quest/:qid/event",jwtauth.auth , function(req,res){
@@ -242,6 +256,58 @@ module.exports = function(app,jwtauth) {
 			})
 			break;
 		}	
+	});
+	
+	/**
+	 * Create new action
+	 * 
+	 * type: String
+	 * game_id: String
+	 */
+	app.put("/editor/action/", jwtauth.auth, function(req,res) {
+		if (!req.body.type) {
+			return res.json({
+				success: false,
+				message: "No type specified."
+			});
+		}
+		if (!req.body.game_id) {
+			return res.json({
+				success: false,
+				message: "No game specified."
+			});
+		}
+		
+		actionController.newAction(req.body.game_id, req.body.type, res);
+	});
+	
+	/**
+	 * Get created action
+	 */
+	app.get("/editor/action/:aid",jwtauth.auth, function(req,res) {
+		actionController.getAction(req.params.aid, res);
+	})
+	
+	/**
+	 * Fetches the list of action for a game.
+	 * game_id 
+	 */
+	app.get("/editor/action/list", jwtauth.auth, function(req,res) {
+		
+	})
+	
+	/**
+	 * Delete an Action
+	 */
+	app.delete("/editor/action/:aid", jwtauth.auth, function(req,res) {
+		actionController.deleteAction(req.params.aid, res);
+	})
+	
+	/**
+	 * Creates a list of the associate action objects
+	 */
+	app.get("/editor/:gid/actions",jwtauth.auth, function(req,res){
+		gameController.listActions(req.params.gid, res);
 	});
 };
 
