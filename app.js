@@ -39,6 +39,7 @@ mongoose.connect(configDB.url); // connect to our database
 
 require('./config/passport')(passport,app,jwt); // pass passport for configuration
 
+
 app.set('jwtTokenSecret','MUGLs_secret_TOKEN');
 
 // set up our express application
@@ -46,7 +47,10 @@ app.use(morgan('dev')); // log every request to the console
 app.use(cookieParser()); // read cookies (needed for auth)
 app.use(bodyParser()); // get information from html forms
 
-//app.use(express.static(__dirname + "/public")); //this is for public files like css / js / image
+app.use(express.static(__dirname + "/public")); //this is for public files like css / js / image
+app.set('views', __dirname + '/views');
+app.engine(".html", require('ejs').renderFile);
+
 //app.set('view engine', 'ejs'); // set up ejs for templating
 
 // required for passport
@@ -54,8 +58,12 @@ app.use(passport.initialize());
 //app.use(flash()); // use connect-flash for flash messages stored in session
 app.use(allowCrossDomain);
 var jwtauth = require("./util/jwtauth.js")(jwt,app);
+
 // routes ======================================================================
 require('./routes/users.js')(app, passport,jwtauth); // load our routes and pass in our app and fully configured passport
+require('./routes/editor.js')(app, jwtauth); 
+require('./routes/game.js')(app, jwtauth); 
+
 
 // launch ======================================================================
 app.listen(port);
