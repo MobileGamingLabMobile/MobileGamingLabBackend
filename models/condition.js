@@ -109,5 +109,23 @@ var conditionSchema = mongoose.Schema({
 });
 
 // methods ======================
+conditionSchema.methods.test=function(values){
+switch(this.type) {
+    case "location":
+       var coord1= values.coord[1];
+       var coord2= values.coord[2];
+       if(Math.abs(this.coord[1]-coord1)<=this.minDistance&&Math.abs(this.coord[2]-   
+       coord2)<=this.minDistance){
+        return true;
+        }
+        return false;
+    default:"the type does not extists for testing"
+}
+conditionSchema.methods.setFulfilled(bool) {
+this.fulfilled=bool;
+}
+
+}
+
 // create the model for condition
 module.exports = mongoose.model('Condition', conditionSchema);

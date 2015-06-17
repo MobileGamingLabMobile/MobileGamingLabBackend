@@ -91,5 +91,24 @@ triggerController.unlinkCondition = function(trigger_id, condition_id,res) {
 			}
 	);
 }
+triggerController.setConditionFulfilledToTriggers=function(condition_id){
+
+setConditionFulfilledToTrigger=function(trigger, condition_id){
+trigger.conditions.findById(condition_id, function (err, conditions) {
+ if( err || !conditions) {
+        console.log("No Condition found");
+    } 
+if(conditions.length>1){
+ console.log("condition_id used by multiple conditions");
+}
+else {            
+      conditions[0].setFullfilled(true);
+    };
+});
+}
+Trigger.find({}, function (err, trigger) {
+setConditionFulfilledToTrigger(trigger,condition_id);
+});
+}
 
 module.exports = triggerController;
