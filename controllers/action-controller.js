@@ -31,11 +31,29 @@ _trimAction = function(action) {
 		if (key.indexOf("Action") > -1) {
 			if (key != action.type) {
 				delete copy[key];
+			} else {
+				allPaths = Action.schema.paths;
+				for (index in allPaths) {
+					currentP = allPaths[index];
+					if (index.indexOf(action.type) > -1) {
+						console.log(currentP.options.type);
+						
+						attr = index.replace(action.type+".", "");
+						 if (currentP.instance && currentP.instance != undefined) {
+							 vaue = currentP.instance; 
+						 } else if (currentP.options.type) {
+							 value = currentP.options.type;
+						 }
+						copy[action.type][attr] = currentP.instance;
+					}
+				}
 			}
 		}
 	}
 	return copy;
 }
+
+
 
 actionController.newAction = function(game_id,type,res) {
 	var newAction = new Action();

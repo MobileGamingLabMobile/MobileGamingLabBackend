@@ -31,7 +31,7 @@ userController.getOwnProfile = function(id, res) {
 userController.getProfile = function(id, res) {
 
 	User.findById(id, function(err, user) {
-		if (err) {
+		if (err || !user) {
 			return res.json({
 				success: false,
 				message: "Public profile not available. Reason undefined."
@@ -39,6 +39,7 @@ userController.getProfile = function(id, res) {
 		}
 		var resUser = {};
 		resUser.profile = user.profile;
+		
 		
 		return res.json({
 			success: true,

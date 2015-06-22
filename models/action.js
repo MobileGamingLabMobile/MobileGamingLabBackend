@@ -40,6 +40,10 @@ var actionSchema = mongoose.Schema({
 		interaction			:{
 			type:  mongoose.Schema.Types.ObjectId,
 			ref: 'Interaction'
+		},
+		game: {
+			type:  mongoose.Schema.Types.ObjectId,
+			ref: 'Game'
 		}
 	},
 

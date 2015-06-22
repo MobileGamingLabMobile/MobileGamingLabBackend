@@ -7,6 +7,8 @@ var questCollection = require('./questCollection.js');
 var scene = require('./scene.js');
 var plot = require('./plot.js');
 var action = require("./action.js");
+var Role = require("./role.js");
+var Player = require("./player.js");
 
 // define the schema for our game model
 var gameSchema = mongoose.Schema({
@@ -39,7 +41,6 @@ var gameSchema = mongoose.Schema({
 			type:  mongoose.Schema.Types.ObjectId,
 			ref: 'Quest'
 		}],
-		actions:	[action],
 		questCollections	:[{
 			type:  mongoose.Schema.Types.ObjectId,
 			ref: 'QuestCollection'
@@ -52,7 +53,14 @@ var gameSchema = mongoose.Schema({
 			type:  mongoose.Schema.Types.ObjectId,
 			ref: 'Plot'
 		}],
-
+		roles: [{
+			type:  mongoose.Schema.Types.ObjectId,
+			ref: 'Role'
+		}],
+		players: [{
+			type:  mongoose.Schema.Types.ObjectId,
+			ref: 'Player'
+		}],
 		boundary		:[Number, Number, Number, Number] //upper left corner, down right corner
 	}
 

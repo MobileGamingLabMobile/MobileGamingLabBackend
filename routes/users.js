@@ -1,7 +1,13 @@
 var userController = require("../controllers/user-controller.js");
 
 module.exports = function(app, passport,jwtauth) {
-	
+	/*
+	 * Hint: Every function in the execution chain carries the request and the request
+	 * document. Respectively "req" and "res".
+	 * The handling controller functions will use the response document to create the
+	 * response message from there. This way it is easier to see which routes are stated
+	 * and where they are handled.
+	 */
 	
 	 function login(req, res, next) {
 	  	  passport.authenticate('local-login', function(err, token, info) {

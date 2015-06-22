@@ -11,7 +11,10 @@ var triggerSchema = mongoose.Schema({
 		type:  mongoose.Schema.Types.ObjectId,
 		ref: 'Condition'
 	}],
-	triggered	:Boolean
+	triggered	: {
+		type: Boolean,
+		default: false
+	}
 	
 });
 

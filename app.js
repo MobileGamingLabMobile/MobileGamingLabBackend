@@ -1,4 +1,3 @@
-
 /**
  * Module dependencies.
  */
@@ -62,8 +61,7 @@ var jwtauth = require("./util/jwtauth.js")(jwt,app);
 // routes ======================================================================
 require('./routes/users.js')(app, passport,jwtauth); // load our routes and pass in our app and fully configured passport
 require('./routes/editor.js')(app, jwtauth); 
-require('./routes/game.js')(app, jwtauth); 
-
+require('./routes/game.js')(app, jwtauth);
 
 // launch ======================================================================
 app.listen(port);

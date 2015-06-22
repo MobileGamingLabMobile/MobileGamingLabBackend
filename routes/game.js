@@ -1,8 +1,18 @@
 var gameController = require('../controllers/game-controller.js');
 var commentController = require("../controllers/comment-controller.js");
-var userController = require("../controllers/user-controller.js")
+var userController = require("../controllers/user-controller.js");
+var gameSessionController = require("../controllers/gamesession-controller.js");
 
 module.exports = function(app,jwtauth) {
+	/*
+	 * Hint: Every function in the execution chain carries the request and the request
+	 * document. Respectively "req" and "res".
+	 * The handling controller functions will use the response document to create the
+	 * response message from there. This way it is easier to see which routes are stated
+	 * and where they are handled.
+	 */
+	
+	
 	/**
 	 * access_token: String
 	 * limit: Number
@@ -84,5 +94,27 @@ module.exports = function(app,jwtauth) {
 				message: "Non supported operation."
 			})
 		}	
+	});
+	
+	/**
+	 * access_token: String
+	 */
+	app.post("/:gid/play",jwtauth.auth,function(req, res) {
+		gameSessionController.play(req.user.id,req.params.gid, res);
+	});
+	
+	app.post("/:gid/remove",jwtauth.auth,function(req, res) {
+		gameSessionController.endSession(req.user.id,req.params.gid, res);
+	});
+	
+	/**
+	 * acces_token : String
+	 * role_id : String
+	 * 
+	 * returns
+	 * playerSchema
+	 */
+	app.post("/:gid/selectRole",jwtauth.auth,function(req, res) {
+		gameSessionController.selectRole(req.user.id,req.params.gid,req.body.role_id, res);
 	});
 }
