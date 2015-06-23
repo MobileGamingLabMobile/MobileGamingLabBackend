@@ -4,17 +4,20 @@ var config= {};
 config.db={}
 config.db.test="mongodb://mgl:Mobile@localhost:27017/mglData_Test"
 
-expect = require("chai").expect;
-var sync = require('synchronize');
+    expect = require("chai").expect;
+sync = require('synchronize');
 //--------------------------
 process.env.NODE_ENV = 'test';
 
 Condition = require('../models/condition.js');
 Trigger = require('../models/trigger.js');
+Interaction = require('../models/interaction.js');
 engine = require("../GameEngine/EngineMethods.js");
+Action = require("../models/action.js");
+Quest = require("../models/quest.js");
 
 before(function (done) { 
-  function clearDB (callback) {
+    function clearDB (callback) {
 	for (var i in mongoose.connection.collections) {
 	    mongoose.connection.collections[i].remove(function() { });
 	}
@@ -23,8 +26,8 @@ before(function (done) {
     }
     function doBefore(callback){
 	clearDB(function(){
-		objects = require("../lib/Objects.js");
-		console.log('doBefore');
+	    objects = require("../lib/Objects.js");
+	    console.log('doBefore');
 	    done();
 	});          
 
@@ -36,11 +39,11 @@ before(function (done) {
 		throw err;
 	    } 
 	    doBefore();
-	  
+
 	});
     } else {
 	doBefore();
-	
+
     }
 
 
@@ -111,20 +114,20 @@ describe("Conditions", function(){
 });
 describe("Triggers", function(){
 
-    describe("#triggerSchema.methods.testConditionFalseExists()", function(){
+    describe("#triggerSchema.methods.testConditionFalseExists(callback)", function(){
 	it("should test if all conditions of a trigger1 are fulfilled", function(done){
-	    objects.trigger1.testConditionFalseExists(function(err,trigger){
+	    objects.trigger1.testConditionFalseExists(function(err,bool){
 		if(err) return err;
-		expect(trigger[0].conditions.length).to.equal(0);
+		expect(bool).to.equal(false);
 		done();
 
-	    });});
+	    });
+	});
 	it("should test if all conditions of a trigger2 are fulfilled", function(done){
-	    objects.trigger2.testConditionFalseExists(function(err,trigger){
+	    objects.trigger2.testConditionFalseExists(function(err,bool){
 		if(err) return err;
-		if(trigger[0].conditions.length>0){
-		    expect(trigger[0].conditions[0].fulfilled).to.equal(false);
-		}
+		expect(bool).to.equal(true);
+
 		done(); 
 
 
@@ -134,19 +137,123 @@ describe("Triggers", function(){
     });
 
 });
+describe("Interaction", function(){
+    describe("#testTriggerFalseExists(callback)", function(){
+
+	it("#interaction1", function(done){
+	    objects.interaction1.testTriggerFalseExists(function(err,bool){
+		if(err) return err;
+		expect(bool).to.equal(true);
+		done(); 
+
+
+	    });
+	});
+	it("#interaction2", function(done){
+	    objects.interaction2.testTriggerFalseExists(function(err,bool){
+		if(err) return err;
+		expect(bool).to.equal(false);
+
+		done(); 
+
+
+	    });
+
+	});
+
+
+    });
+
+    describe("#interactionSchema.methods.interact()", function(){
+	it("#test interaction changed quest.started from false to true (if error setTimeout longer!)", function(done){
+	    Quest.find({title:'Quest2'}).exec(function(err,quest){
+		var started=quest[0].started;
+		expect(started).to.eql(false);
+
+		objects.interaction1.interact();
+		setTimeout(function() {
+		    Quest.find({title:'Quest2'}).exec(function(err,questNew){
+
+			    var startedNew=questNew[0].started;
+			    expect(startedNew).to.eql(true);
+			    done();
+			});
+		}, 10);
+		
+
+	    });
+	});
+    });
+});
+describe("Action", function(){
+    describe("#interactionSchema.methods.execute()", function(){
+	it("## test started changed from false to true", function(done){
+	    Quest.find({title:'Quest1'}).exec(function(err,quest){
+		var started=quest[0].started;
+		expect(started).to.eql(false);
+
+		objects.action1.execute(function(err){
+
+		    Quest.find({_id:quest[0]._id}).exec(function(err,questNew){
+
+			var startedNew=questNew[0].started;
+			expect(startedNew).to.eql(true);
+			done();
+		    });
+		});
+	    });
+
+
+	});
+    });
+
+});
+
+
 describe("Engine", function(){
-    it("#exports.findAllTriggersWithCondition(condition_id,callback)", function(done){
+    it("#findAllTriggersWithCondition(condition_id,callback)", function(done){
 	engine.findAllTriggersWithCondition(objects.locCondition3._id,function (err,list){
 	    expect(list.length).to.equal(1);
 	    if(list[0]){
 		expect(list[0]._id).to.eql(objects.trigger1._id);
 	    }
 	    done(); 
-			
-	    
+
+
 	});
-	   
+    });
+    it("#findAllInteractionsWithTrigger(trigger_id,callback)", function(done){
+	engine.findAllInteractionsWithTrigger(objects.trigger1._id,function (err,list){
+	    expect(list.length).to.equal(2);
+	    var resultInteractions=[objects.interaction1._id,objects.interaction3._id];
+	    expect([list[0]._id,list[1]._id]).to.deep.have.members(resultInteractions );
+	    done(); 
+	});
+
+
+    });
+    
+    it("#exports.testValues_Condition(values)", function(done){
+	  function clearDB (callback) {
+		for (var i in mongoose.connection.collections) {
+		    mongoose.connection.collections[i].remove(function() { });
+		}
+		console.log('clearDB');
+		return callback();
+	    }        
+	clearDB(function(){
+	    objects = require("../lib/Objects.js");
+	    console.log('Whole Big Test');
+	    var values1={};
+	    values1.coord={};
+	    values1.coord[0]=51;
+	    values1.coord[1]=7.22;
+	    engine.testValues_Condition(values1);
+	    done();
+	}); 
 	
+	
+	 
     });
 });
 
