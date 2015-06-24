@@ -20,12 +20,13 @@ var interactionSchema = mongoose.Schema({
 // create the model for interaction
 
 interactionSchema.methods.testTriggerFalseExists=function(callback){
+    var interaction=this;
     return this.model('Interaction').find({'_id':this._id}).populate('trigger','triggered',{triggered:false}).exec(function(err,interaction){
 	if(interaction[0].trigger.length==0){
-		 callback(err,false);
+		 callback(err,false,interaction);
 	     }
 	 else{
-	     callback(err,true);
+	     callback(err,true,interaction);
 	 }
     });
 };

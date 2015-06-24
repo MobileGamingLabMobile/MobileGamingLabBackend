@@ -16,19 +16,27 @@ var triggerSchema = mongoose.Schema({
 });
 
 triggerSchema.methods.testConditionFalseExists=function(callback){
+
     return this.model('Trigger').find({'_id':this._id}).populate('conditions','fulfilled',{fulfilled:false}).exec(function(err,trigger){
-	 if(trigger[0].conditions.length==0){
-		 callback(err,false);
+	if(err) throw (err);
+	if(trigger[0].conditions.length==0){
+	     trigger[0].setTriggered(true,function(err){
+		 if(err)throw (err);
+		 callback(false,trigger[0]);
+	     });
+		
 	     }
 	 else{
-	     callback(err,true);
+	     callback(true,null);
 	 }
+    
     });
 
 
 };
-triggerSchema.methods.setTriggered=function(bool) {
+triggerSchema.methods.setTriggered=function(bool,callback) {
     this.triggered=bool;
+    this.save(callback);
 };
 
 //create the model for trigger

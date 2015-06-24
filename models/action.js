@@ -98,7 +98,7 @@ actionSchema.methods.execute=function(callback){
 			    quest[0].available=progressAction.unlock; 
 			}
 			quest[0].save(function(){
-                             console.log('action executed'+this._id);
+                             console.log('action executed');
 			    callback(err);
 			});
                        

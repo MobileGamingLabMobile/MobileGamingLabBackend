@@ -112,24 +112,31 @@ var conditionSchema = mongoose.Schema({
 });
 
 //methods ======================
-conditionSchema.methods.test=function(values){
-
+conditionSchema.methods.test=function(values,callback){
+var condition=this;
     switch(this.type) {
     case "locationCondition":
 	var coord0= values.coord[0];
 	var coord1= values.coord[1];
 	if(Math.abs(this.locationCondition.coord[0]-coord0)<=this.locationCondition.buffer&&Math.abs(this.locationCondition.coord[1]-   
 		coord1)<=this.locationCondition.buffer){
-	    this.setFulfilled(true);
-	    return true;
+	    this.setFulfilled(true,function(err){
+		if(err){
+		    throw (err);
+		}
+		callback(true,condition);
+	    });
+	    
 	}
-	return false;
+	
+	else{callback(false,null);}
 	break;
     default: throw ("the type "+this.type+" does not extists");
     }
 };
-conditionSchema.methods.setFulfilled=function(bool) {
+conditionSchema.methods.setFulfilled=function(bool,call) {
     this.fulfilled=bool;
+    this.save(call);
 }
 
 

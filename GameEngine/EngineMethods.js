@@ -4,17 +4,23 @@ exports=module.exports={};
 exports.testValues_Condition=function(values){
     Condition.find({}).exec(function(err,conditionList){
 	for(var i =0;i<conditionList.length;i++){
-	    var exists=conditionList[i].test(values);
-	    if(exists==true){
-		findAllTriggersWithCondition(conditionList[i]._id,function(err,triggerList){
-		    for(var j =0;j<triggerList.length;j++){
-			triggerList[j].testConditionFalseExists(function(bool){
-			    if(bool==false){
-				findAllInteractionsWithTrigger(triggerList[j]._id,function(err,interactionList){
-				    for(var k =0;k<interactionList.length;k++){
-					interactionList[k].testTriggerFalseExists(function(err,bool){
-					    if(bool==false){
-						interactionList[k].interact();
+	   conditionList[i].test(values,function(bool,condition){
+		    if(bool==true){
+			findAllTriggersWithCondition(condition._id,function(err,triggerList){
+			    for(var j =0;j<triggerList.length;j++){
+				
+				triggerList[j].testConditionFalseExists(function(bool,trigger){
+				
+				    if(bool==false){
+					findAllInteractionsWithTrigger(trigger._id,function(err,interactionList){
+					    for(var k =0;k<interactionList.length;k++){
+						interactionList[k].testTriggerFalseExists(function(err,bool,interaction){
+						    if(bool==false){
+							Interaction.find({id_:interaction._id}).exec(function(err,interaction){
+							    interaction[0].interact();
+							})
+						    }
+						});
 					    }
 					});
 				    }
@@ -22,8 +28,9 @@ exports.testValues_Condition=function(values){
 			    }
 			});
 		    }
-		});  
-	    };
+	    });
+ 
+	   
 	};
     });
 
@@ -32,11 +39,12 @@ exports.testValues_Condition=function(values){
 
 
 findAllTriggersWithCondition=function(condition_id,callback){
-    Trigger.find({}).populate('conditions',null,{_id:condition_id}).exec(
+
+Trigger.find({}).populate('conditions',null,{_id:condition_id}).exec(
 	    function(err,trigger){
 		var  list=[];
 		for (i=0;i<trigger.length;i++){
-		    if(trigger[i].conditions.length>0){
+		    if(trigger[i].conditions.length>0){			
 			list.push(trigger[i])
 		    }
 		}   
@@ -45,6 +53,7 @@ findAllTriggersWithCondition=function(condition_id,callback){
 	    }
     );
 }
+
 exports.findAllTriggersWithCondition=findAllTriggersWithCondition;
 
 
@@ -61,7 +70,12 @@ findAllInteractionsWithTrigger=function(trigger_id,callback){
 	    }
     );
     
-
-
 };
+
+
 exports.findAllInteractionsWithTrigger=findAllInteractionsWithTrigger;
+
+
+sendUpdatedData=function(type,data){
+    
+}

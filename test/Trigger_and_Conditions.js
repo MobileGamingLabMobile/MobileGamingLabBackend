@@ -1,67 +1,41 @@
+describe("Component Test", function(){
+    before(function (done) { 
+	    function clearDB (callback) {
+		for (var i in mongoose.connection.collections) {
+		    mongoose.connection.collections[i].remove(function() { });
+		}
+		console.log('clearDB');
+		return callback();
+	    }
+	    function doBefore(callback){
+		clearDB(function(){
+		    objects = require("../lib/Objects.js");
+		    console.log('doBefore');
+		    done();
+		});          
 
-mongoose = require('mongoose');
-var config= {};
-config.db={}
-config.db.test="mongodb://mgl:Mobile@localhost:27017/mglData_Test"
+	    }
 
-    expect = require("chai").expect;
-sync = require('synchronize');
-//--------------------------
-process.env.NODE_ENV = 'test';
+	    if (mongoose.connection.readyState === 0) {
+		mongoose.connect(config.db.test, function (err) {
+		    if (err) {
+			throw err;
+		    } 
+		    doBefore();
 
-Condition = require('../models/condition.js');
-Trigger = require('../models/trigger.js');
-Interaction = require('../models/interaction.js');
-engine = require("../GameEngine/EngineMethods.js");
-Action = require("../models/action.js");
-Quest = require("../models/quest.js");
+		});
+	    } else {
+		doBefore();
 
-before(function (done) { 
-    function clearDB (callback) {
-	for (var i in mongoose.connection.collections) {
-	    mongoose.connection.collections[i].remove(function() { });
-	}
-	console.log('clearDB');
-	return callback();
-    }
-    function doBefore(callback){
-	clearDB(function(){
-	    objects = require("../lib/Objects.js");
-	    console.log('doBefore');
-	    done();
-	});          
+	    }
 
-    }
-
-    if (mongoose.connection.readyState === 0) {
-	mongoose.connect(config.db.test, function (err) {
-	    if (err) {
-		throw err;
-	    } 
-	    doBefore();
 
 	});
-    } else {
-	doBefore();
 
-    }
-
-
-});
-
-after(function (done) {
-    mongoose.disconnect();
-    return done();
-});
-//-----------------------------------
-
-
-var db = mongoose.connection;
-db.on('error', console.error.bind(console, 'connection error:'));
-db.once('open', function (callback) {
-    console.log('Database open');
-});
-
+	after(function (done) {
+	    mongoose.disconnect();
+	    return done();
+	});
 describe("Conditions", function(){
     describe('#conditionSchema.methods.test(values)', function(){
 	it("should test if the condition is fulfilled", function(done){
@@ -69,9 +43,12 @@ describe("Conditions", function(){
 	    values1.coord={};
 	    values1.coord[0]=51;
 	    values1.coord[1]=7.22;
-	    var test=objects.locCondition1.test(values1);
-	    expect(test).to.equal(true);
-	    done();
+	    objects.locCondition1.test(values1,function(bool,condition){
+		expect(bool).to.equal(true);
+		    done();
+		
+	    });
+	    
 	});
 
 	it("should test if the condition is not fulfilled", function(done){
@@ -80,9 +57,11 @@ describe("Conditions", function(){
 	    values2.coord[0]=10;
 	    values2.coord[1]=700.22;
 
-	    var test=objects.locCondition1.test(values2);
-	    expect(test).to.equal(false);
-	    done();
+	    objects.locCondition1.test(values2,function(bool,coondition){
+		expect(bool).to.equal(false);
+		    done();
+	    });
+	    
 	});
     });
     describe("#conditionSchema.methods.setFulfilled(values)", function(){
@@ -116,16 +95,15 @@ describe("Triggers", function(){
 
     describe("#triggerSchema.methods.testConditionFalseExists(callback)", function(){
 	it("should test if all conditions of a trigger1 are fulfilled", function(done){
-	    objects.trigger1.testConditionFalseExists(function(err,bool){
-		if(err) return err;
+	    objects.trigger1.testConditionFalseExists(function(bool,trig){
+
 		expect(bool).to.equal(false);
 		done();
 
 	    });
 	});
 	it("should test if all conditions of a trigger2 are fulfilled", function(done){
-	    objects.trigger2.testConditionFalseExists(function(err,bool){
-		if(err) return err;
+	    objects.trigger2.testConditionFalseExists(function(bool,trig){
 		expect(bool).to.equal(true);
 
 		done(); 
@@ -134,6 +112,18 @@ describe("Triggers", function(){
 	    });
 
 	});
+	it("should test if all conditions of a trigger3 are fulfilled", function(done){
+	    objects.trigger3.testConditionFalseExists(function(bool,trig){
+
+		expect(bool).to.equal(false);
+
+		done(); 
+
+
+	    });
+
+	});
+	
     });
 
 });
@@ -174,12 +164,12 @@ describe("Interaction", function(){
 		setTimeout(function() {
 		    Quest.find({title:'Quest2'}).exec(function(err,questNew){
 
-			    var startedNew=questNew[0].started;
-			    expect(startedNew).to.eql(true);
-			    done();
-			});
-		}, 10);
-		
+			var startedNew=questNew[0].started;
+			expect(startedNew).to.eql(true);
+			done();
+		    });
+		}, 20);
+
 
 	    });
 	});
@@ -222,6 +212,7 @@ describe("Engine", function(){
 
 	});
     });
+
     it("#findAllInteractionsWithTrigger(trigger_id,callback)", function(done){
 	engine.findAllInteractionsWithTrigger(objects.trigger1._id,function (err,list){
 	    expect(list.length).to.equal(2);
@@ -232,29 +223,6 @@ describe("Engine", function(){
 
 
     });
-    
-    it("#exports.testValues_Condition(values)", function(done){
-	  function clearDB (callback) {
-		for (var i in mongoose.connection.collections) {
-		    mongoose.connection.collections[i].remove(function() { });
-		}
-		console.log('clearDB');
-		return callback();
-	    }        
-	clearDB(function(){
-	    objects = require("../lib/Objects.js");
-	    console.log('Whole Big Test');
-	    var values1={};
-	    values1.coord={};
-	    values1.coord[0]=51;
-	    values1.coord[1]=7.22;
-	    engine.testValues_Condition(values1);
-	    done();
-	}); 
-	
-	
-	 
-    });
+   
 });
-
-
+});
