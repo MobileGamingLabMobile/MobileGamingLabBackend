@@ -6,28 +6,26 @@ var port=3036;
 var files = require("fs");
 var server=require("http").createServer(app);
 server.listen(port);
-
+exports=module.exports={};
 console.log("Server gestarted");
 
 
 io = require('socket.io').listen(server);
 
-var clients={};
+ clients={};
 
 io.on('connection', function (socket) {
     socket.on('addClient', function (data) {
-	for(i in interval[data.clientName]){
-	    clearInterval(interval[data.clientName][i]);
-	}
+	//console.log('client angemeldet',data.clientName)
 	clients[data.clientName]=socket.id;
 
     });
 });
+exports.io=io;
 
 
 
 
 
-
-channel={"Groups":interval,"InventarItems":interval,"MapItems":interval,"Player":interval,"Quests":interval,"Roles":interval,"Sequences":interval};
+channel={"Groups":"Groups","InventarItems":"InventarItems","MapItems":"MapItems","Player":"Player","quest":"Quests","Roles":"Roles","Sequences":"Sequences"};
 

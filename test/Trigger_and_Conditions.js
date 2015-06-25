@@ -1,4 +1,4 @@
-describe("Component Test", function(){
+describe("Component Test if error uncomment:setTimeout()", function(){
     before(function (done) { 
 	    function clearDB (callback) {
 		for (var i in mongoose.connection.collections) {
@@ -11,7 +11,9 @@ describe("Component Test", function(){
 		clearDB(function(){
 		    objects = require("../lib/Objects.js");
 		    console.log('doBefore');
+		   // setTimeout(function() {
 		    done();
+		    //},20);
 		});          
 
 	    }
@@ -33,8 +35,19 @@ describe("Component Test", function(){
 	});
 
 	after(function (done) {
-	    mongoose.disconnect();
-	    return done();
+	   
+	    function clearDB (callback) {
+		for (var i in mongoose.connection.collections) {
+		    mongoose.connection.collections[i].remove(function() { });
+		}
+		console.log('clearDB');
+		return callback();
+	    }
+	  //  clearDB(function(){
+		 mongoose.disconnect();
+		return done();
+	  //  })
+	    
 	});
 describe("Conditions", function(){
     describe('#conditionSchema.methods.test(values)', function(){
@@ -160,7 +173,7 @@ describe("Interaction", function(){
 		var started=quest[0].started;
 		expect(started).to.eql(false);
 
-		objects.interaction1.interact();
+		objects.interaction1.interact('gamesession1_client1');
 		setTimeout(function() {
 		    Quest.find({title:'Quest2'}).exec(function(err,questNew){
 
@@ -182,10 +195,9 @@ describe("Action", function(){
 		var started=quest[0].started;
 		expect(started).to.eql(false);
 
-		objects.action1.execute(function(err){
+		objects.action1.execute('gamesession1_client1',function(err,quest){
 
 		    Quest.find({_id:quest[0]._id}).exec(function(err,questNew){
-
 			var startedNew=questNew[0].started;
 			expect(startedNew).to.eql(true);
 			done();

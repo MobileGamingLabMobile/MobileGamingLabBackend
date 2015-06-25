@@ -14,6 +14,7 @@ Interaction = require('../models/interaction.js');
 engine = require("../GameEngine/EngineMethods.js");
 Action = require("../models/action.js");
 Quest = require("../models/quest.js");
+ioClient = require('socket.io-client');
 
 
 //-----------------------------------
@@ -26,18 +27,20 @@ Quest = require("../models/quest.js");
 //});
 
 describe.only("Engine-- Whole BigTest", function(){
-    before(function (done) { 
+    beforeEach(function (done) { 
 	function clearDB (callback) {
 	    for (var i in mongoose.connection.collections) {
 		mongoose.connection.collections[i].remove(function() { });
 	    }
-	    console.log('clearDB');
-	    return callback();
+	   // console.log('clearDB');
+	    setTimeout(function() {
+		return callback();
+	    },100);
 	}
 	function doBefore(callback){
-	    clearDB(function(){
-		objects = require("../lib/Objects2.js");
+	    clearDB(function(){	
 //		console.log('doBefore');
+		initialize();	
 		done();
 	    });          
 
@@ -73,33 +76,82 @@ describe.only("Engine-- Whole BigTest", function(){
 //  mongoose.disconnect();
 
 //  });        
+    function initialize(){
+	values1={};
+	values1.coord={};
+	values1.coord[0]=51;
+	values1.coord[1]=7.22;
 
+	var socketURL = 'http://localhost:3036';
 
-    it("#exports.testValues_Condition(values)(if error setTimeout longer!)", function(done){
-	setTimeout(function() {
-	    console.log('Whole Big Test');
-	    var values1={};
-	    values1.coord={};
-	    values1.coord[0]=51;
-	    values1.coord[1]=7.22;
+	var options ={
+		transports: ['websocket'],
+		'force new connection': true
+	};
+
+	socket11=ioClient.connect(socketURL,options);
+	socket11.emit("addClient",{clientName:'client1'});
+    }
+
+    describe.only("Test Quest updated", function(){
+	beforeEach(function(done){
+	    objects = require("../lib/Objects2.js");
+	  //  console.log('load')
+	    setTimeout(function(){
+		done();
+	    },100);
+	});
+	it("#exports.testValues_Condition(values)(if error setTimeout longer!)", function(done){
+
+	    //console.log('Whole Big Test');
 	    Quest.find({title:'Quest2'}).exec(function(err,quest){
 		expect(quest[0].started).to.eql(false);
 	    });
-	    engine.testValues_Condition(values1);
+
+	    setTimeout(function() {
+		engine.testValues_Condition(values1,'locationCondition','client1');
+	    },10);
+
 	    setTimeout(function() {
 		Quest.find({title:'Quest2'}).exec(function(err,quest){
 		    expect(quest[0].started).to.eql(true);
-		    setTimeout(function() {
-			done();
-		    },100);
+		    done();
 
 		});
-		
+
+
 	    },100);
-	},100);
+
+	});
+    });
+
+    describe.only("SocketTest", function(){
+	beforeEach(function(done){
+	    objects = require("../lib/Objects3.js");
+	   
+	    setTimeout(function(){
+		done();
+	    },20);
+	});
+	it("#test if client gets message", function(done){
+
+	    socket11.on('Quests',function(data){		
+		expect(data[0].title).eql('Quest2');
+		done();
+	    });
+
+	    setTimeout(function() {
+		engine.testValues_Condition(values1,'locationCondition','client1');
+	    },200);
+
+	});
+
+
 
     });
+
 });
+
 
 
 

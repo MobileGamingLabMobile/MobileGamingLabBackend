@@ -30,13 +30,12 @@ interactionSchema.methods.testTriggerFalseExists=function(callback){
 	 }
     });
 };
-interactionSchema.methods.interact=function(){
+interactionSchema.methods.interact=function(client_key){
     this.model('Interaction').find({'_id':this._id}).populate('actions').exec(
 	    function(err,interaction){
 		var actionList=interaction[0].actions;
-	
 		for(var i =0;i<actionList.length;i++){
-		    actionList[i].execute(function(err){});
+		    actionList[i].execute(client_key,function(err,object){});
 		}
 	    });
 };

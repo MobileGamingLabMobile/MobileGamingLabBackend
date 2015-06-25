@@ -7,7 +7,8 @@ var group = require('./group.js');
 var scene = require('./scene.js');
 var quest = require('./quest.js');
 var interaction = require('./interaction.js');
-var game = require("./game")
+var game = require("./game");
+var websockets=require("../Websocket.js");
 //define the schema for action model
 var actionSchema = mongoose.Schema({
     type: String,
@@ -80,7 +81,7 @@ var actionSchema = mongoose.Schema({
 });
 //methods ======================
 
-actionSchema.methods.execute=function(callback){
+actionSchema.methods.execute=function(client_key,callback){
     switch(this.type) {
     case "progressAction":
 	if(this.progressAction.quest!=null){
@@ -98,9 +99,13 @@ actionSchema.methods.execute=function(callback){
 			    quest[0].available=progressAction.unlock; 
 			}
 			quest[0].save(function(){
-                             console.log('action executed');
-			    callback(err);
+                       // console.log('action executed');
+     			callback(err,quest);
 			});
+			//console.log(quest)
+			//console.log('channel:'+channel['quest'])
+			sendUpdatedData(client_key,channel['quest'],quest);
+
                        
 		    });
 	}
