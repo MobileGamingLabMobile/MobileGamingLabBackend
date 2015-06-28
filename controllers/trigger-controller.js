@@ -92,4 +92,5 @@ triggerController.unlinkCondition = function(trigger_id, condition_id,res) {
 	);
 }
 
+
 module.exports = triggerController;

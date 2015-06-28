@@ -1,6 +1,5 @@
 // app/models/action.js
 var mongoose = require('mongoose');
-
 var player = require('./player.js');
 var item = require('./item.js');
 var resource = require('./resource.js');
@@ -8,8 +7,8 @@ var group = require('./group.js');
 var scene = require('./scene.js');
 var quest = require('./quest.js');
 var interaction = require('./interaction.js');
-var game = require("./game")
-
+var game = require("./game");
+var websockets=require("../Websocket.js");
 // define the schema for action model
 var actionSchema = mongoose.Schema({
 	type: String,
@@ -66,7 +65,6 @@ var actionSchema = mongoose.Schema({
 		removeItem			:Boolean,
 		placeItemOnMap		:Boolean
 	},
-
 	groupAction				:{
 		group 				:{
 			type:  mongoose.Schema.Types.ObjectId,
@@ -78,15 +76,44 @@ var actionSchema = mongoose.Schema({
 		}],
 		setVisibility		:Boolean
 	}//,
-
 	//inputAction				:{
-
 	//}
-
 }, {
-	toJSON: {minimize: false}
+    toJSON: {minimize: false}
 });
+//methods ======================
 
-// methods ======================
+actionSchema.methods.execute=function(client_key,callback){
+    switch(this.type) {
+    case "progressAction":
+	if(this.progressAction.quest!=null){
+	    var progressAction=this.progressAction;
+	    var quest_id=this.progressAction.quest;
+	    Quest.find({'_id':quest_id}).exec(
+		    function(err,quest){
+			if(progressAction.start!=null){
+			    quest[0].started=progressAction.start; 
+			}
+			if(progressAction.finish!=null){
+			    quest[0].finish=progressAction.finish; 
+			}
+			if(progressAction.unlock!=null){
+			    quest[0].available=progressAction.unlock; 
+			}
+			quest[0].save(function(){
+                       // console.log('action executed');
+     			callback(err,quest);
+});
+			//console.log(quest)
+			//console.log('channel:'+channel['quest'])
+			sendUpdatedData(client_key,channel['quest'],quest);
+
+                       
+		    });
+	}
+	break;
+    default: throw ("the type "+this.type+" does not extists");
+    }
+};
 // create the model for action
 module.exports = mongoose.model('Action', actionSchema);

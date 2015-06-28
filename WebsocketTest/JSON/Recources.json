@@ -1,0 +1,10 @@
+[
+{"ID":12, 
+"visible":true,
+  "property":{"name": "Wetter","type": "global", "sichtweite": 30,"Schneefall": true}
+ },
+ {"ID":123,
+"visible":true, 
+"property":{"name":"Score", "Wert":30,"type": "Gruppe A", "Punkte":10} }
+
+]
