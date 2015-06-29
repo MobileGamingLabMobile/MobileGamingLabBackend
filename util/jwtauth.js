@@ -4,6 +4,22 @@ var jwt = require('jwt-simple');
 module.exports = function(jwt,app) {
 	jwtauth = {};
 	
+	jwtauth.decode = function(token) {
+		return jwt.decode(token, app.get('jwtTokenSecret'));
+	}
+	
+	jwtauth.checkToken = function(token, callback) {
+		var decoded = jwt.decode(token, app.get('jwtTokenSecret'));
+	    if (decoded.exp <= Date.now()) {
+	    	return callback({message:"Token has expired."},false);
+		}
+	    User.findById(decoded.iss, function(err, user) {
+	    	if (err) return callback({message:"Token invalid. No such user."},false);
+	    	
+	    	callback(null, true);
+		});
+	}
+	
 	jwtauth.auth = function(req,res,next) {
 		var token = (req.body && req.body.access_token) || 
 		(req.query && req.query.access_token) || 

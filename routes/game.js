@@ -117,4 +117,8 @@ module.exports = function(app,jwtauth) {
 	app.post("/:gid/selectRole",jwtauth.auth,function(req, res) {
 		gameSessionController.selectRole(req.user.id,req.params.gid,req.body.role_id, res);
 	});
+	
+	app.get("/test/gaming",function(req,res){
+		res.render("socket.html");
+	});
 }

@@ -1,8 +1,6 @@
 //app/models/trigger.js
-
-var bcrypt   = require('bcrypt-nodejs');
-
-
+var mongoose = require('mongoose');
+var condition = require('./condition.js');
 
 //define the schema for trigger model
 var triggerSchema = mongoose.Schema({
