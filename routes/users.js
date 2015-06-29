@@ -115,6 +115,14 @@ module.exports = function(app, passport,jwtauth) {
     	userController.getSubscribedGames(req.user.id, res);
     });
     
+    app.get("/user/games/owned/:owner", jwtauth.auth,function(req, res) {
+    	userController.getOwnedPublishedGames(req.params.owner, res);
+    });
+    
+    app.get("/user/games/subscribed/:owner", jwtauth.auth,function(req, res) {
+    	userController.getSubscribedGames(req.params.owner, res);
+    });
+    
     // =====================================
     // LOGOUT ==============================
     // =====================================

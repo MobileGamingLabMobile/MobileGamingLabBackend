@@ -129,6 +129,16 @@ userController.getOwnedGames = function(user_id, res) {
 	})
 }
 
+userController.getOwnedPublishedGames = function(user_id, res) {
+	Game.find().and([{"metadata.owner": user_id},{"metadata.published": true}]).select("-components").exec(function(err, games){
+		res.json({
+			success: true,
+			message: "Own games successfully loaded.",
+			games: games
+		});
+	})
+}
+
 userController.getSubscribedGames = function(user_id,res) {
 	User.findById(user_id).populate("games.subscribed").exec(function(err, user) {
 		res.json({
