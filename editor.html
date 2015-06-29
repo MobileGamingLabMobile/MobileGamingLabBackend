@@ -1,0 +1,128 @@
+﻿<!doctype html>
+<html lang="en">
+<head>
+	<meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>MUGL | Editor</title>
+    <link rel="stylesheet" href="css/foundation.css" />
+    <script src="js/vendor/jquery.js"></script>
+    <script src="js/foundation.min.js"></script>
+    <script src="js/vendor/modernizr.js"></script>
+    <script src="js/vendor/addelement.js"></script>
+</head>
+
+<body>
+	<div class="fixed">
+		<nav class="top-bar" data-topbar role="navigation" data-options="is_hover: true">
+		  	<ul class="title-area">
+		    	<li class="name">
+		     		<h1><a href="editor.html">MUGL | Editor</a></h1>
+		    	</li>
+			    <!-- remove the class "menu-icon" to get rid of menu icon. take out "Menu" to just have icon alone 
+			    <li class="toggle-topbar menu-icon"><a href="#"><span>Menu</span></a></li>-->
+		  	</ul>
+		  	<section class="top-bar-section">
+			    <!-- right nav section -->
+			    <ul class="right">
+			    	<!-- dropdown nav -->
+			      	<li class="has-dropdown">
+			        	<a href="#">Optionen</a>
+			        	<ul class="dropdown">
+				        	<!-- publish the game to the community -->
+				        	<li><a href="#">Veröffentlichen</a></li>
+				        	<!-- profile settings -->
+				        	<li><a href="profile.html">Profil</a></li>
+				        	<!-- help -->
+				        	<li><a href="help.html">Hilfe?</a></li>
+				        	<!-- logging out  and return to home.html -->
+				        	<li><a href="home.html">Loggout</a></li>
+			        	</ul>
+			      	</li>
+			    </ul>
+			</section>
+		</nav>
+	</div>
+
+	<!-- content panel -->
+	<div class="panel">
+		<!-- tab nav section -->
+		<ul class="tabs" data-tab role="tablist">
+			<li class="tab-title active" role="presentational" ><a href="#panel2-1" role="tab" tabindex="0" aria-selected="true" controls="panel2-1">Storyboard</a></li>
+			<li class="tab-title" role="presentational" ><a href="#panel2-2" role="tab" tabindex="0" aria-selected="false" controls="panel2-2">Quest</a></li>
+			<li class="tab-title" role="presentational"><a href="#panel2-3" role="tab" tabindex="0" aria-selected="false" controls="panel2-3">Trigger</a></li>
+			<li class="tab-title" role="presentational"><a href="#panel2-4" role="tab" tabindex="0" aria-selected="false" controls="panel2-4">Interaktion</a></li>
+			<li class="tab-title" role="presentational"><a href="#panel2-5" role="tab" tabindex="0" aria-selected="false" controls="panel2-5">Sequenz</a></li>
+			<li class="tab-title" role="presentational"><a href="#panel2-6" role="tab" tabindex="0" aria-selected="false" controls="panel2-6">Funktionen</a></li>
+			<li class="tab-title" role="presentational"><a href="#panel2-7" role="tab" tabindex="0" aria-selected="false" controls="panel2-7">Objekte</a></li>
+			<li class="tab-title" role="presentational"><a href="#panel2-7" role="tab" tabindex="0" aria-selected="false" controls="panel2-8">Spielerrollen</a></li>
+			<li class="tab-title" role="presentational"><a href="#panel2-7" role="tab" tabindex="0" aria-selected="false" controls="panel2-9">Metadaten</a></li>
+		</ul>
+
+		<div class="row">
+			<div class="small-2 column">
+				<!-- tab content -->
+				<div class="tabs-content">
+
+					<!-- components for the first tab: quest -->
+                    <section role="tabpanel" aria-hidden="false" class="content active" id="panel2-1">
+
+                        <button type="button" class="button medium expand" onclick="addNewGame()">Neues Spiel</button>
+
+                    </section>
+
+				  	<!-- components for the second tab: roles (for the players) -->
+					<section role="tabpanel" aria-hidden="true" class="content" id="panel2-2">
+
+                        <button type="button" class="button medium expand" onclick="addNewQuest()">Neue Quest</button>
+
+					</section>
+
+					<!-- components for the third tab: objects -->
+					<section role="tabpanel" aria-hidden="true" class="content" id="panel2-3">
+
+					</section>
+
+					<!-- components for the fourth tab: trigger -->
+					<section role="tabpanel" aria-hidden="true" class="content" id="panel2-4">
+				    	<p>Bedingung</p>
+				    	<p>Objekt</p>
+				    	<p>Spielerrolle</p>
+				    	<p>Position</p>
+				    	<p>Zeit</p>
+				    	<p>Quest</p>
+				    	<!-- already existing trigger -->
+				    	<p>Trigger</p>
+					</section>
+
+					<!-- components for the first tab: sequenz -->
+					<section role="tabpanel" aria-hidden="true" class="content" id="panel2-5">
+					   	<p>Trigger</p>
+					   	<p>Trigger</p>
+					</section>
+
+					<!-- components for the first tab: interaction -->
+					<section role="tabpanel" aria-hidden="true" class="content" id="panel2-6">
+					   	<p>Triggerauswahl</p>
+					   	<p>Aktion</p>
+					</section>
+
+					<!-- components for the first tab: functions -->
+					<section role="tabpanel" aria-hidden="true" class="content" id="panel2-7">
+					   	<p>Aktion</p>
+					   	<p>Verbindung</p>
+					</section>
+				</div>
+			</div>
+			<!-- area the user create the game out of the components on the left hand site called storyboard -->
+            <div class="small-10 column">
+                <div id="workspace" style="height: 600px" class="panel">
+
+                </div>
+            </div>
+		</div>
+	<script>
+        $(document).foundation();
+	</script>
+	
+</body>
+</html>

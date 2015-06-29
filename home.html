@@ -1,0 +1,114 @@
+<!doctype html>
+<html class="no-js" lang="en">
+<head>
+	<meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>MUGL | Login</title>
+    <link rel="stylesheet" href="css/foundation.css" />
+    <script src="js/vendor/modernizr.js"></script>
+</head>
+
+<body>
+	<!-- topbar for nav. fixed. -->
+	<div class="fixed">
+		<nav class="top-bar" data-topbar role="navigation" data-options="is_hover: true">
+		  	<ul class="title-area">
+			    <li class="name">
+			      <h1><a href="home.html">MUGL | Login</a></h1>
+			    </li>
+		  	</ul>
+		  	<section class="top-bar-section">
+			    <!-- right nav section -->
+			    <ul class="right">
+			    	<!-- dropdown nav -->
+			    	<li class="has-dropdown">
+				        <a href="#">Optionen</a>
+				        <ul class="dropdown">
+				        	<!-- sign up -->
+				        	<li><a href="register.html">Registrieren</a></li>
+				        	<!-- help -->
+				        	<li><a href="help.html">Hilfe?</a></li>
+				        </ul>
+			    	</li>
+			    </ul>
+			</section>
+		</nav>
+	</div>
+
+	<!-- content panel for logging in, registration link und help link -->
+	<div class="panel">
+		<div class="row">
+			<div class="large-12 large-centered columns">
+				<p style="text-align: center;"><font size="20">Wilkommen bei Mobile Unicorn Gaming Lab!</font></p>
+			</div>
+		</div>
+		<ul class="small-block-grid-1 medium-block-grid-1 large-block-grid-3">
+			<li>
+				<!-- logo -->
+				<img src="img/unicorn01.png" width="300" height="300" style="margin:0px auto;display:block">
+			</li>
+			<li>
+				<form data-abide>
+					<div class="row">
+						<div class="large-12 large-centered columns">
+							<!-- email to log in -->
+				        	<div class="email-field">
+					        	<input type="email" id="email" placeholder="Email" name="email" required pattern="email">
+					        	<!-- error handling -->
+					        	<small class="error">Bitte eine gültige EMail-Adresse eingeben</small>
+					        </div>
+					    </div>
+				    </div>
+					<div class="row">
+						<div class="large-12 large-centered columns">
+							<!-- password for the correct email tipped in -->
+				        	<div class="password-field">
+					        	<input type="password" id="password" placeholder="Passwort" name="password" required>
+					        	<!-- error handling and check for right password -->
+					        	<small class="error">Bitte dein Passwort eingeben</small>
+					        </div>
+				        </div>
+				    </div>
+				    <div class="row">
+						<div class="large-12 large-centered columns">
+							<!-- checkbox for the user to stay online -->
+				        	<input id="checkbox1" type="checkbox"><label for="checkbox1">Eingeloggt bleiben?</label>
+				        	<!-- link to the help.html for further information and tutorials -->
+				        	<a href="help.html" class="right">Hilfe?</a>
+				        </div>
+				    </div>
+				    <div class="row">
+				    	<div class="large-12 large-centered columns">
+				    		<!-- button for logging in -->
+				    		<a href="editor.html" class="button expand" type="submit">Einloggen</a>
+				    	</div>
+				    </div>
+				    <div class="row">
+				    	<div class="large-12 large-centered columns">
+				    		<p style="text-align: center;">oder</p>
+				    	</div>
+				    </div>
+				    <div class="row">
+				    	<div class="large-12 large-centered columns">
+				    		<!-- button for register -->
+				    		<a href="register.html" class="button expand" type="submit">Registrieren</a>
+				    	</div>
+				    </div>
+				</form>
+			</li>
+			<li>
+				<!-- tooltipps or some reasions why to use MUGL or what you can do with MUGL -->
+				<div class="panel">
+				</div>
+			</li>
+		</ul>
+	</div>
+
+	<script src="js/vendor/jquery.js"></script>
+	<script src="js/foundation.min.js"></script>
+	<script>
+		$(document).foundation();
+	</script>
+
+</body>
+</html>
