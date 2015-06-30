@@ -1,6 +1,4 @@
 // app/models/role.js
-var mongoose = require('mongoose');
-
 // define the schema for role model
 var roleSchema = mongoose.Schema({
 	name : String

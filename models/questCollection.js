@@ -1,6 +1,5 @@
 // app/models/questCollection.js
-var mongoose = require('mongoose');
-var bcrypt   = require('bcrypt-nodejs');
+
 var user = require('./user.js');
 
 var quest = require('./quest.js');

@@ -1,6 +1,4 @@
 // app/models/item.js
-var mongoose = require('mongoose');
-
 var functions = require('./action.js');
 
 // define the schema for item model

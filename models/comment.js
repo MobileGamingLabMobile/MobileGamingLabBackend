@@ -1,5 +1,5 @@
 // app/models/comment.js
-var mongoose = require('mongoose');
+
 
 var user = require('./user.js');
 var game = require('./game.js');

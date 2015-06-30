@@ -1,6 +1,4 @@
 // app/models/properties.js
-var mongoose = require('mongoose');
-
 
 // define the schema for our properties model
 var propertiesSchema = mongoose.Schema({

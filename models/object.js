@@ -1,6 +1,4 @@
 // app/models/object.js
-var mongoose = require('mongoose');
-
 var item = require('./item.js');
 var resource = require('./resource.js');
 var player = require('./player.js');

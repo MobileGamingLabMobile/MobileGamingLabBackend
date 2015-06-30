@@ -1,6 +1,4 @@
 // app/models/content.js
-var mongoose = require('mongoose');
-
 // define the schema for content model
 var contentSchema = mongoose.Schema({
 

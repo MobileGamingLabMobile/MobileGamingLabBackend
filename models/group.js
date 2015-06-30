@@ -1,6 +1,4 @@
 // app/models/group.js
-var mongoose = require('mongoose');
-
 var player = require('./player.js');
 var item = require('./item.js');
 var properties = require('./properties.js');

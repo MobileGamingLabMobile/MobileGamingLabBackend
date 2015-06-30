@@ -1,4 +1,5 @@
-var websockets=require("../Websocket.js");
+//var websockets=require("../Websocket.js"); //websocket defined app.js so no longer needed
+var Condition = require("../models/condition");
 exports=module.exports={};
 
 exports.testValues_Condition=function(values,type,client_key){

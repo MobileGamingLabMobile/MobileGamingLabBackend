@@ -1,7 +1,6 @@
 /**
  * The Game session data model. It is used to let the user play a game.
  */
-var mongoose = require('mongoose');
 var Game = require("./game");
 var Quest = require("./quest");
 var User = require("./user");
