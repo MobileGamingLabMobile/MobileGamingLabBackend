@@ -4,19 +4,19 @@ module.exports = function(app) {
 
 	/** GETITEM
 	*/
-	app.get("/item/", jwtauth.auth, function(req,res){
+	app.get("/editor/item/:iid", jwtauth.auth, function(req,res){
 		itemController.getItem(req.params.item._id, res)
 	});
 
 	/** DELETEITEM
 	*/
-	app.delete("/item/", jwtauth.auth, function(req,res){
+	app.delete("/editor/item/:iid", jwtauth.auth, function(req,res){
 		itemController.deleteItem(req.params.item._id, req.body.deep, res);
 	});
 
 	/** EDITITEM
 	*/
-	app.post("/item/", jwtauth.auth, function(req,res){
+	app.post("/editor/item/:iid", jwtauth.auth, function(req,res){
 		var operation = req.body.operation;
 		if (operation == "name") {
 			var name = {};

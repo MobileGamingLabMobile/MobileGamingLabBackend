@@ -1,24 +1,24 @@
 var playerController = require("../controllers/player-controller.js");
 
-module.exports = function(app) {
+module.exports = function(app,jwtauth) {
 
 	/** GETPLAYER
 	*/
-	app.get("/editor",jwtauth.auth,function(req,res){
-		playerController.getPlayer(req.params.player._id, res);
+	app.get("/editor/player/:pid",jwtauth.auth,function(req,res){
+		playerController.getPlayer(req.params.pid, res);
 	})
 
 	/** DELETEPLAYER
 	*/
-	app.delete("/editor/player",jwtauth.auth,function(req,res){
-		playerController.deletePlayer(req.params.player._id, res);
+	app.delete("/editor/player/:pid",jwtauth.auth,function(req,res){
+		playerController.deletePlayer(req.params.pid, res);
 
 	})
 
 	/** EDITPLAYER
 	*/
-	app.put("/editor/player",jwtauth.auth,function(req,res){
-		playerController.editPlayer(req.params.body._id, req.body.meta_data, res);
+	app.put("/editor/player/:pid",jwtauth.auth,function(req,res){
+		playerController.editPlayer(req.params.pid, req.body.meta_data, res);
 	})
 
 }

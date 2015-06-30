@@ -6,9 +6,10 @@ var role = require('./role.js');
 var group = require('./group.js');
 var resource = require('./resource.js');
 var properties = require('./properties.js');
+var User = require("./user")
 
 // define the schema for player model
-var playerSchema = mongoose.Schema({
+var playerInstanceSchema = mongoose.Schema({
 
 	inventar		:{
 		enabled		:{
@@ -32,8 +33,11 @@ var playerSchema = mongoose.Schema({
 		z: Number 
 	},
 	resource		:[{
-		type:  mongoose.Schema.Types.ObjectId,
-		ref: 'Resource'
+		value		: Number,
+		type		: {
+			type:  mongoose.Schema.Types.ObjectId,
+			ref: 'Resource'
+		}
 	}],
 	groups			:[{
 		type:  mongoose.Schema.Types.ObjectId,
@@ -42,9 +46,13 @@ var playerSchema = mongoose.Schema({
 	properties		: [{
 		type:  mongoose.Schema.Types.ObjectId,
 		ref: 'ObjectProperty'
-	}]
+	}],
+	user		: {
+		type:  mongoose.Schema.Types.ObjectId,
+		ref: 'User'
+	}
 });
 
 // methods ======================
 // create the model for player
-module.exports = mongoose.model('Player', playerSchema);
+module.exports = mongoose.model('PlayerInstance', playerInstanceSchema);

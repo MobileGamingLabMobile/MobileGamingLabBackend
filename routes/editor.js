@@ -4,6 +4,7 @@ var conditionController = require('../controllers/condition-controller');
 var triggerController = require('../controllers/trigger-controller');
 var eventController = require('../controllers/event-controller');
 var actionController = require('../controllers/action-controller');
+var playerController = require("../controllers/player-controller.js");
 
 module.exports = function(app,jwtauth) {
 	
@@ -309,6 +310,26 @@ module.exports = function(app,jwtauth) {
 	app.get("/editor/:gid/actions",jwtauth.auth, function(req,res){
 		gameController.listActions(req.params.gid, res);
 	});
+
+	/** GETPLAYER
+	*/
+	app.get("/editor/player/:pid",jwtauth.auth,function(req,res){
+		playerController.getPlayer(req.params.pid, res);
+	})
+
+	/** DELETEPLAYER
+	*/
+	app.delete("/editor/player/:pid",jwtauth.auth,function(req,res){
+		playerController.deletePlayer(req.params.pid, res);
+
+	})
+
+	/** EDITPLAYER
+	*/
+	app.put("/editor/player/:pid",jwtauth.auth,function(req,res){
+		playerController.editPlayer(req.params.pid, req.body.meta_data, res);
+	})
+
 };
 
 function isGameOwner(req, res) {

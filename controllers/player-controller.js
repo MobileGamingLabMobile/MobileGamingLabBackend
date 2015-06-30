@@ -8,7 +8,7 @@ playerController.newPlayer = function(player_id, res) {
 
 	});
 	{$push : {
-			"components.player": player_id
+			"components.players": player_id
 			}},
 			{safe:true}, 
 			function (err) {
@@ -98,7 +98,7 @@ playerController.deletePlayer = function(player_id, res) {
 		}
 		Game.update({"components.players": player_id},
 			{$pull : {
-				"components.player": player_id
+				"components.players": player_id
 			}},
 			{safe:true}, 
 			function (err) {
