@@ -1,4 +1,4 @@
-describe("Component Test if error uncomment:setTimeout()", function(){
+describe.only("Component Test if error uncomment:setTimeout()", function(){
     before(function (done) { 
 	    function clearDB (callback) {
 		for (var i in mongoose.connection.collections) {
