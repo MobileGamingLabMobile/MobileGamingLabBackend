@@ -73,6 +73,9 @@ module.exports = function(io,jwtauth) {
 		socket.on("getCoords", function() {
 			socket.emit("message",{"message": x+", "+y});
 		});
+		socket.on('locationCondition', function(data){
+		engineMethods.testValues_Condition(data, 'locationCondition', clientKey);
+		});
 	})
 	
 }
