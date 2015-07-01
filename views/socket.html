@@ -7,7 +7,21 @@
 	var sockethost = 'http://localhost:3030';
 	//var host = "http://giv-mgl.uni.muenster.de:3030/";
 	var socket;
- 	
+ 	function register(){
+ 	   $.ajax({
+ 	      url: host+"/signup",
+ 	      type: 'POST',
+ 	      data:{
+ 	 	        email:'j_klem04@uni-muenster.de',
+ 	       		password:'testen'
+ 	       	},
+ 	      success: function(data) {
+ 	       var html = '<li>' + data.message + '</li>';
+ 	        
+ 	          		$('#message').html(html);
+ 	      }
+ 	   });
+ 	 	}
  	function writeMessage(data){
         var html = '<li>' + data.message + '</li>';
      
@@ -60,6 +74,10 @@
    				 });
  				// Initial set of notes, loop through and add to list
     			socket.on('message', writeMessage);
+    			 socket.on('Quests',function(data){		
+    				$("#output1").text(JSON.stringify(data,null,"\t")+"socket ID:"+socket.id);
+    				done();
+    			    });
     		}
     		writeMessage(data);
     	})
@@ -87,21 +105,80 @@
 	    	$('#message').html(html);
 	    });
     }
-    
+    function testLocationCondition() {
+    	socket.emit("Player", {
+    		coord:[$("#coordx").val(),$("#coordy").val()] 
+    	});
+    }
+    function clearDatabase() {
+    	socket.emit("clearDatabase", {
+    	
+    	});
+    }
+   
+  function ingestGame() {
+
+$.ajax({
+   url: host+"/editor/game/ingest",
+   type: 'PUT',
+   data:{
+    		access_token: sessionStorage.getItem("token")
+    	},
+   success: function(data) {
+    var html = '<li>' + data.message + '</li>';
+     
+       		$('#message').html(html);
+   }
+});
+    }
+  function subscribeGame(){
+      $.ajax({
+	   url: host+"/games/published",
+	   type: 'GET',
+	   data:{
+	    		access_token: sessionStorage.getItem("token")
+	    	},
+	   success: function(data) {
+	    var html = '<li>' + data.message + '</li>';
+	     html = html+'<li>' + data.games[0]._id + '</li>';
+	     var gameID=data.games[0]._id;
+        console.log('gameID'+gameID)
+	     $.ajax({
+		   url: host+"/games/"+gameID,
+		   type: 'POST',
+		   data:{
+		    		access_token: sessionStorage.getItem("token"),
+		    		operation:'subscribe'
+		    	},
+		   success: function(data) {
+		    var html = '<li>' + data.message + '</li>';
+		       		$('#message').html(html);
+		   }
+		});
+	       		
+	   }
+	});
+      }
 </script>
 </head>
 <body>
+    <button onClick="register()">Register User</button><br/>
 	<button onClick="getID()">SocketID</button><br/>
 	<input type="text" id="email"></input><br/>
 	<input type="password" id="passwd"></input><br/>
 	<button onClick="login()">Login</button><br/>
-	
+	Erst einloggen
+	<button onClick="ingestGame()">Create Example Game</button><br/>
+	<button onClick="subscribeGame()">Subscribe Game</button><br/>
 	<br/>
 	<select multiple id="games"></select><br/>
 	<button onClick="play()">Play Game</button><br/>
 	<input type="text" id="coordx"></input><br/>
 	<input type="text" id="coordy"></input><br/>
 	<button onClick="sendCoords()">Send Coords</button><br/>
+		<button onClick="testLocationCondition()">Test LocationCondition</button><br/>
+		<pre style="height:150px;overflow-y: scroll;"id="output1"></pre>
+		<button onClick="clearDatabase()">Clear Database</button><br/>
 	<br/>
 	<ul id="message"></ul>	
 </body>

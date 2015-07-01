@@ -20,7 +20,7 @@ var bodyParser   = require('body-parser');
 
 var gameEngine = require("http").createServer(express);
 var gameEnginePort = 3030;
-var io = require("socket.io")(gameEngine);
+ io = require("socket.io")(gameEngine);
 
 
 var allowCrossDomain = function(req, res, next) {
@@ -72,6 +72,7 @@ require('./routes/game.js')(app, jwtauth);
 
 //set up the socket channels and functions
 require("./sockets/engine")(io,jwtauth);
+require("./lib/Objects3.js");
 channel={"Groups":"Groups","InventarItems":"InventarItems","MapItems":"MapItems","Player":"Player","quest":"Quests","Roles":"Roles","Sequences":"Sequences"};
 
 /*
