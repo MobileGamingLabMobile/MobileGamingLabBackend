@@ -10,7 +10,7 @@ exports=module.exports={};
 console.log("Server gestarted");
 
 
-var io = require('socket.io').listen(server);
+ io = require('socket.io').listen(server);
 
  clients={};
 

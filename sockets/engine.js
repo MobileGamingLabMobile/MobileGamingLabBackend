@@ -4,7 +4,7 @@ var engineMethods = require("../GameEngine/EngineMethods");
  * handle connections of socket
  */
 module.exports = function(io,jwtauth) {
-	var clients = {};
+	clients = {};
 	io.sockets.on("connection", function(socket) {
 		var TIMEOUT_UNAUTH = 2000;
 		socket.auth = false;
@@ -73,8 +73,15 @@ module.exports = function(io,jwtauth) {
 		socket.on("getCoords", function() {
 			socket.emit("message",{"message": x+", "+y});
 		});
-		socket.on('locationCondition', function(data){
+		socket.on('Player', function(data){
+		    console.log('angekommen');
+		    console.log(data);
 		engineMethods.testValues_Condition(data, 'locationCondition', clientKey);
+		});
+		socket.on('clearDatabase',function(data){
+		    for (var i in mongoose.connection.collections) {
+			mongoose.connection.collections[i].remove(function() { });
+		    }
 		});
 	})
 	

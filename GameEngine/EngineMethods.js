@@ -3,6 +3,7 @@
 exports=module.exports={};
 
 exports.testValues_Condition=function(values,type,client_key){
+    console.log('testValues_condition')
     Condition.find({type:type,available:true}).exec(function(err,conditionList){
 	for(var i =0;i<conditionList.length;i++){
 	   conditionList[i].test(values,function(bool,condition){
@@ -76,7 +77,7 @@ exports.findAllInteractionsWithTrigger=findAllInteractionsWithTrigger;
 
 
 sendUpdatedData=function(client_key,channel,data){
-   // console.log('clientkey:'+clients[client_key]+', channel'+channel)
-    websockets.io.to(clients[client_key]).emit(channel,data);
+   console.log('clientkey:'+clients[client_key]+', channel'+channel)
+    io.to(clients[client_key]).emit(channel,data);
 }
 exports.sendUpdatedData=sendUpdatedData;
