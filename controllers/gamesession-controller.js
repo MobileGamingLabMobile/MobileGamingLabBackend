@@ -52,7 +52,7 @@ gameSessionController.startNewSession = function(owner, game, res) {
 		}
 		gs.roles = game.components.roles
 		gs.save(function(err) {
-			GameSession.populate(gs,{path:"roles"}, function(err, session) {
+			gs.deepPopulate("roles availableQuests.description finishedQuests.description", function(err, session) {
 				res.json({
 					success: true,
 					message: "Game successfully started",
@@ -64,13 +64,13 @@ gameSessionController.startNewSession = function(owner, game, res) {
 }
 
 gameSessionController.resumeSession = function (user, game,session, res) {
-
-		res.json({
-			success: true,
-			message: "Resuming Game Session",
-			gameSession: session
-		});
-	
+		session.deepPopulate("roles availableQuests.description finishedQuests.description", function(err,s){
+			res.json({
+				success: true,
+				message: "Resuming Game Session",
+				gameSession: s
+			});
+		})
 }
 
 gameSessionController.play = function(user, game, res) {

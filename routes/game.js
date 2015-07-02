@@ -39,7 +39,6 @@ module.exports = function(app,jwtauth) {
 	 * 
 	 * access_token: STRING
 	 * operation: STRING (subscribe | unsubscribe)
-	 * game_id: STRING
 	 */
 	app.post("/games/:gid", jwtauth.auth, function(req,res){
 		operation = req.body.operation;

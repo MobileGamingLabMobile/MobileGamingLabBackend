@@ -7,6 +7,7 @@ var User = require("./user");
 var Player = require("./playerinstance");
 var  Group = require("./group");
 var Role = require("./role");
+var deepPopulate = require("mongoose-deep-populate");
 
 var gameSessionSchema = mongoose.Schema({
 	started: Date,
@@ -42,6 +43,21 @@ var gameSessionSchema = mongoose.Schema({
 		type:  mongoose.Schema.Types.ObjectId,
 		ref: 'Role'
 	}]
+});
+
+// optional plugins
+gameSessionSchema.plugin(deepPopulate,{
+	populate: {
+		"availableQuests": {
+			select: "_id description"
+		},
+		"finishedQuests": {
+			select: "_id description"
+		},
+		"activeQuest": {
+			select: "_id description"
+		}
+	}
 });
 
 module.exports = mongoose.model('GameSession', gameSessionSchema);

@@ -44,6 +44,21 @@
     	return $("#games option:selected").val();
     }
     
+    function ingestGame() {
+    	$.ajax({
+    		url: host+"/editor/game/ingest",
+    		type: "PUT",
+    		data: {
+    			access_token: sessionStorage.getItem("token")
+    		},
+    		success: function(data){
+	    		var html = '<li>' + data.message + '</li>';
+	     
+	       		$('#message').html(html);
+    		}
+    	});
+    }
+    
     function play() {
     	$.post(host+"/"+getSelected()+"/play", {
     		access_token: sessionStorage.getItem("token")
@@ -92,10 +107,12 @@
 </head>
 <body>
 	<button onClick="getID()">SocketID</button><br/>
+	
 	<input type="text" id="email"></input><br/>
 	<input type="password" id="passwd"></input><br/>
-	<button onClick="login()">Login</button><br/>
-	
+	<button onClick="login()">Login</button><br/><br/>
+	Erst einloggen!"
+	<button onClick="ingestGame()">Create Example Game</button><br/>
 	<br/>
 	<select multiple id="games"></select><br/>
 	<button onClick="play()">Play Game</button><br/>
