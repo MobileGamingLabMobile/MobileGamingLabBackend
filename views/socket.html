@@ -61,6 +61,17 @@
     	}
     }
     
+    function addQuests(quests) {
+    	clearQuestList();
+    	for(var i = 0; i < quests.length; i++) {
+    		id = quests[i];
+    		name = quests[i];
+    		$("#available_quests").append(
+    			new Option(name,id)
+    		);
+    	}
+    }
+    
     function clearList() {
     	$("#games option").remove();
     }
@@ -69,12 +80,19 @@
     	$("#roles option").remove();
     }
     
+    function clearQuestList() {
+    	$("#available_quests option").remove();
+    }
+    
     function getSelected() {
     	return $("#games option:selected").val();
     }
     
     function getSelectedRole() {
     	return $("#roles option:selected").val();
+    }
+    function getSelectedQuest() {
+    	return $("#available_quests option:selected").val();
     }
     
     function ingestGame() {
@@ -98,11 +116,20 @@
     	}, function(data) {
     		writeMessage(data);
     		
-    		if (data.success && data.gameSession && data.gameSession.players.length > 0) {
-   				connectToSocket();
-			}
+    		if (data.status == "selected") {
+    			connectToSocket();
+    		}
+
     		console.log(JSON.stringify(data.playerInstance));
     	});
+    }
+    
+    
+    function activateQuest() {
+    	socket.emit("Quest", {
+    		operation: "active",
+    		quest: getSelectedQuest()
+    	})
     }
     
     function play() {
@@ -110,16 +137,25 @@
     		access_token: sessionStorage.getItem("token")
     	}, function(data) {
     		if(data.success) {
-    			var gameSession = data.gameSession;
-    			var roles = data.gameSession.roles;
-    			clearRoleList();
-    			addRoles(roles);
-    			
-    			sessionStorage.setItem("session",data.gameSession._id);
-    			
-    			if (data.gameSession && data.gameSession.players.length > 0) {
-    				connectToSocket();
-   			    }
+    			switch (data.status) {
+    				case "started":
+    					var gameSession = data.gameSession;
+		    			var roles = data.gameSession.roles;
+		    			clearRoleList();
+		    			addRoles(roles);
+		    			sessionStorage.setItem("session",data.gameSession._id);
+		    			if (data.gameSession && data.gameSession.players.length > 0) {
+		    				connectToSocket();
+		   			    }
+    					break;
+    				case "selected":
+    				case "resume":
+    					addQuests(data.playerInstance.availableQuests);
+		    			sessionStorage.setItem("session",data.playerInstance.gameSession);
+		    			connectToSocket();
+
+    					break;
+    			}
     		}
     		writeMessage(data);
     	})
@@ -250,6 +286,11 @@
 		<legend>Utilities</legend>
 		<button onClick="ingestGame()">Create Example Game</button>
 		<button onClick="subscribeGame()">Subscribe Game</button>
+	</fieldset>
+	<fieldset>
+		<legend>Available Quests</legend>
+		<select multiple id="available_quests"></select>
+		<button onClick="activateQuest()">Starte Quest</button>
 	</fieldset>
 	<fieldset>
 		<legend>Socket</legend>

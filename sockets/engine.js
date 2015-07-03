@@ -47,6 +47,9 @@ module.exports = function(io,jwtauth) {
 		//define listener channels
 		console.log("authorized");
 		console.log(gameSession);
+		var progress = require("../controllers/progress-controller")();
+		
+		
 		var randomID = Math.round(Math.random()*10000000);
 		var goalx = 10;
 		var goaly = 10;
@@ -69,6 +72,9 @@ module.exports = function(io,jwtauth) {
 		});
 		socket.on("getID", function() {
 			socket.emit("message",{"message": JSON.stringify(clients)});
+		});
+		socket.on("Quest", function(data) {
+			socket.emit("message",{"message": "Received the data: "+progress.getID()})
 		});
 		socket.on("getCoords", function() {
 			socket.emit("message",{"message": x+", "+y});

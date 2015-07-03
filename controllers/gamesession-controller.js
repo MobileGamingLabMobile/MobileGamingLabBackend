@@ -61,26 +61,42 @@ gameSessionController.startNewSession = function(owner, game, res) {
  * @param session Object GameSession
  */
 gameSessionController.resumeSession = function (user, game,session, res) {
-		session.deepPopulate("roles", function(err,s){
-			PlayerInstance.findOne({"user":user,"gameSession":session._id}).deepPopulate("availableQuests.description "+ 
-					"finishedQuests.description role properties resource.type inventar.slot", function(err, pinst) {
-				var doc = pinst;
-				
-				console.log(doc)
-			})
-			res.json({
-				success: true,
-				message: "Resuming Game Session",
-				status: "resume",
-				gameSession: s
-			});
-		})
+//		session.deepPopulate("roles", function(err,s){
+//			PlayerInstance.findOne({"user":user,"gameSession":session._id}).deepPopulate("availableQuests.description "+ 
+//					"finishedQuests.description role properties resource.type inventar.slot", function(err, pinst) {
+//				var doc = pinst;
+//				
+//				console.log(doc)
+//				res.json({
+//					success: true,
+//					message: "Resuming Game Session",
+//					status: "resume",
+//					gameSession: pinst
+//				});
+//			})
+//			
+//		})
+		var pinst;
+		for (var i = 0; i < session.players.length; i++) {
+			var p = session.players[i];
+			if (p.user == user) {
+				pinst =  p;
+				break;
+			}
+		}
+		
+		res.json({
+			success: true,
+			message: "Resuming Game Session",
+			status: "resume",
+			playerInstance: pinst
+		});
 }
 
 gameSessionController.play = function(user, game, res) {
 	//{$and:[{"game":game},{$or : [{"owner": user},{"players.user": user}]}]}
 	//{"owner":user,"game":game}
-	GameSession.findOne({$and:[{"game":game},{$or : [{"owner": user},{"players.user": user}]}]}).populate("players").exec(function(err, session){
+	GameSession.findOne({$and:[{"game":game},{$or : [{"owner": user},{"players.user": user}]}]}).populate("players roles").exec(function(err, session){
 		if (!session) {
 			gameSessionController.startNewSession(user,game,res);
 		} else {
@@ -140,6 +156,7 @@ gameSessionController.joinGame = function(session, user, role_id,res) {
 			
 			return res.json({
 				success:true,
+				status: "selected",
 				message: "Role was selected and a player instance was created",
 				playerInstance: pinst
 			});

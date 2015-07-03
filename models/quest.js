@@ -3,6 +3,8 @@ var trigger = require('./trigger.js');
 var content = require('./content.js');
 var interaction = require('./interaction.js');
 var questEvent = require('./questEvent.js');
+var deepPopulate = require("mongoose-deep-populate");
+
 //define the schema for quest model
 var questSchema = mongoose.Schema({
     title: String,
@@ -27,5 +29,7 @@ var questSchema = mongoose.Schema({
     finished :Boolean
 });
 //methods ======================
+questSchema.plugin(deepPopulate);
+
 //create the model for quest
 module.exports = mongoose.model('Quest', questSchema);
