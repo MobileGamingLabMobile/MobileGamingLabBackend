@@ -21,9 +21,9 @@ module.exports = function(io,jwtauth) {
 						GameSession.findById(data.gameSessionID, function(err, data){
 							if (!err && data) {
 								gameSession = data;
-								console.log(data)
+								//console.log(data)
 							} else {
-								console.log("no GS")
+								//console.log("no GS")
 							}
 						});
 						clientKey = user+"_"+data.gameSessionID;
