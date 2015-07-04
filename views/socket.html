@@ -27,19 +27,6 @@
      
         $('#message').html(html);
     }
- 	
-    
-    
-    function getID() {
-    	socket.emit("getID", null);
-    }
-    
-    function sendCoords() {
-    	socket.emit("player", {
-    		"x": $("#coordx").val(),
-    		"y": $("#coordy").val()
-    	});
-    }
     
     function addOptions(games) {
     	for(var i = 0; i < games.length; i++) {
@@ -64,8 +51,8 @@
     function addQuests(quests) {
     	clearQuestList();
     	for(var i = 0; i < quests.length; i++) {
-    		id = quests[i];
-    		name = quests[i];
+    		id = quests[i]._id
+    		name = quests[i].title;
     		$("#available_quests").append(
     			new Option(name,id)
     		);
@@ -289,7 +276,7 @@
 	</fieldset>
 	<fieldset>
 		<legend>Available Quests</legend>
-		<select multiple id="available_quests"></select>
+		<select multiple id="available_quests"></select><br/>
 		<button onClick="activateQuest()">Starte Quest</button>
 	</fieldset>
 	<fieldset>
@@ -298,12 +285,10 @@
 		<input type="text" id="coordx"></input><br/>
 		<label>Y: </label>
 		<input type="text" id="coordy"></input><br/>
-		<button onClick="getID()">SocketID</button><br/>
-		<button onClick="sendCoords()">Send Coords</button><br/>
 		<button onClick="testLocationCondition()">Test LocationCondition</button><br/>
 	</fieldset>
 	<fieldset>
-		<legend>Server-Mesages</legend>
+		<legend>Server-Messages</legend>
 		<ul id="message"></ul>	
 	</fieldset>
 	<pre style="height:150px;overflow-y: scroll;"id="output1"></pre>

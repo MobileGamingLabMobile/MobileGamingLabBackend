@@ -96,7 +96,8 @@ gameSessionController.resumeSession = function (user, game,session, res) {
 gameSessionController.play = function(user, game, res) {
 	//{$and:[{"game":game},{$or : [{"owner": user},{"players.user": user}]}]}
 	//{"owner":user,"game":game}
-	GameSession.findOne({$and:[{"game":game},{$or : [{"owner": user},{"players.user": user}]}]}).populate("players roles").exec(function(err, session){
+	GameSession.findOne({$and:[{"game":game},{$or : [{"owner": user},{"players.user": user}]}]}).
+	deepPopulate("players.availableQuests.description players.role players.finishedQuests roles").exec(function(err, session){
 		if (!session) {
 			gameSessionController.startNewSession(user,game,res);
 		} else {
