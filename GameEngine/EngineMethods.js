@@ -2,8 +2,9 @@
 //var Condition = require("../models/condition");
 exports=module.exports={};
 
-exports.testValues_Condition=function(values,type,client_key){
+exports.testValues_Condition=function(values,type,client_key,playerInstanz){
     console.log('testValues_condition')
+      //console.log(gameSession);
     Condition.find({type:type,available:true}).exec(function(err,conditionList){
 	for(var i =0;i<conditionList.length;i++){
 	   conditionList[i].test(values,function(bool,condition){

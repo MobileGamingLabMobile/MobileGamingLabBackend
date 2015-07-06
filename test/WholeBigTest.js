@@ -27,7 +27,7 @@ ioClient = require('socket.io-client');
 //console.log('Database open');
 //});
 
-describe.only("Engine-- Whole BigTest", function(){
+describe("Engine-- Whole BigTest", function(){
     beforeEach(function (done) { 
 	function clearDB (callback) {
 	    for (var i in mongoose.connection.collections) {

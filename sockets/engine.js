@@ -76,6 +76,8 @@ module.exports = function(io,jwtauth) {
 		socket.on('Player', function(data){
 		    console.log('angekommen');
 		    console.log(data);
+		    console.log(gameSession+'gameSession0')
+		    
 		engineMethods.testValues_Condition(data, 'locationCondition', clientKey);
 		});
 		socket.on('clearDatabase',function(data){
