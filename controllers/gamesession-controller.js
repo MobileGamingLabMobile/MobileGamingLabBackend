@@ -43,7 +43,7 @@ gameSessionController.startNewSession = function(owner, game, res) {
 		
 		gs.roles = game.components.roles
 		gs.save(function(err) {
-			gs.deepPopulate("roles availableQuests.description finishedQuests.description", function(err, session) {
+			gs.deepPopulate("roles", function(err, session) {
 				res.json({
 					success: true,
 					message: "Game successfully started",
@@ -84,20 +84,37 @@ gameSessionController.resumeSession = function (user, game,session, res) {
 				break;
 			}
 		}
+		if (pinst) {
+			res.json({
+				success: true,
+				message: "Resuming Game Session",
+				status: "resume",
+				playerInstance: pinst
+			});
+		} else {
+			res.json({
+				success: true,
+				message: "Game was started and no role was selected",
+				status: "started",
+				gameSession: session
+			});
+		}
 		
-		res.json({
-			success: true,
-			message: "Resuming Game Session",
-			status: "resume",
-			playerInstance: pinst
-		});
+		
 }
 
 gameSessionController.play = function(user, game, res) {
 	//{$and:[{"game":game},{$or : [{"owner": user},{"players.user": user}]}]}
 	//{"owner":user,"game":game}
-	GameSession.findOne({$and:[{"game":game},{$or : [{"owner": user},{"players.user": user}]}]}).
-	deepPopulate("players.availableQuests.description players.role players.finishedQuests roles").exec(function(err, session){
+	console.log("User: "+user);
+	console.log("game: "+game);
+	GameSession.findOne({$and:
+		[{"game":game},{$or : 
+			[{"owner": user},{"players.user": user}]
+		}]
+	}).deepPopulate("players.availableQuests.description players.role players.finishedQuests roles "+
+			"players.properties players.resource.type players.groups").exec(function(err, session){
+				console.log(session);
 		if (!session) {
 			gameSessionController.startNewSession(user,game,res);
 		} else {
@@ -154,13 +171,16 @@ gameSessionController.joinGame = function(session, user, role_id,res) {
 			pinst.save();
 			session.players.push(pinst);
 			session.save();
+			pinst.deepPopulate("availableQuests.description role finishedQuests"+
+			"properties resource.type groups inventar.slot", function(err, player) {
+				return res.json({
+					success:true,
+					status: "selected",
+					message: "Role was selected and a player instance was created",
+					playerInstance: pinst
+				});
+			})
 			
-			return res.json({
-				success:true,
-				status: "selected",
-				message: "Role was selected and a player instance was created",
-				playerInstance: pinst
-			});
 		});
 
 	});

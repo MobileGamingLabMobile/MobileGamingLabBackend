@@ -106,8 +106,9 @@
     		if (data.status == "selected") {
     			connectToSocket();
     		}
-
-    		console.log(JSON.stringify(data.playerInstance));
+			addQuests(data.playerInstance.availableQuests);
+			
+    		console.log("Role selected: "+JSON.stringify(data.playerInstance));
     	});
     }
     
@@ -115,6 +116,12 @@
     function activateQuest() {
     	socket.emit("Quest", {
     		operation: "active",
+    		quest: getSelectedQuest()
+    	})
+    }
+    function finishQuest() {
+    	socket.emit("Quest", {
+    		operation: "finish",
     		quest: getSelectedQuest()
     	})
     }
@@ -140,7 +147,7 @@
     					addQuests(data.playerInstance.availableQuests);
 		    			sessionStorage.setItem("session",data.playerInstance.gameSession);
 		    			connectToSocket();
-
+						console.log("Game resumed: "+JSON.stringify(data.playerInstance))
     					break;
     			}
     		}
@@ -278,6 +285,7 @@
 		<legend>Available Quests</legend>
 		<select multiple id="available_quests"></select><br/>
 		<button onClick="activateQuest()">Starte Quest</button>
+		<button onClick="finishQuest()">Beende Quest</button>
 	</fieldset>
 	<fieldset>
 		<legend>Socket</legend>

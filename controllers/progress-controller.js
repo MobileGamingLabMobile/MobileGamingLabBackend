@@ -16,11 +16,16 @@ function constructor () {
 	controller.finishedTrigger = [];
 	controller.activeQuest = null;
 	controller.socket = null;
+	controller.playerInstance = null;
 	
 	//define methods
 	
 	controller.setSocket = function(s) {
 		controller.socket = s;
+	}
+	
+	controller.setPlayerInstance = function(pi) {
+		controller.playerInstance = pi;
 	}
 	
 	controller.clear = function() {
@@ -36,7 +41,7 @@ function constructor () {
 	 */
 	controller.setActiveQuest = function(questID) {
 		controller.clear();
-		Quest.findById(questID).deepPopulate("requirements.condition " +
+		Quest.findById(questID).deepPopulate("requirements.conditions " +
 				"tasks.trigger.conditions " +
 				"tasks.actions").exec(function(err, quest) {
 			controller.activeQuest = quest;
@@ -44,16 +49,20 @@ function constructor () {
 			for (var i = 0; i < quest.tasks.length; i++) {
 				var trigger = quest.tasks[i].trigger;
 				for (var j=0; j < trigger.length; j++) {
-					for (var k = 0; j < trigger[j].condition.length; k++) {
-						controller.conditions.push(trigger[j].condition[k]._id);
-					}
-					
+					for (var k = 0; k < trigger[j].conditions.length; k++) {
+						controller.conditions.push(trigger[j].conditions[k]._id);
+					}	
 				}
 			}
-			
+			/*
 			controller.socket.emit("message",{
 				success: true,
 				message : "Quest successfully activated "+JSON.stringify(controller.getActiveQuest())
+			});
+			*/
+			controller.socket.emit("message",{
+				success: true,
+				message : "Quest successfully activated "+JSON.stringify(controller.playerInstance)
 			});
 		})
 	}
@@ -149,7 +158,32 @@ function constructor () {
 	 * Checks whether or not the active quest is finished.
 	 */
 	controller.isQuestFinished = function() {
-		return (controller.activeQuest.tasks.length == controller.finishedTrigger.length)
+		//return (controller.activeQuest.tasks.length == controller.finishedTrigger.length);
+		return true;
+	}
+	
+	controller.hasActiveQuest = function() {
+		return (controller.activeQuest != null);
+	}
+	
+	/**
+	 * Finishes the active quest.
+	 * @return boolean wether or not the quest has been finished.
+	 */
+	controller.finishQuest = function() {
+		if (controller.isQuestFinished()) {
+			var index = controller.playerInstance.availableQuests.indexOf(controller.activeQuest._id);
+			var activeQuestLink = controller.playerInstance.availableQuests.splice(index,1);
+			controller.playerInstance.finishedQuests.push(activeQuestLink);
+			controller.playerInstance.save(function(err) {
+				if (!err) {
+					controller.socket.emit("message","Next Quest, please");
+				}
+			})
+			controller.clear();
+		} else {
+			return false;
+		}
 	}
 	
 	/**
