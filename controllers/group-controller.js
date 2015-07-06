@@ -1,19 +1,22 @@
 var Group = require("../models/group.js");
 var Player = require("../models/player.js");
+var Game = require("../models/game.js");
 
 var groupController = {};
 
-groupController.newGroup = function(group_id, res) {
-	var newGroup = new Group({
+groupController.newGroup = function(group_id, game_id, res) {
+	var newGroup = new Group();
 
-	});
-	// müssten die gruppen nicht auf unter game.components.groups aufgeführt werden, genau
-	// wie die player-controller?
 	newGroup.save(function(err, group) {
 		if (err) return res.json({
 			success: false,
-			message: "Can't create new Group in data base."
-		})		
+			message: "Can´t create new Group in data base."
+		});
+
+		Game.findById(game_id, function(err, game) {
+			game.components.groups.push(group._id);
+			game.save();
+		});	
 		res.json({
 			success: true,
 			group: group,
@@ -37,11 +40,11 @@ groupController.addGroupMember = function(group_id, newMember_id, res) {
 					message:"Not found."
 				});
 			}
-			player.groups.push(group_id);
-			player.save();
+			Player.groups.push(group_id);
+			Player.save();
 		})
-		group.member.push(newMember_id);
-		group.save();
+		Group.member.push(newMember_id);
+		Group.save();
 		res.json({
 			success: true,
 			message: "Player is now a new member of the group."
@@ -64,40 +67,16 @@ groupController.removeGroupMember = function(group_id, member_id, res) {
 					message:"Not found."
 				});
 			}
-			player.groups.remove(group_id);//löschen der gruppen_id von den gruppen des spielers
-			player.save();
+			Player.groups.remove(group_id);//löschen der gruppen_id von den gruppen des spielers
+			Player.save();
 		})
-		group.member.remove(member_id);//löschen der player_id (hier member_id) aus dem member array in group.member
-		group.save();
+		Group.member.remove(member_id);//löschen der player_id (hier member_id) aus dem member array in group.member
+		Group.save();
 		res.json({
 			success: true,
 			message: "Player is no longer a member of the group."
 		});
 	})
-}
-
-groupController.deleteGroup = function(group_id, res) {
-	Group.findById.populate("properties").populate("member").exec(function(err, group){
-		if (err) return error(res, "Problems finding group for delete operation.");
-		if(!group) return error(res, "Can't find group to delete.");
-		if (deep) {
-		//remove all linkin
-
-			for (var i in group.properties) {
-				group.properties.remove();
-			}
-
-			for (var i in group.member) {
-				// auch noch die referenz von player auf diese gruppe löschen?
-				group.member[i].remove(); //löschen der referenzen von gruppe auf player
-			}
-		}
-
-		Group.remove({_id: group_id}, null).exec();
-		res.json({
-			success: true,
-			message: "Group successfully deleted."
-		});
 }
 
 groupController.getGroup = function(group_id, res) {
@@ -108,13 +87,12 @@ groupController.getGroup = function(group_id, res) {
 				message: "Not found."
 			});
 		}
-		var current_group = group_id.toString();
 		res.json({
 			success: true,
-			group: current_group,
+			group: group,
 			message: "Group successfully loaded."
 		});
-	}
+	});
 }
 
 groupController.editGroup = function(group_id, group_data, res) {
@@ -146,6 +124,39 @@ groupController.editGroup = function(group_id, group_data, res) {
 			success: true,
 			message: "Group successfully edited."
 		});
+	});
+}
+
+groupController.deleteGroup = function(group_id, deep, res) {
+	Group.findById(group_id).populate("properties").populate("member").exec(function(err, group){
+		if (err) return error(res, "Problems finding group for delete operation.");
+		if(!group) return error(res, "Can't find group to delete.");
+		if (deep) {
+		//remove all linkin
+			for (var i=0; i<group.properties.length; i++) {
+				group.properties[i].remove();
+			}
+
+			for (var j=0; i<group.member.length; j++) {
+				group.member[j].remove();
+			}
+		}
+
+		Game.update({"components.groups": group_id},
+			{$pull : {
+				"components.groups" : group_id
+			}},
+			{safe:true},
+			function(err) {
+				if (err) return error(res, "Can´t remove group from list in game object.")
+			});
+			group.remove(function(err) {
+				if (err) return error (res, "Error whiling removing player object.");
+				res.json({
+					success: true,
+					message: "Group successfully deleted."
+				});
+			});
 	});
 }
 

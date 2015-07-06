@@ -1,40 +1,44 @@
 var Item = require("../models/item.js");
+var Game = require("../models/game.js");
 
 var itemController = {};
 
-itemController.newItem = function(item_id, res) {
-	var newItem = new Item({
-		//wenn wir bei object sagen, dass es ein typ haben muss wie item etc. dann müsster
-		//hier in der erzeuge methode doch eig die erzeugung von object-controller aufgerufen werden oder?
-	});
+itemController.newItem = function(item_id, game_id, res) {
+	var newItem = new Item();
+
 	newItem.save(function(err, item) {
 		if (err) return res.json({
 			success: false,
-			message: "Can't create new Item in data base."
-		})		
+			message: "Can't create new item in data base."
+		});
+
+		Game.findById(game_id, function(err, game) {
+			game.components.items.push(item._id);
+			game.save();
+		});
+
 		res.json({
 			success: true,
-			item: item,
-			message: "New Item successfully created."
+			player: item,
+			message: "New item successfully created."
 		});
 	});
 }
 
 itemController.getItem = function(item_id, res) {
-	Item.findById(item_id, function(err, item){
+	Item.findById(item_id, function(err, item) {
 		if (err) {
 			return res.json({
 				success:false,
 				message: "Not found."
 			});
 		}
-		var current_item = item_id.toString();
 		res.json({
 			success: true,
-			item: current_item,
+			item: item,
 			message: "Item successfully loaded."
 		});
-	}
+	});
 }
 
 itemController.editItem = function(item_id, item_data, res) {
@@ -55,8 +59,8 @@ itemController.editItem = function(item_id, item_data, res) {
 				}					
 			}
 		}
-		item.metadata = mcopy;
-		item.save(function(err) {
+		Item.metadata = mcopy;
+		Item.save(function(err) {
 			if (err) return res.json({
 				success:false,
 				message: "Can't save item."
@@ -69,22 +73,32 @@ itemController.editItem = function(item_id, item_data, res) {
 	});
 }
 
-itemController.deleteItem = function(item_id, res) {
-	Item.findById.populate("functions").exec(function(err, object){
+itemController.deleteItem = function(item_id, deep, res) {
+	Item.findById(item_id).populate("actions").exec(function(err, item){
 		if (err) return error(res, "Problems finding item for delete operation.");
 		if(!item) return error(res, "Can't find item to delete.");
 		if (deep) {
 			//remove all linkin
-			for (var i in item.functions) {
-					item.functions[i].remove();
+			for (var i=0; i<item.actions.length; i++) {
+					item.actions[i].remove();
 			}
 		}
 
-		Item.remove({_id: item_id}, null).exec();
-		res.json({
-			success: true,
-			message: "Item successfully deleted."
-		});
+		Game.update({"components.items": item_id},
+			{$pull : {
+				"components.items": item_id
+			}},
+			{safe:true}, 
+			function (err) {
+				if (err) return error(res, "Can't remove item from list in game object.");
+			});
+			item.remove(function(err) {
+				if (err) return error(res, "Error whiling removing item object.");
+				res.json({
+				success: true,
+				message: "Item successfully deleted."
+				});	
+			});
 	});
 }
 

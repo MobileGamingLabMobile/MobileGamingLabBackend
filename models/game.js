@@ -60,6 +60,18 @@ var gameSchema = mongoose.Schema({
 			type:  mongoose.Schema.Types.ObjectId,
 			ref: 'Player'
 		}],
+		objects:[{
+			type: mongoose.Schema.Types.ObjectId,
+			ref: 'Object'
+		}],
+		items:[{
+			type: mongoose.Schema.Types.ObjectId,
+			ref: 'Item'
+		}],
+		resource:[{
+			type: mongoose.Schema.Types.ObjectId,
+			ref: 'Resource'
+		}],
 		boundary		:[Number, Number, Number, Number] //upper left corner, down right corner
 	}
 

@@ -5,7 +5,14 @@ var triggerController = require('../controllers/trigger-controller');
 var eventController = require('../controllers/event-controller');
 var actionController = require('../controllers/action-controller');
 var ingestGame = require("../util/example-game-ingestion");
+var playerController = require("../controllers/player-controller");
+var groupController = require("../controllers/group-controller.js");
+var itemController = require("../controllers/item-controller.js");
+var objectController = require("../controllers/object-controller.js");
+var resourceController = require("../controllers/resource-controller.js");
+
 module.exports = function(app,jwtauth) {
+
 	/*
 	 * Hint: Every function in the execution chain carries the request and the request
 	 * document. Respectively "req" and "res".
@@ -338,24 +345,159 @@ module.exports = function(app,jwtauth) {
 		gameController.listActions(req.params.gid, res);
 	});
 
+
+
+	/** NEWPLAYER
+	*	pid : player id
+	*	gid : game id
+	*/
+	app.put("/editor/player",jwtauth.auth,function(req,res){
+		if (req.body.game_id) {
+			playerController.newPlayer(req.params.pid, req.body.game_id, res);
+		}
+	});
+
 	/** GETPLAYER
+	*	pid : player id
 	*/
 	app.get("/editor/player/:pid",jwtauth.auth,function(req,res){
 		playerController.getPlayer(req.params.pid, res);
-	})
+	});
 
 	/** DELETEPLAYER
+	*	pid : player id
 	*/
 	app.delete("/editor/player/:pid",jwtauth.auth,function(req,res){
-		playerController.deletePlayer(req.params.pid, res);
-
-	})
+		playerController.deletePlayer(req.params.pid, req.body.deep, res);
+	});
 
 	/** EDITPLAYER
+	*	pid : player id
 	*/
 	app.put("/editor/player/:pid",jwtauth.auth,function(req,res){
 		playerController.editPlayer(req.params.pid, req.body.meta_data, res);
-	})
+	});
+
+
+	/** NEWGROUP
+	*	gpid : group id
+	*	gid : game if
+	*/
+	app.put("/editor/group",jwtauth.auth,function(req,res){
+		if (req.body.group_id){
+			groupController.newGroup(req.params.gpid, req.body.game_id, res);
+		}
+	});
+
+	/** GETGROUP
+	*	gpid : group id
+	*/
+	app.get("/editor/group/:gid", jwtauth.auth, function(req,res){
+		groupController.getGroup(req.params.gpid, res)
+	});
+
+	/** ADD/REMOVEGROUPMEMBER
+	*	gpid : group id
+	*/
+	app.post("/editor/group/member/:mid", jwtauth.auth, function(req,res){
+		var operation = req.body.operation;
+		if (operation == "addGroupMember"){
+			groupController.addGroupMember(req.body.gpid, req.body.player_id, res);
+		}
+		if (operation == "removeGroupMember") {
+			groupController.removeGroupMember(req.body.gpid, req.body.player_id, res);
+		}
+	});
+
+	/** DELETEGROUP
+	*	gpid : group id
+	*/
+	app.delete("/editor/group/:gpid", jwtauth.auth, function(req,res){
+		groupController.deleteGroup(req.params.gpid, req.body.deep, res);
+	});
+
+
+	/** NEWOBJECT
+	*	oid : object id
+	*	gid : game id
+	*/
+	app.put("/editor/object",jwtauth.auth,function(req,res){
+		objectController.newObject(req.params.oid, req.body.game_id, res);
+	});
+
+	/** GETOBJECT
+	*	oid : object id
+	*/
+	app.get("/editor/object/:oid", jwtauth.auth, function(req,res){
+		objectController.getObject(req.params.oid, res);
+	});
+
+	/** DELETEOBJECT
+	*	oid : object id
+	*/
+	app.delete("/editor/object/:oid", jwtauth.auth, function(req,res){
+		objectController.deleteObject(req.params.oid, req.body.deep, res);
+	});
+
+
+	/** NEWITEM
+	*	iid : item id
+	*	gid : game id
+	*/
+	app.put("/editor/item",jwtauth.auth,function(req,res){
+		itemController.newItem(req.params.iid, req.body.game_id, res);
+	});
+
+	/** GETITEM
+	*	iid : item id
+	*/
+	app.get("/editor/item/:iid", jwtauth.auth, function(req,res){
+		itemController.getItem(req.params.iid, res)
+	});
+
+	/** DELETEITEM
+	*	iid : item id
+	*/
+	app.delete("/editor/item/:iid", jwtauth.auth, function(req,res){
+		itemController.deleteItem(req.params.iid, req.body.deep, res);
+	});
+
+	/** EDITITEM
+	*	iid : item id
+	*/
+	app.post("/editor/item/:iid", jwtauth.auth, function(req,res){
+		var operation = req.body.operation;
+		if (operation == "name") {
+			var name = {};
+			if (req.body.name && req.body.name != "") {
+				name = req.body.name;
+			}
+			itemController.editItem(req.iid, name, req, res);
+		}
+	});
+
+
+	/** NEWRESOURCE
+	*	rid : resource id
+	*	gid : game id
+	*/
+	app.put("/editor/resource",jwtauth.auth,function(req,res){
+		resourceController.newResource(req.params.rid, req.body.game_id, res);
+	});
+
+	/** GETRESOURCE
+	*	rid : resource id
+	*/
+	app.get("/editor/resource/:rid", jwtauth.auth, function(req,res){
+		resourceController.getResource(req.params.rid, res)
+	});
+
+	/** DELETERESOURCE
+	*	rid : resource id
+	*/
+	app.delete("/editor/resource/:rid", jwtauth.auth, function(req,res){
+		resourceController.deleteResource(req.params.rid, res);
+	});
 
 };
 
