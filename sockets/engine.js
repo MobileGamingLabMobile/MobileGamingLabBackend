@@ -1,5 +1,7 @@
 var GameSession = require("../models/gamesession");
 var engineMethods = require("../GameEngine/EngineMethods");
+var PlayerInstance = require("../models/playerinstance");
+
 /*
  * handle connections of socket
  */
@@ -11,6 +13,8 @@ module.exports = function(io,jwtauth) {
 		var user = "";
 		var gameSession = {};
 		var clientKey = "";
+		var progress = require("../controllers/progress-controller")();
+		
 		socket.on('authenticate', function(data){
 			jwtauth.checkToken(data.access_token, function (err, success){
 				if (success && !err) {
@@ -18,9 +22,16 @@ module.exports = function(io,jwtauth) {
 					user = jwtauth.decode(data.access_token).iss;
 					
 					if (data.gameSessionID) {
-						GameSession.findById(data.gameSessionID, function(err, data){
+						GameSession.findById(data.gameSessionID).populate("players").exec(function(err, data){
 							if (!err && data) {
 								gameSession = data;
+								for (var i=0; i < data.players.length; i++) {
+									//assuming there is just one player from one account
+									if (data.players[i].user == user) {
+										progress.setPlayerInstance(data.players[i]);
+										break;
+									}
+								}
 								//console.log(data)
 							} else {
 								//console.log("no GS")
@@ -47,31 +58,34 @@ module.exports = function(io,jwtauth) {
 		//define listener channels
 		console.log("authorized");
 		console.log(gameSession);
-		var progress = require("../controllers/progress-controller")();
-		progress.setSocket(socket);
 		
-		var randomID = Math.round(Math.random()*10000000);
-		var goalx = 10;
-		var goaly = 10;
-		var x = 0;
-		var y = 0;
+		progress.setSocket(socket);
 		
 		socket.emit("message",{
 			"message": "Your are connected"
 		});
 		
 		socket.on("Quest", function(data) {
-			if (data.quest) {
-				progress.setActiveQuest(data.quest);
-			} else {
-				socket.emit("message",{"message": "Data object was malformed. No quest was sent"})
+			switch(data.operation) {
+				case "active":
+					if (data.quest) {
+						progress.setActiveQuest(data.quest);
+					} else {
+						socket.emit("message",{"message": "Data object was malformed. No quest was sent"})
+					}
+					break;
+				//for testing
+				case "finish":
+					progress.finishQuest();
+					break;
 			}
+			
 			
 		});
 		socket.on('Player', function(data){
 		    console.log('angekommen');
 		    console.log(data);
-		engineMethods.testValues_Condition(data, 'locationCondition', clientKey);
+		    engineMethods.testValues_Condition(data, 'locationCondition', clientKey);
 		});
 		socket.on('clearDatabase',function(data){
 		    for (var i in mongoose.connection.collections) {
