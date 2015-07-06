@@ -1,5 +1,4 @@
 //app/models/trigger.js
-var mongoose = require('mongoose');
 var condition = require('./condition.js');
 
 //define the schema for trigger model

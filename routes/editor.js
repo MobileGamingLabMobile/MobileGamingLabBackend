@@ -4,16 +4,43 @@ var conditionController = require('../controllers/condition-controller');
 var triggerController = require('../controllers/trigger-controller');
 var eventController = require('../controllers/event-controller');
 var actionController = require('../controllers/action-controller');
-var playerController = require("../controllers/player-controller.js");
-
+var ingestGame = require("../util/example-game-ingestion");
 module.exports = function(app,jwtauth) {
+	/*
+	 * Hint: Every function in the execution chain carries the request and the request
+	 * document. Respectively "req" and "res".
+	 * The handling controller functions will use the response document to create the
+	 * response message from there. This way it is easier to see which routes are stated
+	 * and where they are handled.
+	 */
 	
+	/**
+	 * This function renders a very basic login screen.
+	 */
 	app.get("/", function(req,res){
 		res.render("login.html");
 	});
 	
+	/**
+	 * This route will open the editor view, which is also very basic for now.
+	 */
 	app.get("/editor",jwtauth.auth,function(req,res){
 		res.render("editor.html");
+	});
+	
+	/**
+	 * For demonstration purposes this route will ingest an example game into the
+	 * database.
+	 * 
+	 * param:
+	 * access_token: String
+	 */
+	app.put("/editor/game/ingest", jwtauth.auth,function(req,res){
+		ingestGame(req.user.id);
+		res.json({
+			success : true,
+			message: "The example game was successfully created"
+		})
 	});
 	
 	/**
@@ -294,7 +321,7 @@ module.exports = function(app,jwtauth) {
 	 * game_id 
 	 */
 	app.get("/editor/action/list", jwtauth.auth, function(req,res) {
-		
+		gameController.listActions(req.body.game_id, res);
 	})
 	
 	/**

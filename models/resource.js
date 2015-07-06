@@ -1,6 +1,4 @@
 // app/models/resource.js
-var mongoose = require('mongoose');
-
 // define the schema for resource model
 var resourceSchema = mongoose.Schema({
 

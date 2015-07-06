@@ -1,5 +1,5 @@
 // app/models/action.js
-var mongoose = require('mongoose');
+//var mongoose = require('mongoose');
 var player = require('./player.js');
 var item = require('./item.js');
 var resource = require('./resource.js');
@@ -8,7 +8,8 @@ var scene = require('./scene.js');
 var quest = require('./quest.js');
 var interaction = require('./interaction.js');
 var game = require("./game");
-//var websockets=require("../WebsocketTest/Websocket.js");
+var engineMethods = require("../GameEngine/EngineMethods");
+//var websockets=require("../Websocket.js");
 
 // define the schema for action model
 var actionSchema = mongoose.Schema({
@@ -107,7 +108,7 @@ actionSchema.methods.execute=function(client_key,callback){
 					});
 					//console.log(quest)
 					//console.log('channel:'+channel['quest'])
-					sendUpdatedData(client_key,channel['quest'],quest);
+					engineMethods.sendUpdatedData(client_key,channel['quest'],quest);
 		
 		                       
 				    });

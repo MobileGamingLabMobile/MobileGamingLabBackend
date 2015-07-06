@@ -1,6 +1,4 @@
 //app/models/condition.js
-var mongoose = require('mongoose');
-
 var object = require('./object.js');
 var item = require('./item.js');
 var player = require('./player.js');

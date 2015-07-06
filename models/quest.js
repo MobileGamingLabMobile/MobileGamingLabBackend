@@ -1,5 +1,4 @@
 //app/models/quest.js
-var mongoose = require('mongoose');
 var trigger = require('./trigger.js');
 var content = require('./content.js');
 var interaction = require('./interaction.js');

@@ -1,6 +1,4 @@
 // app/models/player.js
-var mongoose = require('mongoose');
-
 var item = require('./item.js');
 var role = require('./role.js');
 var group = require('./group.js');

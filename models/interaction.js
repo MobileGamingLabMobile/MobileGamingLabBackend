@@ -1,6 +1,4 @@
 // app/models/interaction.js
-var mongoose = require('mongoose');
-
 var trigger = require('./trigger.js');
 var action = require('./action.js');
 

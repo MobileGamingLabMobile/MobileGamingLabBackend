@@ -72,4 +72,14 @@ conditionController.getCondition = function(condition_id, res) {
 	})
 }
 
+conditionController.getAllConditionsByType=function(type,res){
+Condition.find({ 'type': type}, function (err, conditions) {
+ if( err || !conditions) {
+        console.log("No Condition found");
+    } else {            
+        res.conditions=conditions;
+    };
+});
+
+}
 module.exports = conditionController;

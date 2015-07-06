@@ -1,5 +1,4 @@
 // app/models/questEvent.js
-var mongoose = require('mongoose');
 var Action = require('./action.js');
 
 

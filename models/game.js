@@ -1,5 +1,4 @@
 // app/models/game.js
-var mongoose = require('mongoose');
 var user = require('./user.js');
 
 var quest = require('./quest.js');

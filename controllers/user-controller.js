@@ -31,7 +31,7 @@ userController.getOwnProfile = function(id, res) {
 userController.getProfile = function(id, res) {
 
 	User.findById(id, function(err, user) {
-		if (err) {
+		if (err || !user) {
 			return res.json({
 				success: false,
 				message: "Public profile not available. Reason undefined."
@@ -39,6 +39,7 @@ userController.getProfile = function(id, res) {
 		}
 		var resUser = {};
 		resUser.profile = user.profile;
+		
 		
 		return res.json({
 			success: true,
@@ -120,6 +121,16 @@ userController.logout = function(id, res) {
 
 userController.getOwnedGames = function(user_id, res) {
 	Game.find().where('metadata.owner').equals(user_id).select("-components").exec(function(err, games){
+		res.json({
+			success: true,
+			message: "Own games successfully loaded.",
+			games: games
+		});
+	})
+}
+
+userController.getOwnedPublishedGames = function(user_id, res) {
+	Game.find().and([{"metadata.owner": user_id},{"metadata.published": true}]).select("-components").exec(function(err, games){
 		res.json({
 			success: true,
 			message: "Own games successfully loaded.",
