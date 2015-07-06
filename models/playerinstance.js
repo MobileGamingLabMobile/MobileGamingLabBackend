@@ -4,11 +4,18 @@ var role = require('./role.js');
 var group = require('./group.js');
 var resource = require('./resource.js');
 var properties = require('./properties.js');
-var User = require("./user")
+var User = require("./user");
+var Quest = require("./quest");
+var GameSession = require("./gamesession");
+var deepPopulate = require("mongoose-deep-populate");
+
 
 // define the schema for player model
 var playerInstanceSchema = mongoose.Schema({
-
+	gameSession: {
+		type:  mongoose.Schema.Types.ObjectId,
+		ref: 'GameSession'
+	},
 	inventar		:{
 		enabled		:{
 			type:Boolean,
@@ -19,6 +26,18 @@ var playerInstanceSchema = mongoose.Schema({
 			ref: 'Item'
 		}]
 	},
+	activeQuest: {
+		type:  mongoose.Schema.Types.ObjectId,
+		ref: 'Quest'
+	},
+	availableQuests: [{
+		type:  mongoose.Schema.Types.ObjectId,
+		ref: 'Quest'
+	}],
+	finishedQuests: [{
+		type:  mongoose.Schema.Types.ObjectId,
+		ref: 'Quest'
+	}],
 
 	role			:[{
 		type:  mongoose.Schema.Types.ObjectId,
@@ -52,5 +71,7 @@ var playerInstanceSchema = mongoose.Schema({
 });
 
 // methods ======================
+playerInstanceSchema.plugin(deepPopulate);
+
 // create the model for player
 module.exports = mongoose.model('PlayerInstance', playerInstanceSchema);

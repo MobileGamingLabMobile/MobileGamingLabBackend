@@ -39,7 +39,6 @@ module.exports = function(app,jwtauth) {
 	 * 
 	 * access_token: STRING
 	 * operation: STRING (subscribe | unsubscribe)
-	 * game_id: STRING
 	 */
 	app.post("/games/:gid", jwtauth.auth, function(req,res){
 		operation = req.body.operation;
@@ -103,8 +102,13 @@ module.exports = function(app,jwtauth) {
 		gameSessionController.play(req.user.id,req.params.gid, res);
 	});
 	
-	app.post("/:gid/remove",jwtauth.auth,function(req, res) {
-		gameSessionController.endSession(req.user.id,req.params.gid, res);
+	/**
+	 * access_token: String
+	 */
+	app.post("/session/:gsid/remove",jwtauth.auth,function(req, res) {
+		gameSessionController.endSession(req.user.id,
+				req.params.gsid, 
+				res);
 	});
 	
 	/**
@@ -114,10 +118,17 @@ module.exports = function(app,jwtauth) {
 	 * returns
 	 * playerSchema
 	 */
-	app.post("/:gid/selectRole",jwtauth.auth,function(req, res) {
-		gameSessionController.selectRole(req.user.id,req.params.gid,req.body.role_id, res);
+	app.post("/session/:gsid/selectRole",jwtauth.auth,function(req, res) {
+		if (!req.body.role_id || req.body.role_id == "undefined") {
+			return res.json({
+				success: false,
+				message: "Parameter role_id is missing."
+			})
+		}
+		gameSessionController.selectRole(req.user.id,req.params.gsid,req.body.role_id, res);
 	});
 	
+	//TODO remove this
 	app.get("/test/gaming",function(req,res){
 		res.render("socket.html");
 	});

@@ -21,9 +21,9 @@ module.exports = function(io,jwtauth) {
 						GameSession.findById(data.gameSessionID, function(err, data){
 							if (!err && data) {
 								gameSession = data;
-								console.log(data)
+								//console.log(data)
 							} else {
-								console.log("no GS")
+								//console.log("no GS")
 							}
 						});
 						clientKey = user+"_"+data.gameSessionID;
@@ -37,7 +37,7 @@ module.exports = function(io,jwtauth) {
 		    //If the socket didn't authenticate, disconnect it
 		    if (!socket.auth) {
 		      console.log("Disconnecting socket ", socket.id);
-		      socket.emit("message",{message: "Connection was closed due to no authentification"})
+		      socket.emit("message",{message: "Connection was closed due to no authentification. Press F5 to refresh the page."})
 		      return socket.disconnect('unauthorized');
 		    } else {
 		    	clients[clientKey] = socket.id;	
@@ -47,6 +47,9 @@ module.exports = function(io,jwtauth) {
 		//define listener channels
 		console.log("authorized");
 		console.log(gameSession);
+		var progress = require("../controllers/progress-controller")();
+		progress.setSocket(socket);
+		
 		var randomID = Math.round(Math.random()*10000000);
 		var goalx = 10;
 		var goaly = 10;
@@ -57,21 +60,13 @@ module.exports = function(io,jwtauth) {
 			"message": "Your are connected"
 		});
 		
-		// check if location 
-		socket.on("player", function(data) {
-			console.log(data);
-			x = data.x;
-			y = data.y;
-			
-			if (x == goalx && y == goaly) {
-				socket.emit("message", {"message":"You have won, Dude"});
+		socket.on("Quest", function(data) {
+			if (data.quest) {
+				progress.setActiveQuest(data.quest);
+			} else {
+				socket.emit("message",{"message": "Data object was malformed. No quest was sent"})
 			}
-		});
-		socket.on("getID", function() {
-			socket.emit("message",{"message": JSON.stringify(clients)});
-		});
-		socket.on("getCoords", function() {
-			socket.emit("message",{"message": x+", "+y});
+			
 		});
 		socket.on('Player', function(data){
 		    console.log('angekommen');

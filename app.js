@@ -2,7 +2,6 @@
  * Module dependencies.
  */
 
-
 // set up ======================================================================
 // get all the tools we need
 var express  = require('express');
@@ -72,7 +71,7 @@ require('./routes/game.js')(app, jwtauth);
 
 //set up the socket channels and functions
 require("./sockets/engine")(io,jwtauth);
-require("./lib/Objects3.js");
+//require("./lib/Objects3.js");
 channel={"Groups":"Groups","InventarItems":"InventarItems","MapItems":"MapItems","Player":"Player","quest":"Quests","Roles":"Roles","Sequences":"Sequences"};
 
 /*
