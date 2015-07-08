@@ -5,6 +5,7 @@ var triggerController = require('../controllers/trigger-controller');
 var eventController = require('../controllers/event-controller');
 var actionController = require('../controllers/action-controller');
 var ingestGame = require("../util/example-game-ingestion");
+var ingestGame2 = require("../util/example2-ingestion");
 module.exports = function(app,jwtauth) {
 	/*
 	 * Hint: Every function in the execution chain carries the request and the request
@@ -37,6 +38,13 @@ module.exports = function(app,jwtauth) {
 	 */
 	app.put("/editor/game/ingest", jwtauth.auth,function(req,res){
 		ingestGame(req.user.id);
+		res.json({
+			success : true,
+			message: "The example game was successfully created"
+		})
+	});
+	app.put("/editor/game/ingest2", jwtauth.auth,function(req,res){
+		ingestGame2(req.user.id);
 		res.json({
 			success : true,
 			message: "The example game was successfully created"

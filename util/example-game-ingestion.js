@@ -16,8 +16,8 @@ var Property = require("../models/properties");
 function ingest (user_id) {
 	var g = new Game();
 	g.metadata = {
-			"name": "Münsters Schnitzel",
-			"description": "Ein Spiel für Jung und Alt zum Auffinden besonderer Orte im schönen Münster.",
+			"name": "GEO1 Test",
+			"description": "Ein kurzes Demo-Spiel",
 			"category"		: ["Schnitzeljagd"], 
 			"owner": user_id,
 			"published"		: true,
@@ -37,17 +37,17 @@ function ingest (user_id) {
 		q1_descr.name = "Aller Anfang ist schwer - Aufgaben";
 		q1_descr.url = "";
 		q1_descr.type= "text";
-		q1_descr.html= "<li>Begebe dich zur \"Blauen Lagune\"</li><li>Sammle den Gegenstand ein</li>";
+		q1_descr.html= "<li>Gehe zum Parkplatz des GEO1 Institut</li>";
 		q1_descr.save();
 		q1.description = q1_descr;
 		
 		var i1 = new Interaction();
 			var t1 = new Trigger();
 				var c1 = new Condition();
-				c1.name ="Location-BlaueLagune"; 
+				c1.name ="Location-GEO"; 
 				c1.type = "locationCondition";
 				c1.locationCondition = {
-						"coord":[7.613833,51.967457],
+						"coord":[7.595781,51.969111],
 						"buffer": 25.0
 					};
 				c1.save();
@@ -55,12 +55,13 @@ function ingest (user_id) {
 			t1.save();
 		i1.trigger.push(t1);
 		
-			var item1 = new Item();
-			item1.name = "Schöner Ort 1";
-			item1.position = [7.612116,51.967053];
+		var item1 = new Item();
+			item1.name = "Bus";
+			item1.position = [7.596358, 51.969352];
 			item1.buffer = 15.0;
 			item1.icon = "http://giv-mgl.uni-muenster.de:8080/img/marker.png";
 			item1.save();
+			
 			var a1 = new Action();
 			a1.type = "objectAction";
 			a1.game = g;
@@ -82,6 +83,7 @@ function ingest (user_id) {
 						};
 					c2.save();
 				t2.triggered = false;
+				t2.conditions.push(c2);
 				t2.save();
 			i2.trigger.push(t2);
 			var a2 = new Action();
@@ -122,6 +124,7 @@ function ingest (user_id) {
 			a4.save();
 		qe1.actions.push(a4);
 		qe1.save();
+		q1.questEvent = qe1;
 	q1.save();
 	g.components.quests.push(q1);
 		var r1 = new Role();

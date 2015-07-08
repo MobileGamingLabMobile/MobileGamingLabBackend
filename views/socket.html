@@ -12,8 +12,8 @@
  	      url: host+"/signup",
  	      type: 'POST',
  	      data:{
- 	 	        email:'j_klem04@uni-muenster.de',
- 	       		password:'testen'
+ 	 	        email: $("#email").val(),
+	    		password: $("#passwd").val()
  	       	},
  	      success: function(data) {
  	       var html = '<li>' + data.message + '</li>';
@@ -80,19 +80,6 @@
     }
     function getSelectedQuest() {
     	return $("#available_quests option:selected").val();
-    }
-    
-    function ingestGame() {
-    	$.ajax({
-    		url: host+"/editor/game/ingest",
-    		type: "PUT",
-    		data: {
-    			access_token: sessionStorage.getItem("token")
-    		},
-    		success: function(data){
-	    		writeMessage(data);
-    		}
-    	});
     }
     
     function selectRole() {
@@ -224,6 +211,18 @@
 		   }
 		});
     }
+    function ingestGame2() {
+		$.ajax({
+		   url: host+"/editor/game/ingest2",
+		   type: 'PUT',
+		   data:{
+		    		access_token: sessionStorage.getItem("token")
+		    	},
+		   success: function(data) {
+		   $('#message').html(html);
+		   }
+		});
+    }
   	function subscribeGame(){
       $.ajax({
 	   url: host+"/games/published",
@@ -279,6 +278,7 @@
 	<fieldset>
 		<legend>Utilities</legend>
 		<button onClick="ingestGame()">Create Example Game</button>
+		<button onClick="ingestGame2()">Create Example Game 2</button>
 		<button onClick="subscribeGame()">Subscribe Game</button>
 	</fieldset>
 	<fieldset>
