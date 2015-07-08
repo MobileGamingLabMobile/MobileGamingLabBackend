@@ -85,37 +85,45 @@ var actionSchema = mongoose.Schema({
 });
 //methods ======================
 
-actionSchema.methods.execute=function(client_key,callback){
+actionSchema.methods.execute=function(client_key,progress,callback){
+    var logger=log4js.getLogger("models");
+    logger.trace('action.execute executed');
     switch(this.type) {
     case "progressAction":
 	if(this.progressAction.quest!=null){
 	    var progressAction=this.progressAction;
 	    var quest_id=this.progressAction.quest;
-	    Quest.find({'_id':quest_id}).exec(
+	    Quest.find({'_id':quest_id}).exec(//populate von der description
 		    function(err,quest){
 			if(progressAction.start!=null){
 			    quest[0].started=progressAction.start; 
 			}
-			if(progressAction.finish!=null){
-			    quest[0].finish=progressAction.finish; 
-			}
 			if(progressAction.unlock!=null){
+			    //progress.plaerInstance setze neue qurst id in available quest
+			    // speichere playerInstanz datenbank mit save()
+			    
 			    quest[0].available=progressAction.unlock; 
 			}
-			quest[0].save(function(){
-			    // console.log('action executed');
-			    callback(err,quest); 
-			});
+			callback(err,quest);
 			//console.log(quest)
 			//console.log('channel:'+channel['quest'])
-			engineMethods.sendUpdatedData(client_key,channel['quest'],quest);
+			engineMethods.sendUpdatedData(client_key,channel['quest'],quest[0]);
 
 
 		    });
 	}
 	break;
     case "objectAction":
-	engineMethods.sendUpdatedData(client_key,channel['quest'],"Quest auf finished setzen");
+	logger.trace(this);
+	var Item = require('./item.js');
+	var objectAction=this.objectAction;
+	if(objectAction.placeItemOnMap==true){
+	    var mapItem=this.objectAction.item;
+	    Item.find({'_id':mapItem}).exec(function(err,item){
+		var engineMethods = require("../GameEngine/EngineMethods");
+		engineMethods.sendUpdatedData(client_key,channel['MapItems'],item);
+	    });
+	}
 	break;
     default: throw ("the type "+this.type+" does not extists");
     }

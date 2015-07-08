@@ -3,7 +3,6 @@
 exports=module.exports={};
 
 testValues_Condition=function(values,type,client_key,progress){
-    var Interaction = require("../models/interaction");
     
     var logger=log4js.getLogger("testValues_Condition");
     logger.trace('testValues_condition executed');
@@ -28,7 +27,7 @@ testValues_Condition=function(values,type,client_key,progress){
 				var allTriggered=testAllTriggers_Triggered(interaction,progress);
 				if(allTriggered){
 					logger.debug("interaction: "+interaction);
-					interaction.interact(client_key);
+					interaction.interact(client_key,progress);
 				 
 				}
 
@@ -76,9 +75,29 @@ testAllTriggers_Triggered=function(interaction,progress){
 	    return false;
 	}
     }
+    //progress.finishInteraction(interaction._id);
     return true;
 
 }
+
+//testAllInteractions_Interacted=function(interaction,progress){
+//    var logger=log4js.getLogger("testValues_Condition");
+//    logger.trace('testAllTriggers_Triggered executed');
+//    var interactionTrigger=interaction.trigger;
+//    logger.trace("interactionTrigger.length: "+interactionTrigger.length);
+//    for (var i=0;i<interactionTrigger.length;i++){
+//	var trigger=interactionTrigger[i];
+//	logger.trace("progress: "+progress);
+//	logger.trace("trigger._id: "+trigger._id);
+//	var finished=progress.isTriggerFinished(trigger._id);
+//	if(!finished){
+//	    return false;
+//	}
+//    }
+//    //progress.finishInteraction(interaction._id);
+//    return true;
+//
+//}
 findAllTriggersWithCondition=function(condition_id,progress){
     var conditionID=condition_id.toString();
     var logger=log4js.getLogger("testValues_Condition");
