@@ -15,7 +15,7 @@ var conditionSchema = mongoose.Schema({
     name					:String,
     available				:Boolean,
     type: String,
-    fulfilled                               :Boolean,
+    // fulfilled                               :Boolean,
     timeCondition			:{
 	countdown			:Number,
 	beforeTime			:Date,
@@ -110,32 +110,37 @@ var conditionSchema = mongoose.Schema({
 });
 
 //methods ======================
-conditionSchema.methods.test=function(values,callback){
-var condition=this;
+conditionSchema.methods.test=function(values,progress,callback){
+    var logger=log4js.getLogger("models");
+    logger.trace('Condition.test executed');
+    logger.trace('this'+this);
+    var condition=this;
     switch(this.type) {
-    case "locationCondition":
+    case "locationCondition"://auch mit Item machen
 	var coord0= values.coord[0];
 	var coord1= values.coord[1];
 	if(Math.abs(this.locationCondition.coord[0]-coord0)<=this.locationCondition.buffer&&Math.abs(this.locationCondition.coord[1]-   
 		coord1)<=this.locationCondition.buffer){
-	    this.setFulfilled(true,function(err){
-		if(err){
-		    throw (err);
-		}
-		callback(true,condition);
-	    });
-	    
+	    logger.trace('condition');
+	    logger.trace('location condition fullfilled ');
+	  
+	    var exists=progress.finishCondition(this._id);
+	    callback(exists,condition);
+
+
 	}
-	
-	else{callback(false,null);}
+	else{
+	    logger.trace('location condition not fullfilled ');
+	    callback(false,null);
+	}
 	break;
     default: throw ("the type "+this.type+" does not extists");
     }
 };
-conditionSchema.methods.setFulfilled=function(bool,call) {
-    this.fulfilled=bool;
-    this.save(call);
-}
+//conditionSchema.methods.setFulfilled=function(bool,call) {
+//this.fulfilled=bool;
+//this.save(call);
+//}
 
 
 

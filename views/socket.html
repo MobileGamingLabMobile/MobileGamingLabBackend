@@ -152,7 +152,11 @@
 		 });
 		socket.on('message', writeMessage);
 		socket.on('Quests',function(data){		
-			$("#output1").text(JSON.stringify(data,null,"\t")+"socket ID:"+socket.id);
+			$("#output1").text("Quests:"+JSON.stringify(data,null,"\t")+"socket ID:"+socket.id);
+			done();
+		});
+		socket.on('MapItems',function(data){		
+			$("#output2").text("MapItems:\n"+JSON.stringify(data,null,"\t")+"socket ID:"+socket.id);
 			done();
 		});
     }
@@ -189,6 +193,7 @@
 	    });
     }
     function testLocationCondition() {
+    //alert(socket);
     	socket.emit("Player", {
     		coord:[$("#coordx").val(),$("#coordy").val()] 
     	});
@@ -257,9 +262,9 @@
 	<fieldset>
 		<legend>Login</legend>
 		<label>Email:</label>
-		<input type="text" id="email"></input><br/>
+		<input type="text" id="email" value="j_klem04@uni-muenster.de"></input><br/>
 		<label>Password:</label>
-		<input type="password" id="passwd"></input><br/>
+		<input type="password" id="passwd"value="testen"></input><br/>
 		<button onClick="login()">Login</button>
 		<button onClick="register()">Register User</button><br/>
 	</fieldset>
@@ -290,9 +295,9 @@
 	<fieldset>
 		<legend>Socket</legend>
 		<label>X: </label>
-		<input type="text" id="coordx"></input><br/>
+		<input type="text" id="coordx" value=7.22></input><br/>
 		<label>Y: </label>
-		<input type="text" id="coordy"></input><br/>
+		<input type="text" id="coordy" value="52"></input><br/>
 		<button onClick="testLocationCondition()">Test LocationCondition</button><br/>
 	</fieldset>
 	<fieldset>
@@ -300,6 +305,7 @@
 		<ul id="message"></ul>	
 	</fieldset>
 	<pre style="height:150px;overflow-y: scroll;"id="output1"></pre>
+		<pre style="height:150px;overflow-y: scroll;"id="output2"></pre>
 	<button onClick="clearDatabase()">Clear Database</button><br/>
 	<br/>
 	

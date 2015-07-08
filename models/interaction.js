@@ -17,23 +17,25 @@ var interactionSchema = mongoose.Schema({
 // methods ======================
 // create the model for interaction
 
-interactionSchema.methods.testTriggerFalseExists=function(callback){
-    var interaction=this;
-    return this.model('Interaction').find({'_id':this._id}).populate('trigger','triggered',{triggered:false}).exec(function(err,interaction){
-	if(interaction[0].trigger.length==0){
-		 callback(err,false,interaction);
-	     }
-	 else{
-	     callback(err,true,interaction);
-	 }
-    });
-};
-interactionSchema.methods.interact=function(client_key){
+//interactionSchema.methods.testTriggerFalseExists=function(callback){
+//    var interaction=this;
+//    return this.model('Interaction').find({'_id':this._id}).populate('trigger','triggered',{triggered:false}).exec(function(err,interaction){
+//	if(interaction[0].trigger.length==0){
+//		 callback(err,false,interaction);
+//	     }
+//	 else{
+//	     callback(err,true,interaction);
+//	 }
+//    });
+//};
+interactionSchema.methods.interact=function(client_key,progress){
+    var logger=log4js.getLogger("models");
+    logger.trace('interaction.interact executed');
     this.model('Interaction').find({'_id':this._id}).populate('actions').exec(
 	    function(err,interaction){
 		var actionList=interaction[0].actions;
 		for(var i =0;i<actionList.length;i++){
-		    actionList[i].execute(client_key,function(err,object){});
+		    actionList[i].execute(client_key,progress,function(err,object){});
 		}
 	    });
 };

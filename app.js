@@ -69,6 +69,17 @@ require('./routes/users.js')(app, passport,jwtauth);
 require('./routes/editor.js')(app, jwtauth); 
 require('./routes/game.js')(app, jwtauth);
 
+
+/**
+*Logger
+**/
+ log4js = require('log4js');
+ log4js.loadAppender('file');
+ log4js.addAppender(log4js.appenders.file('logs/engine.log'), 'engine');
+ 
+/**
+* Sockets
+**/
 //set up the socket channels and functions
 require("./sockets/engine")(io,jwtauth);
 //require("./lib/Objects3.js");

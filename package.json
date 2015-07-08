@@ -14,14 +14,15 @@
     "express": "~4.0.0",
     "express-session": "~1.0.0",
     "jwt-simple": "*",
+    "log4js": "^0.6.26",
     "method-override": "~1.0.0",
     "moment": "*",
     "mongoose": "~3.8.1",
+    "mongoose-deep-populate": "*",
     "morgan": "~1.0.0",
     "passport": "~0.1.17",
     "passport-local": "~0.1.6",
-    "synchronize": "^0.9.11",
     "socket.io": "*",
-    "mongoose-deep-populate":"*"
+    "synchronize": "^0.9.11"
   }
 }
