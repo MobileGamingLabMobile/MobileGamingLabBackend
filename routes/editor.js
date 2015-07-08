@@ -351,7 +351,7 @@ module.exports = function(app,jwtauth) {
 	*	pid : player id
 	*	gid : game id
 	*/
-	app.put("/editor/player",jwtauth.auth,function(req,res){
+	app.put("/editor/player",jwtauth.auth,function(req, res){
 		if (req.body.game_id) {
 			playerController.newPlayer(req.params.pid, req.body.game_id, res);
 		}
@@ -360,21 +360,22 @@ module.exports = function(app,jwtauth) {
 	/** GETPLAYER
 	*	pid : player id
 	*/
-	app.get("/editor/player/:pid",jwtauth.auth,function(req,res){
+	app.get("/editor/player/:pid",jwtauth.auth,function(req, res){
 		playerController.getPlayer(req.params.pid, res);
 	});
 
 	/** DELETEPLAYER
 	*	pid : player id
+	*	deep: if remove the deeper references
 	*/
-	app.delete("/editor/player/:pid",jwtauth.auth,function(req,res){
-		playerController.deletePlayer(req.params.pid, req.body.deep, res);
+	app.delete("/editor/player/:pid",jwtauth.auth,function(req, res){
+		playerController.deletePlayer(req.params.pid, req.body.deep, req.body.game_id, res);
 	});
 
 	/** EDITPLAYER
 	*	pid : player id
 	*/
-	app.put("/editor/player/:pid",jwtauth.auth,function(req,res){
+	app.put("/editor/player/:pid",jwtauth.auth,function(req, res){
 		playerController.editPlayer(req.params.pid, req.body.meta_data, res);
 	});
 
@@ -383,7 +384,7 @@ module.exports = function(app,jwtauth) {
 	*	gpid : group id
 	*	gid : game if
 	*/
-	app.put("/editor/group",jwtauth.auth,function(req,res){
+	app.put("/editor/group",jwtauth.auth,function(req, res){
 		if (req.body.group_id){
 			groupController.newGroup(req.params.gpid, req.body.game_id, res);
 		}
@@ -392,14 +393,14 @@ module.exports = function(app,jwtauth) {
 	/** GETGROUP
 	*	gpid : group id
 	*/
-	app.get("/editor/group/:gid", jwtauth.auth, function(req,res){
+	app.get("/editor/group/:gid", jwtauth.auth, function(req, res){
 		groupController.getGroup(req.params.gpid, res)
 	});
 
 	/** ADD/REMOVEGROUPMEMBER
 	*	gpid : group id
 	*/
-	app.post("/editor/group/member/:mid", jwtauth.auth, function(req,res){
+	app.post("/editor/group/member/:mid", jwtauth.auth, function(req, res){
 		var operation = req.body.operation;
 		if (operation == "addGroupMember"){
 			groupController.addGroupMember(req.body.gpid, req.body.player_id, res);
@@ -412,8 +413,8 @@ module.exports = function(app,jwtauth) {
 	/** DELETEGROUP
 	*	gpid : group id
 	*/
-	app.delete("/editor/group/:gpid", jwtauth.auth, function(req,res){
-		groupController.deleteGroup(req.params.gpid, req.body.deep, res);
+	app.delete("/editor/group/:gpid", jwtauth.auth, function(req, res){
+		groupController.deleteGroup(req.params.gpid, req.body.deep, req.body.game_id, res);
 	});
 
 
@@ -421,22 +422,22 @@ module.exports = function(app,jwtauth) {
 	*	oid : object id
 	*	gid : game id
 	*/
-	app.put("/editor/object",jwtauth.auth,function(req,res){
+	app.put("/editor/object",jwtauth.auth,function(req, res){
 		objectController.newObject(req.params.oid, req.body.game_id, res);
 	});
 
 	/** GETOBJECT
 	*	oid : object id
 	*/
-	app.get("/editor/object/:oid", jwtauth.auth, function(req,res){
+	app.get("/editor/object/:oid", jwtauth.auth, function(req, res){
 		objectController.getObject(req.params.oid, res);
 	});
 
 	/** DELETEOBJECT
 	*	oid : object id
 	*/
-	app.delete("/editor/object/:oid", jwtauth.auth, function(req,res){
-		objectController.deleteObject(req.params.oid, req.body.deep, res);
+	app.delete("/editor/object/:oid", jwtauth.auth, function(req, res){
+		objectController.deleteObject(req.params.oid, req.body.deep, req.body.game_id, res);
 	});
 
 
@@ -459,7 +460,7 @@ module.exports = function(app,jwtauth) {
 	*	iid : item id
 	*/
 	app.delete("/editor/item/:iid", jwtauth.auth, function(req,res){
-		itemController.deleteItem(req.params.iid, req.body.deep, res);
+		itemController.deleteItem(req.params.iid, req.body.deep, req.body.game_id, res);
 	});
 
 	/** EDITITEM
@@ -496,7 +497,7 @@ module.exports = function(app,jwtauth) {
 	*	rid : resource id
 	*/
 	app.delete("/editor/resource/:rid", jwtauth.auth, function(req,res){
-		resourceController.deleteResource(req.params.rid, res);
+		resourceController.deleteResource(req.params.rid, req.body.deep, req.body.game_id, res);
 	});
 
 };
