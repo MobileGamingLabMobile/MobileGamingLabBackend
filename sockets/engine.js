@@ -89,6 +89,7 @@ module.exports = function(io,jwtauth) {
 		    engineMethods.testValues_Condition(data, 'locationCondition', clientKey,progress);
 		});
 		socket.on('clearDatabase',function(data){
+		    var logger=log4js.getLogger("channel");
 		    logger.info('clearDatabase');
 		    for (var i in mongoose.connection.collections) {
 			mongoose.connection.collections[i].remove(function() { });

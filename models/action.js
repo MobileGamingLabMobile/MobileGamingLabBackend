@@ -91,25 +91,23 @@ var actionSchema = mongoose.Schema({
 actionSchema.methods.execute=function(client_key,progress,callback){
     var logger=log4js.getLogger("models");
     logger.trace('action.execute executed');
+    logger.trace(this);
     switch(this.type) {
     case "progressAction":
 	if(this.progressAction.quest!=null){
 	    var progressAction=this.progressAction;
 	    var quest_id=this.progressAction.quest;
-	    Quest.find({'_id':quest_id}).exec(//populate von der description
+	    Quest.find({'_id':quest_id}).populate("description").exec(
 		    function(err,quest){
 			if(progressAction.start!=null){
 			    quest[0].started=progressAction.start; 
 			}
 			if(progressAction.unlock!=null){
-			    //progress.plaerInstance setze neue qurst id in available quest
-			    // speichere playerInstanz datenbank mit save()
-			    
-			    quest[0].available=progressAction.unlock; 
+			   progress.playerInstance.availableQuests.push(quest[0]._id);
+			   progress.playerInstance.save();
 			}
-			callback(err,quest);
-			//console.log(quest)
-			//console.log('channel:'+channel['quest'])
+			callback(err,quest[0]);
+			logger.trace("Quest of ProgressAction: "+quest[0]);
 			engineMethods.sendUpdatedData(client_key,channel['quest'],quest[0]);
 
 
@@ -117,7 +115,6 @@ actionSchema.methods.execute=function(client_key,progress,callback){
 	}
 	break;
     case "objectAction":
-	logger.trace(this);
 	var Item = require('./item.js');
 	var objectAction=this.objectAction;
 	if(objectAction.placeItemOnMap==true){

@@ -119,7 +119,21 @@ conditionSchema.methods.test=function(values,progress,callback){
     case "locationCondition"://auch mit Item machen
 	var coord0= values.coord[0];
 	var coord1= values.coord[1];
-	if(Math.abs(this.locationCondition.coord[0]-coord0)<=this.locationCondition.buffer&&Math.abs(this.locationCondition.coord[1]-   
+	var testCoord=[];
+	if(this.locationCondition.coord!=null){
+	    testCoord[0]=this.locationCondition.coord[0];
+	    testCoord[1]=this.locationCondition.coord[1];
+	}else{
+	    if(this.locationCondition.item!=null){
+		    testCoord[0]=this.locationCondition.item.position[0];
+		    testCoord[1]=this.locationCondition.item.position[1];
+		}
+	    else{
+		throw("No test coordinates exist in condition!");
+	    }
+	    
+	}
+	if(Math.abs(testCoord[0]-coord0)<=this.locationCondition.buffer&&Math.abs(testCoord[1]-   
 		coord1)<=this.locationCondition.buffer){
 	    logger.trace('condition');
 	    logger.trace('location condition fullfilled ');

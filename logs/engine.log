@@ -1,0 +1,17 @@
+{
+	"appenders":[
+		{
+			"type":"console",
+			"layout":{
+				"type":"pattern",
+				"pattern":"%d %p %c - %m"
+			}
+		}
+	],
+	"levels":{
+		"channel":"ALL",
+		"testValues_Condition":"ALL",
+		"progressController":"ALL",
+		"models":"ALL"
+	}
+}
