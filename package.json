@@ -14,7 +14,7 @@
     "express": "~4.0.0",
     "express-session": "~1.0.0",
     "jwt-simple": "*",
-    "log4js": "^0.6.26",
+    "log4js": "*",
     "method-override": "~1.0.0",
     "moment": "*",
     "mongoose": "~3.8.1",

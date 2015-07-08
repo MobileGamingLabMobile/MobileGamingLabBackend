@@ -13,77 +13,80 @@ var engineMethods = require("../GameEngine/EngineMethods");
 
 //define the schema for action model
 var actionSchema = mongoose.Schema({
-    type: String,
-    game: {
-	type:  mongoose.Schema.Types.ObjectId,
-	ref: 'Game'
-    },
-    timeAction				:{
-	wait				:Boolean,
-	countdown			:Number,
-	startTime			:Boolean,
-	stopTime			:Boolean
-    },
+	type : String,
+	game : {
+		type : mongoose.Schema.Types.ObjectId,
+		ref : 'Game'
+	},
+	timeAction : {
+		wait : Boolean,
+		countdown : Number,
+		startTime : Boolean,
+		stopTime : Boolean
+	},
 
-    progressAction			:{
-	start 				:Boolean,
-	unlock				:Boolean,
-	finish				:Boolean,
-	update				:Boolean,
-	scene				:{
-	    type:  mongoose.Schema.Types.ObjectId,
-	    ref: 'Scene'
+	progressAction : {
+		start : Boolean,
+		unlock : Boolean,
+		finish : Boolean,
+		update : Boolean,
+		scene : {
+			type : mongoose.Schema.Types.ObjectId,
+			ref : 'Scene'
+		},
+		quest : {
+			type : mongoose.Schema.Types.ObjectId,
+			ref : 'Quest'
+		},
+		interaction : {
+			type : mongoose.Schema.Types.ObjectId,
+			ref : 'Interaction'
+		},
+		game : {
+			type : mongoose.Schema.Types.ObjectId,
+			ref : 'Game'
+		}
 	},
-	quest				:{
-	    type:  mongoose.Schema.Types.ObjectId,
-	    ref: 'Quest'
+
+	objectAction : {
+		add : Number,
+		resource : {
+			type : mongoose.Schema.Types.ObjectId,
+			ref : 'Resource'
+		},
+		decreaseResource : Number,
+		item : {
+			type : mongoose.Schema.Types.ObjectId,
+			ref : 'Item'
+		},
+		addItem : Boolean,
+		player : {
+			type : mongoose.Schema.Types.ObjectId,
+			ref : 'Player'
+		},
+		removeItem : Boolean,
+		placeItemOnMap : Boolean
 	},
-	interaction			:{
-	    type:  mongoose.Schema.Types.ObjectId,
-	    ref: 'Interaction'
-	},
-	game: {
-	    type:  mongoose.Schema.Types.ObjectId,
-	    ref: 'Game'
+	groupAction : {
+		group : {
+			type : mongoose.Schema.Types.ObjectId,
+			ref : 'Group'
+		},
+		showPlayers : [ {
+			type : mongoose.Schema.Types.ObjectId,
+			ref : 'Player'
+		} ],
+		setVisibility : Boolean
 	}
-    },
-
-    objectAction			:{
-	add 				:Number,
-	resource			:{
-	    type:  mongoose.Schema.Types.ObjectId,
-	    ref: 'Resource'
-	},
-	decreaseResource	:Number,
-	item 				:{
-	    type:  mongoose.Schema.Types.ObjectId,
-	    ref: 'Item'
-	},
-	addItem				:Boolean,
-	player 				:{
-	    type:  mongoose.Schema.Types.ObjectId,
-	    ref: 'Player'
-	},
-	removeItem			:Boolean,
-	placeItemOnMap		:Boolean
-    },
-    groupAction				:{
-	group 				:{
-	    type:  mongoose.Schema.Types.ObjectId,
-	    ref: 'Group'
-	},
-	showPlayers			:[{
-	    type:  mongoose.Schema.Types.ObjectId,
-	    ref: 'Player'
-	}],
-	setVisibility		:Boolean
-    }//,
-    //inputAction				:{
-    //}
+// ,
+// inputAction :{
+// }
 }, {
-    toJSON: {minimize: false}
+	toJSON : {
+		minimize : false
+	}
 });
-//methods ======================
+// methods ======================
 
 actionSchema.methods.execute=function(client_key,progress,callback){
     var logger=log4js.getLogger("models");

@@ -58,7 +58,7 @@ module.exports = function(io,jwtauth) {
 		//define listener channels
 		console.log("authorized");
 		console.log(gameSession);
-		
+		progress.setClientKey(clientKey);
 		progress.setSocket(socket);
 		
 		socket.emit("message",{
