@@ -385,7 +385,7 @@ module.exports = function(app,jwtauth) {
 	*	gid : game if
 	*/
 	app.put("/editor/group",jwtauth.auth,function(req, res){
-		if (req.body.group_id){
+		if (req.body.game_id){
 			groupController.newGroup(req.params.gpid, req.body.game_id, res);
 		}
 	});
@@ -423,7 +423,9 @@ module.exports = function(app,jwtauth) {
 	*	gid : game id
 	*/
 	app.put("/editor/object",jwtauth.auth,function(req, res){
-		objectController.newObject(req.params.oid, req.body.game_id, res);
+		if (req.body.game_id){
+			objectController.newObject(req.params.oid, req.body.game_id, res);
+		}
 	});
 
 	/** GETOBJECT
@@ -446,7 +448,9 @@ module.exports = function(app,jwtauth) {
 	*	gid : game id
 	*/
 	app.put("/editor/item",jwtauth.auth,function(req,res){
-		itemController.newItem(req.params.iid, req.body.game_id, res);
+		if (req.body.game_id){
+			itemController.newItem(req.params.iid, req.body.game_id, res);
+		}
 	});
 
 	/** GETITEM
@@ -483,14 +487,16 @@ module.exports = function(app,jwtauth) {
 	*	gid : game id
 	*/
 	app.put("/editor/resource",jwtauth.auth,function(req,res){
-		resourceController.newResource(req.params.rid, req.body.game_id, res);
+		if (req.body.game_id){
+			resourceController.newResource(req.params.rid, req.body.game_id, res);
+		}
 	});
 
 	/** GETRESOURCE
 	*	rid : resource id
 	*/
 	app.get("/editor/resource/:rid", jwtauth.auth, function(req,res){
-		resourceController.getResource(req.params.rid, res)
+		resourceController.getResource(req.params.rid, res);
 	});
 
 	/** DELETERESOURCE
@@ -498,6 +504,58 @@ module.exports = function(app,jwtauth) {
 	*/
 	app.delete("/editor/resource/:rid", jwtauth.auth, function(req,res){
 		resourceController.deleteResource(req.params.rid, req.body.deep, req.body.game_id, res);
+	});
+
+
+	/** NEWINTERACTION
+	*	qid : quest id
+	*/
+	app.put("/editor/interaction", jwtauth.auth, function(req,res){
+		if (req.body.game_id){
+			interactionController.newInteraction(req.body.quest_id, res);
+		}
+	});
+
+	/**	GETINTERACTION
+	*	iid : interaction id
+	*/
+	app.get("/editor/interaction/:iid", jwtauth.auth, function(req,res){
+		interactionController.getInteraction(req.params.iid, res);
+	});
+
+	/**	DELETEINTERACTION
+	*	iid : interaction id
+	*/
+	app.delete("/editor/interaction/:iid", jwtauth.auth, function(req,res){
+		interactionController.deleteInteraction(req.params.iid, req.body.deep, req.body.quest_id, res);
+	});
+
+	/** ADDTRIGGER OR ADDACTION
+	*	operation : should be trigger or action
+	*	trigger_id or action_id depend on what you want to add
+	*/
+	app.put("/editor/interaction/:iid", jwtauth.auth, function(req,res){
+		var operation = req.body.operation;
+		if (operation == "trigger") {
+			interactionController.addTrigger(req.params.iid, req.body.trigger_id, res);
+		}
+		if (operation == "action") {
+			interactionController.addAction(req.params.iid, req.body.action_id, res);
+		}
+	});
+
+	/** REMOVETRIGGER OR REMOVEACTION
+	*	operation: should be trigger or action
+	*	trigger_id or action_id depend on what you want to remove
+	*/
+	app.post("/editor/interaction/:iid", jwtauth.auth, function(req,res){
+		var operation = req.body.operation;
+		if (operation == "trigger") {
+			interactionController.removeTrigger(req.params.iid, req.body.trigger_id, res);
+		}
+		if (operation == "action") {
+			interactionController.removeAction(req.params.iid, req.body.action_id, res);
+		}
 	});
 
 };
