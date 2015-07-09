@@ -4,7 +4,7 @@
 var Game = require("./game");
 var Quest = require("./quest");
 var User = require("./user");
-var PlayerInstance = require("./playerinstance");
+var Player = require("./playerinstance");
 var  Group = require("./group");
 var Role = require("./role");
 var deepPopulate = require("mongoose-deep-populate");
@@ -19,9 +19,21 @@ var gameSessionSchema = mongoose.Schema({
 		type:  mongoose.Schema.Types.ObjectId,
 		ref: 'Game'
 	},
-	players: [{ //note: these are the instances of players not the schema kind defined in the editor (well they are created after those)
+	availableQuests: [{
 		type:  mongoose.Schema.Types.ObjectId,
-		ref: 'PlayerInstance'
+		ref: 'Quest'
+	}],
+	activeQuest: {
+		type:  mongoose.Schema.Types.ObjectId,
+		ref: 'Quest'
+	},
+	finishedQuests: [{
+		type:  mongoose.Schema.Types.ObjectId,
+		ref: 'Quest'
+	}],
+	players: [{
+		type:  mongoose.Schema.Types.ObjectId,
+		ref: 'Player'
 	}],
 	groups: [{
 		type:  mongoose.Schema.Types.ObjectId,
