@@ -142,7 +142,7 @@ function ingest2 (user_id) {
 	//show map item for next --> maybe it would have been better to define some "quest setup actions"
 	var bus = new Item({
 		name: "Bushaltestelle",
-		position: { "type": "Point", "coordinates": [7.596358, 51.969352] },
+		position: [7.596358, 51.969352],
 		buffer: 15.0,
 		icon: ""
 	});

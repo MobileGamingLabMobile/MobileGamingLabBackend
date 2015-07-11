@@ -21,7 +21,10 @@ var playerInstanceSchema = mongoose.Schema({
 			type:Boolean,
 			default: true
 		},
-		slot	:[item]
+		slot	:[{
+			type:  mongoose.Schema.Types.ObjectId,
+			ref: 'Item'
+		}]
 	},
 	activeQuest: {
 		type:  mongoose.Schema.Types.ObjectId,

@@ -23,6 +23,6 @@
     "passport": "~0.1.17",
     "passport-local": "~0.1.6",
     "socket.io": "*",
-    "synchronize": "^0.9.11"
+    "synchronize": "*"
   }
 }

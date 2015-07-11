@@ -142,6 +142,7 @@ gameSessionController.endSession = function(user,sessionID,res) {
 	});
 }
 
+
 gameSessionController.joinGame = function(session, user, role_id,res) {
 	Player.findOne({role:role_id}).populate("role properties resource iventar.slot").exec(function(err, player){
 		var cp = player.toJSON();
@@ -157,29 +158,30 @@ gameSessionController.joinGame = function(session, user, role_id,res) {
 				type: curr._id
 			})
 		}
-
+		
 		Game.findById(session.game).populate("components.quests").exec(function(err, game) {
 			for (var index = 0; index < game.components.quests.length; index++) {
 				var currentQuest = game.components.quests[index];
-				console.log(currentQuest.requirements)
 				//add quest to the initially available quest if no trigger is specified
 				if (currentQuest.requirements && currentQuest.requirements.length == 0) {
-					pinst.availableQuests.push(currentQuest);
+					pinst.availableQuests.push(currentQuest._id);
 				}
+				
+				pinst.save();
+				session.players.push(pinst);
+				session.save();
+				pinst.deepPopulate("availableQuests.description role finishedQuests"+
+				"properties resource.type groups inventar.slot", function(err, player) {
+					return res.json({
+						success:true,
+						status: "selected",
+						message: "Role was selected and a player instance was created",
+						playerInstance: pinst
+					});
+				})
 			}
 			
-			pinst.save();
-			session.players.push(pinst);
-			session.save();
-			pinst.deepPopulate("availableQuests.description role finishedQuests"+
-			"properties resource.type groups inventar.slot", function(err, player) {
-				return res.json({
-					success:true,
-					status: "selected",
-					message: "Role was selected and a player instance was created",
-					playerInstance: pinst
-				});
-			})
+			
 			
 		});
 

@@ -4,7 +4,7 @@
 var Game = require("./game");
 var Quest = require("./quest");
 var User = require("./user");
-var Player = require("./playerinstance");
+var PlayerInstance = require("./playerinstance");
 var  Group = require("./group");
 var Role = require("./role");
 var deepPopulate = require("mongoose-deep-populate");
@@ -33,7 +33,7 @@ var gameSessionSchema = mongoose.Schema({
 	}],
 	players: [{
 		type:  mongoose.Schema.Types.ObjectId,
-		ref: 'Player'
+		ref: 'PlayerInstance'
 	}],
 	groups: [{
 		type:  mongoose.Schema.Types.ObjectId,
