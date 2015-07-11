@@ -9,9 +9,9 @@
 		}
 	],
 	"levels":{
-		"channel":"ALL",
-		"testValues_Condition":"ALL",
-		"progressController":"ALL",
-		"models":"ALL"
+		"channel":"ERROR",
+		"testValues_Condition":"ERROR",
+		"progressController":"ERROR",
+		"models":"ERROR"
 	}
 }

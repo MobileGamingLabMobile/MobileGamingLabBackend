@@ -135,7 +135,6 @@ module.exports = function(app,jwtauth) {
 	 * quest_meta : OBJECT with parameters else then the triggers, description or interaction, questEvent
 	 */
 	app.put("/editor/quest/:qid", jwtauth.auth, function(req,res){
-		console.log("Trying to edit")
 		questController.editQuest(req.params.qid,req.body.quest_meta,res);
 	});
 	
@@ -145,7 +144,6 @@ module.exports = function(app,jwtauth) {
 	 * content: CONTENT OBJECT
 	 */
 	app.put("/editor/quest/:qid/description",jwtauth.auth, function(req,res){
-		console.log("Setting description")
 		if (req.params.qid) {		
 			questController.editDescription(req.params.qid, req.body.content, res);
 		} else {

@@ -30,6 +30,8 @@ var interactionSchema = mongoose.Schema({
 //};
 interactionSchema.methods.interact=function(client_key,progress){
     var logger=log4js.getLogger("models");
+    logger.setLevel("ERROR");
+    
     logger.trace('interaction.interact executed');
     this.model('Interaction').findById(this._id).populate('actions').exec(
 	    function(err,interaction){

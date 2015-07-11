@@ -95,7 +95,6 @@ gameSessionController.play = function(user, game, res) {
 		}]
 	}).deepPopulate("players.availableQuests.description players.role players.finishedQuests roles "+
 			"players.properties players.resource.type players.groups").exec(function(err, session){
-				console.log(session);
 		if (!session) {
 			gameSessionController.startNewSession(user,game,res);
 		} else {

@@ -8,6 +8,9 @@
  *  @author Florian Lahn 
  */
 function constructor () {
+	logger = log4js.getLogger("progressController");
+	logger.setLevel("ERROR");
+	
     var Quest = require("../models/quest");
     var Condition = require("../models/condition");
     var controller = {};
@@ -97,10 +100,7 @@ function constructor () {
 			"tasks.actions "+
 			"questEvent.sequence questEvent.actions").exec(function(err, quest) {
 		    //transfer the conditions to controller.conditions
-				console.log("At the beginning "+JSON.stringify(quest));
-				
 			controller.activeQuest = quest;
-			console.log(controller)
 		    for (var i = 0; i < quest.tasks.length; i++) {
 		    	var interaction = quest.tasks[i];
 				var trigger = interaction.trigger;
@@ -120,16 +120,9 @@ function constructor () {
 						    	controller.conditions.push(trigger[j].conditions[k]._id.toString());
 						    }	
 						}
-						console.log("we got "+controller.conditions.length+" conditions.")
 					}
 				}
 		    }
-	    /*
-			controller.socket.emit("message",{
-				success: true,
-				message : "Quest successfully activated "+JSON.stringify(controller.getActiveQuest())
-			});
-	     */
 		    controller.socket.emit("message",{
 				success: true,
 				message : "Quest successfully activated "+JSON.stringify(controller.playerInstance)
@@ -145,7 +138,6 @@ function constructor () {
      */
     controller.finishCondition = function(condition_id) {
 		var conditionID=condition_id.toString();
-		var logger=log4js.getLogger("progressController");
 		logger.trace('Controller.finishCondition executed');
 		logger.trace('conditionID: '+conditionID);
 		logger.trace("controller.conditions:"+controller.conditions);
@@ -170,7 +162,6 @@ function constructor () {
      * @memberOf controller
      */
     controller.isConditionFinished = function(condition_id) {
-		var logger=log4js.getLogger("progressController");
 		logger.trace('Controller.isConditionFinished executed');
 		var conditionID=condition_id.toString();
 	
@@ -235,7 +226,6 @@ function constructor () {
      * 
      */
     controller.getAllTriggers = function() {
-		var logger=log4js.getLogger("progressController");
 		logger.trace('getAllTriggers executed');
 		var list=[];
 		for (var i = 0; i < controller.activeQuest.tasks.length; i++) {
@@ -245,7 +235,6 @@ function constructor () {
 	
 		    }
 		}
-		console.log(list)
 		return list;
     }
 
@@ -346,7 +335,8 @@ function constructor () {
      * @memberOf controller
      */
     controller.getConditionsByType = function(type,callback) {
-		var logger = log4js.getLogger("progressController");
+		
+		
 		logger.trace('getConditions executed');
 		var conditions = controller.conditions;
 		var list = [];
@@ -358,7 +348,6 @@ function constructor () {
     }
     
     function pushCondition(list,conditions,i,type,callback){
-		var logger=log4js.getLogger("progressController");
 		logger.trace("condition._id: "+conditions[i]);
 		Condition.find({_id:conditions[i]}).exec(function(err,condition){
 		    if(condition){
@@ -382,7 +371,6 @@ function constructor () {
      */
     controller.isQuestFinished = function() {
     	var done = (controller.interactions.length == 0);
-    	//return (controller.activeQuest.tasks.length == controller.finishedTrigger.length);
     	return done;
     }
     
@@ -400,7 +388,6 @@ function constructor () {
      */
     controller.finishQuest = function() {
 		if (controller.isQuestFinished()) {
-			console.log(controller.activeQuest);
 			var index = controller.playerInstance.availableQuests.indexOf(controller.activeQuest._id.toString());
 			var activeQuestLink = controller.playerInstance.availableQuests.splice(index, 1);
 			controller.playerInstance.finishedQuests.push(controller.activeQuest._id);

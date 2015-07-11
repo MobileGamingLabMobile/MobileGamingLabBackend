@@ -36,7 +36,6 @@ _trimAction = function(action) {
 				for (index in allPaths) {
 					currentP = allPaths[index];
 					if (index.indexOf(action.type) > -1) {
-						console.log(currentP.options.type);
 						
 						attr = index.replace(action.type+".", "");
 						 if (currentP.instance && currentP.instance != undefined) {

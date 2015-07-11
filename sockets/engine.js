@@ -57,8 +57,6 @@ module.exports = function(io,jwtauth) {
 		  }, TIMEOUT_UNAUTH);
 		
 		//define listener channels
-		console.log("authorized");
-		console.log(gameSession);
 		progress.setSocket(socket);
 		
 		socket.emit("message",{
@@ -85,13 +83,16 @@ module.exports = function(io,jwtauth) {
 		//register the channels at which the client can send data
 		socket.on('Player', function(data){
 		    var logger=log4js.getLogger("channel");
+		    logger.setLevel("ERROR");
 		    logger.info('Data on channel:"Player" arrived at the server');
 		    logger.debug(data);
 		    engineMethods.testValues_Condition(data, 'locationCondition', clientKey,progress);
 		});
 		socket.on('clearDatabase',function(data){
 		    var logger=log4js.getLogger("channel");
+		    logger.setLevel("ERROR");
 		    logger.info('clearDatabase');
+		    
 		    for (var i in mongoose.connection.collections) {
 			mongoose.connection.collections[i].remove(function() { });
 		    }
