@@ -1,15 +1,13 @@
 //app/models/action.js
-//var mongoose = require('mongoose');
 var player = require('./player.js');
 var item = require('./item.js');
 var resource = require('./resource.js');
 var group = require('./group.js');
 var scene = require('./scene.js');
-var quest = require('./quest.js');
+var Quest = require('./quest.js');
 var interaction = require('./interaction.js');
 var game = require("./game");
 var engineMethods = require("../GameEngine/EngineMethods");
-//var websockets=require("../Websocket.js");
 
 //define the schema for action model
 var actionSchema = mongoose.Schema({
@@ -89,43 +87,54 @@ var actionSchema = mongoose.Schema({
 // methods ======================
 
 actionSchema.methods.execute=function(client_key,progress,callback){
+	var Quest = require("../models/quest");
     var logger=log4js.getLogger("models");
+    console.log("HEY OVER HERE "+progress)
     logger.trace('action.execute executed');
     logger.trace(this);
     switch(this.type) {
-    case "progressAction":
-	if(this.progressAction.quest!=null){
-	    var progressAction=this.progressAction;
-	    var quest_id=this.progressAction.quest;
-	    Quest.find({'_id':quest_id}).populate("description").exec(
-		    function(err,quest){
-			if(progressAction.start!=null){
-			    quest[0].started=progressAction.start; 
+	    case "progressAction":
+			if(this.progressAction.quest!=null){
+			    var progressAction=this.progressAction;
+			    var quest_id= progressAction.quest;
+			    Quest.findById(quest_id).populate("description").exec(function(err,q){
+			    		console.log(progressAction)
+						if(progressAction.unlock){
+							progress.unlock(q._id);
+						}
+						callback(err,q);
+						logger.trace("Quest of ProgressAction: "+q);
+						
+						var result = {};
+						result.operation = "available";
+						result.quest = q;
+						
+						engineMethods.sendUpdatedData(client_key,"Quest",result);
+				    });
 			}
-			if(progressAction.unlock!=null){
-			   progress.playerInstance.availableQuests.push(quest[0]._id);
-			   progress.playerInstance.save();
+			break;
+	    case "objectAction":
+			var Item = require('./item.js');
+			var objectAction=this.objectAction;
+			var mapItem=this.objectAction.item; //the model uses the id as reference
+			
+			if(objectAction.placeItemOnMap){ //place on map
+				//find item and return it
+			    Item.findById(mapItem).exec(function(err,item){
+					var engineMethods = require("../GameEngine/EngineMethods");
+					var result = {};
+					result.operation = "add";
+					result.item = item;
+					engineMethods.sendUpdatedData(client_key,"MapItem",result);
+			    });
+			} else if (objectAction.removeItem) { //remove from map
+				var result = {};
+				result.operation = "remove";
+				result.item = mapItem;
+				engineMathods.sendUpdatedData(client_key,"MapItem", result);
 			}
-			callback(err,quest[0]);
-			logger.trace("Quest of ProgressAction: "+quest[0]);
-			engineMethods.sendUpdatedData(client_key,channel['quest'],quest[0]);
-
-
-		    });
-	}
-	break;
-    case "objectAction":
-	var Item = require('./item.js');
-	var objectAction=this.objectAction;
-	if(objectAction.placeItemOnMap==true){
-	    var mapItem=this.objectAction.item;
-	    Item.find({'_id':mapItem}).exec(function(err,item){
-		var engineMethods = require("../GameEngine/EngineMethods");
-		engineMethods.sendUpdatedData(client_key,channel['MapItems'],item);
-	    });
-	}
-	break;
-    default: throw ("the type "+this.type+" does not extists");
+			break;
+	    default: throw ("the type "+this.type+" does not extists");
     }
 };
 //create the model for action

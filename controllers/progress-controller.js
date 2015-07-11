@@ -5,7 +5,7 @@
  *  the progress on conditions as part of the interaction needs to be stored.
  *  This will be done in memory, meaning that unless the quest was completed and the
  *  game is interrupted the propgression in one quest is lost.
- *  @author FL 
+ *  @author Florian Lahn 
  */
 function constructor () {
     var Quest = require("../models/quest");
@@ -96,8 +96,11 @@ function constructor () {
 			"tasks.trigger.conditions " +
 			"tasks.actions "+
 			"questEvent.sequence questEvent.actions").exec(function(err, quest) {
-		    controller.activeQuest = quest;
 		    //transfer the conditions to controller.conditions
+				console.log("At the beginning "+JSON.stringify(quest));
+				
+			controller.activeQuest = quest;
+			console.log(controller)
 		    for (var i = 0; i < quest.tasks.length; i++) {
 		    	var interaction = quest.tasks[i];
 				var trigger = interaction.trigger;
@@ -109,14 +112,15 @@ function constructor () {
 							action.execute(controller.clientKey,controller,function(){});
 						}
 						//add interaction as finished
-						controller.finishedInteractions.push(interaction._id);
+						controller.finishedInteractions.push(interaction._id.toString());
 					} else {
-						controller.interactions.push(interaction._id);
+						controller.interactions.push(interaction._id.toString());
 						for (var j=0; j < trigger.length; j++) {
 						    for (var k = 0; k < trigger[j].conditions.length; k++) {
-						    	controller.conditions.push(trigger[j].conditions[k]._id);
+						    	controller.conditions.push(trigger[j].conditions[k]._id.toString());
 						    }	
 						}
+						console.log("we got "+controller.conditions.length+" conditions.")
 					}
 				}
 		    }
@@ -151,7 +155,7 @@ function constructor () {
 		if (position >= 0) {
 		    logger.trace('position found--condition exists');
 		    var condition = controller.conditions.splice(position,1);
-		    controller.finishedConditions.push(condition);
+		    controller.finishedConditions.push(condition.toString());
 		    return true;
 		} else {
 		    logger.trace('position not found--condition not exists');
@@ -203,9 +207,9 @@ function constructor () {
 	}
     /**
      * get the interactions which have a specific trigger
+     * @memberOf controller
      * @param triggerID The id of the Trigger.
      * @return Trigger object or null if not found.
-     * @memberOf controller
      */
 	controller.getInteractionsByTrigger = function(trigger_id) {
 		var triggerID = trigger_id.toString();
@@ -225,35 +229,38 @@ function constructor () {
 
     /**
      * get all Triggers of the tasks of the activeQuest
+     * @memberOf controller
      * @param triggerID The id of the Trigger.
      * @return Trigger object or null if not found.
-     * @memberOf controller
+     * 
      */
     controller.getAllTriggers = function() {
-	var logger=log4js.getLogger("progressController");
-	logger.trace('getAllTriggers executed');
-	var list=[];
-	for (var i = 0; i < controller.activeQuest.tasks.length; i++) {
-	    var task = controller.activeQuest.tasks[i];
-	    for (var j = 0; j < task.trigger.length; j++) {
-	    	list.push(task.trigger[j]);
-
-	    }
-	}
-	return list;
+		var logger=log4js.getLogger("progressController");
+		logger.trace('getAllTriggers executed');
+		var list=[];
+		for (var i = 0; i < controller.activeQuest.tasks.length; i++) {
+		    var task = controller.activeQuest.tasks[i];
+		    for (var j = 0; j < task.trigger.length; j++) {
+		    	list.push(task.trigger[j]);
+	
+		    }
+		}
+		console.log(list)
+		return list;
     }
 
     /**
      * Checks if trigger is available in the quest and if not already
      * finished. This trigger will be marked as finished.
+     * @memberOf controller
      * @param triggerID The id of the Trigger that needs to be finished
      * @return Returns the success as boolean.
-     * @memberOf controller
+     * 
      */
     controller.finishTrigger = function(triggerID) {
-		var trigger = controller.getTrigger(triggerID);
-		if (trigger && controller.finishedTrigger.indexOf(triggerID) < 0) {
-			controller.finishedTrigger.push(triggerID);
+		var trigger = controller.getTrigger(triggerID.toString());
+		if (trigger && controller.finishedTrigger.indexOf(triggerID.toString()) < 0) {
+			controller.finishedTrigger.push(triggerID.toString());
 			return true;
 		} else {
 			return false;
@@ -267,14 +274,15 @@ function constructor () {
      * @memberOf controller
      */
     controller.finishInteraction = function(interactionID) {
-    	var index = controller.finishedInteraction.indexOf(interactionID);
+    	var index = controller.finishedInteractions.indexOf(interactionID.toString());
     	if ( index < 0) {
     		//if not found
-    		controller.finishedInteractions.push(interactionID);
+    		controller.finishedInteractions.push(interactionID.toString());
     		controller.interactions.splice(index,1);
     	}
     	
     	if (controller.isQuestFinished()) {
+    		console.log("hey quest is finished")
     		controller.finishQuest();
     	}
     }
@@ -284,26 +292,40 @@ function constructor () {
      * Checks whether or not the trigger is finished. First by looking in the
      * array. Then by checking the conditions. If the conditions are met, then
      * the Trigger will be marked as triggered.
+     * @memberOf controller
      * @param triggerID
      * @return boolean
-     * @memberOf controller
      */
     controller.isTriggerFinished = function(triggerID) {
-	var trigger = controller.getTrigger(triggerID);
-	if (trigger) {
-	    if (controller.finishedTrigger.indexOf(triggerID) >= 0) {
-		return true;
-	    }
-	    for (var i = 0; i < trigger.conditions.length; i++) {
-		var condition = trigger.conditions[i];
-		if (controller.finishedConditions.indexOf(condition._id) < 0) return false;
-	    }
-	    controller.finishTrigger(triggerID);
-	    return true;
-	}
-	return false;
+    	if (controller.finishedTrigger.indexOf(triggerID) >= 0) {
+    		//trigger is already finished --> do nothing just return true;
+    		return true;
+    	}
+    	var trigger = controller.getTrigger(triggerID);
+    	console.log("Finished Conditions: "+controller.finishedConditions);
+		if (trigger) {
+		    for (var i = 0; i < trigger.conditions.length; i++) {
+				var condition = trigger.conditions[i];
+				console.log("Condition to be checked: "+condition._id);
+				console.log(typeof condition._id);
+				console.log(typeof controller.finishedConditions[0]);
+				
+				console.log("condition in list: "+controller.finishedConditions.indexOf(condition._id.toString()));
+				var conditionFinished = controller.finishedConditions.indexOf(condition._id.toString()) >= 0;
+				if (!conditionFinished) return false;
+			}
+		    console.log("going to finish trigger");
+		    controller.finishTrigger(triggerID);
+		    return true;
+
+		} else {
+			console.log("Der trigger: "+trigger);
+			console.log("Die finishedTrigger: "+controller.finishedTrigger)
+			return false;
+		}
     }
 
+    
     /**
      * Return all finished trigger
      * @memberOf controller
@@ -323,7 +345,7 @@ function constructor () {
      * Returns all conditions with a specific type
      * @memberOf controller
      */
-    controller.getConditions = function(type,callback) {
+    controller.getConditionsByType = function(type,callback) {
 		var logger = log4js.getLogger("progressController");
 		logger.trace('getConditions executed');
 		var conditions = controller.conditions;
@@ -336,24 +358,23 @@ function constructor () {
     }
     
     function pushCondition(list,conditions,i,type,callback){
-	var logger=log4js.getLogger("progressController");
-	logger.trace("condition._id: "+conditions[i]);
-	Condition.find({_id:conditions[i]}).exec(function(err,condition){
-	    if(condition){
-		var condition=condition[0];
-		logger.trace("condition types: typeCondition:"+condition.type+" typeCompare: "+type);
-		if(condition.type==type){
-		    logger.trace("condition found"+condition);
-		    list.push(condition);
-		}
-	    }
-	    if(i<(conditions.length-1)){
-		return pushCondition(list,conditions,i+1,type,callback)
-	    }
-	    else{
-		return callback(list);
-	    }
-	});
+		var logger=log4js.getLogger("progressController");
+		logger.trace("condition._id: "+conditions[i]);
+		Condition.find({_id:conditions[i]}).exec(function(err,condition){
+		    if(condition){
+				var condition=condition[0];
+				logger.trace("condition types: typeCondition:"+condition.type+" typeCompare: "+type);
+				if(condition.type==type){
+				    logger.trace("condition found"+condition);
+				    list.push(condition);
+				}
+		    }
+		    if(i<(conditions.length-1)){
+		    	return pushCondition(list,conditions,i+1,type,callback)
+		    } else{
+		    	return callback(list);
+		    }
+		});
     }
     /**
      * Checks whether or not the active quest is finished.
@@ -369,21 +390,20 @@ function constructor () {
      * @memberOf controller
      */
     controller.hasActiveQuest = function() {
-	return (controller.activeQuest != null);
+    	return (controller.activeQuest != null);
     }
 
     /**
      * Finishes the active quest.
-     * @return boolean whether or not the quest has been finished.
      * @memberOf controller
+     * @return boolean whether or not the quest has been finished.
      */
     controller.finishQuest = function() {
 		if (controller.isQuestFinished()) {
-			var index = controller.playerInstance.availableQuests
-					.indexOf(controller.activeQuest._id);
-			var activeQuestLink = controller.playerInstance.availableQuests
-					.splice(index, 1);
-			controller.playerInstance.finishedQuests.push(activeQuestLink);
+			console.log(controller.activeQuest);
+			var index = controller.playerInstance.availableQuests.indexOf(controller.activeQuest._id.toString());
+			var activeQuestLink = controller.playerInstance.availableQuests.splice(index, 1);
+			controller.playerInstance.finishedQuests.push(controller.activeQuest._id);
 			controller.playerInstance.save(function(err) {
 				//save the playerInstance, because the quest progress must
 				// be preserved
@@ -404,12 +424,13 @@ function constructor () {
 					var actions = controller.activeQuest.questEvent.actions;
 					for (var i = 0; i < actions.length; i++) {
 						var a = actions[i];
-						a.execute(controller.clientKey, controller, function() {
+							a.execute(controller.clientKey, controller, function() {
 						});
 					}
+					//controller.clear();
 				}
 			});
-			controller.clear();
+			return true;
 		} else {
 			return false;
 		}
@@ -422,6 +443,18 @@ function constructor () {
 	 */
     controller.getActiveQuest = function() {
     	return controller.activeQuest;
+    }
+    
+    /**
+	 * Unlocks a quest for the player.
+	 * @memberOf controller
+	 * @param quest_id The ID of the quest that needs to be unlocked for the player
+	 * 
+	 */
+    controller.unlockQuest = function(quest_id) {
+    	console.log("Big fat: "+quest_id)
+    	controller.playerInstance.availableQuests.push(quest_id);
+		controller.playerInstance.save();
     }
 
     return controller;

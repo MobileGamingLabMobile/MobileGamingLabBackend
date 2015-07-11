@@ -31,13 +31,15 @@ var interactionSchema = mongoose.Schema({
 interactionSchema.methods.interact=function(client_key,progress){
     var logger=log4js.getLogger("models");
     logger.trace('interaction.interact executed');
-    this.model('Interaction').find({'_id':this._id}).populate('actions').exec(
+    this.model('Interaction').findById(this._id).populate('actions').exec(
 	    function(err,interaction){
-		var actionList=interaction[0].actions;
-		for(var i =0;i<actionList.length;i++){
-		    actionList[i].execute(client_key,progress,function(err,object){});
-		}
+			var actionList=interaction.actions;
+			for(var i =0;i<actionList.length;i++){
+			    actionList[i].execute(client_key,progress,function(err,object){});
+			}
+			progress.finishInteraction(interaction._id);
 	    });
+    	
 };
 
 

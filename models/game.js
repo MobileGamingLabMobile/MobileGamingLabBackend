@@ -40,6 +40,10 @@ var gameSchema = mongoose.Schema({
 			type:  mongoose.Schema.Types.ObjectId,
 			ref: 'Quest'
 		}],
+		initialQuests: [{
+			type:  mongoose.Schema.Types.ObjectId,
+			ref: 'Quest'
+		}],
 		questCollections	:[{
 			type:  mongoose.Schema.Types.ObjectId,
 			ref: 'QuestCollection'

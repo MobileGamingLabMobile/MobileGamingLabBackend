@@ -54,7 +54,7 @@ _trimAction = function(action) {
 }
 
 
-
+//editor functions
 actionController.newAction = function(game_id,type,res) {
 	var newAction = new Action();
 

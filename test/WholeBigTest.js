@@ -14,7 +14,7 @@ Interaction = require('../models/interaction.js');
 engine = require("../GameEngine/EngineMethods.js");
 Action = require("../models/action.js");
 Quest = require("../models/quest.js");
-websockets=require("../Websocket.js");
+websockets=require("./Websocket.js");
 ioClient = require('socket.io-client');
 
 
@@ -96,7 +96,7 @@ describe("Engine-- Whole BigTest", function(){
 
     describe("Test Quest updated", function(){
 	beforeEach(function(done){
-	    objects = require("../lib/Objects2.js");
+	    objects = require("./lib/Objects2.js");
 	  //  console.log('load')
 	    setTimeout(function(){
 		done();
@@ -129,7 +129,7 @@ describe("Engine-- Whole BigTest", function(){
 
     describe("SocketTest", function(){
 	beforeEach(function(done){
-	    objects = require("../lib/Objects3.js");
+	    objects = require("./lib/Objects3.js");
 	   
 	    setTimeout(function(){
 		done();

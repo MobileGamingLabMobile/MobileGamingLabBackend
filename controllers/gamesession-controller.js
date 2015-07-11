@@ -61,21 +61,6 @@ gameSessionController.startNewSession = function(owner, game, res) {
  * @param session Object GameSession
  */
 gameSessionController.resumeSession = function (user, game,session, res) {
-//		session.deepPopulate("roles", function(err,s){
-//			PlayerInstance.findOne({"user":user,"gameSession":session._id}).deepPopulate("availableQuests.description "+ 
-//					"finishedQuests.description role properties resource.type inventar.slot", function(err, pinst) {
-//				var doc = pinst;
-//				
-//				console.log(doc)
-//				res.json({
-//					success: true,
-//					message: "Resuming Game Session",
-//					status: "resume",
-//					gameSession: pinst
-//				});
-//			})
-//			
-//		})
 		var pinst;
 		for (var i = 0; i < session.players.length; i++) {
 			var p = session.players[i];
@@ -104,10 +89,6 @@ gameSessionController.resumeSession = function (user, game,session, res) {
 }
 
 gameSessionController.play = function(user, game, res) {
-	//{$and:[{"game":game},{$or : [{"owner": user},{"players.user": user}]}]}
-	//{"owner":user,"game":game}
-	console.log("User: "+user);
-	console.log("game: "+game);
 	GameSession.findOne({$and:
 		[{"game":game},{$or : 
 			[{"owner": user},{"players.user": user}]
@@ -159,28 +140,25 @@ gameSessionController.joinGame = function(session, user, role_id,res) {
 			})
 		}
 		
-		Game.findById(session.game).populate("components.quests").exec(function(err, game) {
-			for (var index = 0; index < game.components.quests.length; index++) {
-				var currentQuest = game.components.quests[index];
-				//add quest to the initially available quest if no trigger is specified
-				if (currentQuest.requirements && currentQuest.requirements.length == 0) {
-					pinst.availableQuests.push(currentQuest._id);
-				}
+		Game.findById(session.game).populate("components.initialQuests").exec(function(err, game) {
+			for (var index = 0; index < game.components.initialQuests.length; index++) {
+				var currentQuest = game.components.initialQuests[index];
+				//TODO if role conditions are implemented maybe this needs to be accounted for at this point. Meaning that the quest requirements need to be fullfilled
+				pinst.availableQuests.push(currentQuest._id);
 				
-				pinst.save();
-				session.players.push(pinst);
-				session.save();
-				pinst.deepPopulate("availableQuests.description role finishedQuests"+
-				"properties resource.type groups inventar.slot", function(err, player) {
-					return res.json({
-						success:true,
-						status: "selected",
-						message: "Role was selected and a player instance was created",
-						playerInstance: pinst
-					});
-				})
 			}
-			
+			pinst.save();
+			session.players.push(pinst);
+			session.save();
+			pinst.deepPopulate("availableQuests.description role finishedQuests"+
+			"properties resource.type groups inventar.slot", function(err, player) {
+				return res.json({
+					success:true,
+					status: "selected",
+					message: "Role was selected and a player instance was created",
+					playerInstance: pinst
+				});
+			})
 			
 			
 		});

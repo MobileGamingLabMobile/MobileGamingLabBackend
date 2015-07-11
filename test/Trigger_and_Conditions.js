@@ -9,7 +9,7 @@ describe.only("Component Test if error uncomment:setTimeout()", function(){
 	    }
 	    function doBefore(callback){
 		clearDB(function(){
-		    objects = require("../lib/Objects.js");
+		    objects = require("./lib/Objects.js");
 		    console.log('doBefore');
 		   // setTimeout(function() {
 		    done();
@@ -53,9 +53,8 @@ describe("Conditions", function(){
     describe('#conditionSchema.methods.test(values)', function(){
 	it("should test if the condition is fulfilled", function(done){
 	    var values1={};
-	    values1.coord={};
-	    values1.coord[0]=51;
-	    values1.coord[1]=7.22;
+	    values1.x = 51;
+	    values1.y =7.22;
 	    objects.locCondition1.test(values1,function(bool,condition){
 		expect(bool).to.equal(true);
 		    done();

@@ -151,13 +151,25 @@
 			"gameSessionID":sessionStorage.getItem("session")
 		 });
 		socket.on('message', writeMessage);
-		socket.on('Quests',function(data){		
-			$("#output1").text("Quests:"+JSON.stringify(data,null,"\t")+"socket ID:"+socket.id);
-			done();
+		socket.on('Quest',function(data){
+			switch(data.operation) {
+				case "finished": 
+					$("#"+data.quest._id).remove();
+					break;
+				case "available":
+					addQuests([data.quest]);
+					break;
+			}		
+			$("#questChannel").text("Quest Event from server:"+JSON.stringify(data,null,"\t"));
+			
 		});
-		socket.on('MapItems',function(data){		
-			$("#output2").text("MapItems:\n"+JSON.stringify(data,null,"\t")+"socket ID:"+socket.id);
-			done();
+		socket.on('MapItem',function(data){		
+			$("#mapItemChannel").text("MapItem Event from server:\n"+JSON.stringify(data,null,"\t"));
+			
+		});
+		socket.on('QuestEvent',function(data){		
+			$("#questEventChannel").text("QuestEvent Event from server:\n"+JSON.stringify(data,null,"\t"));
+			
 		});
     }
     
@@ -193,10 +205,15 @@
 	    });
     }
     function testLocationCondition() {
-    //alert(socket);
-    	socket.emit("Player", {
-    		coord:[$("#coordx").val(),$("#coordy").val()] 
-    	});
+	    var x =  $("#coordx").val();
+	    var y = $("#coordy").val();
+	    var data = {
+    		x:x,
+    		y: y
+    	};
+    	
+    	socket.emit("Player", data);
+    	$("#playerChannel").text(JSON.stringify(data,null,"\t"));
     }
     function clearDatabase() {
     	socket.emit("clearDatabase", {
@@ -303,6 +320,27 @@
 	<fieldset>
 		<legend>Server-Messages</legend>
 		<ul id="message"></ul>	
+	</fieldset>
+	<fieldset>
+		<legend>Channel Activities</legend>
+		<div style="display:inline-block;">
+			<fieldset>
+				<legend>Channel Player</legend>
+				<div id="playerChannel"></div>
+			</fieldset>
+			<fieldset>
+				<legend>Channel Quest</legend>
+				<div id="questChannel"></div>
+			</fieldset>
+			<fieldset>
+				<legend>Channel MapItem</legend>
+				<div id="mapItemChannel"></div>
+			</fieldset>
+			<fieldset>
+				<legend>Channel QuestEvent</legend>
+				<div id="questEventChannel"></div>
+			</fieldset>
+		</div>
 	</fieldset>
 	<pre style="height:150px;overflow-y: scroll;"id="output1"></pre>
 		<pre style="height:150px;overflow-y: scroll;"id="output2"></pre>

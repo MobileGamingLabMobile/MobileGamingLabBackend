@@ -12,6 +12,7 @@ var Role = require("../models/role");
 var Player = require("../models/player");
 var Resource = require("../models/resource");
 var Property = require("../models/properties");
+var User = require("../models/user");
 
 function ingest2 (user_id) {
 	var g = new Game();
@@ -82,10 +83,33 @@ function ingest2 (user_id) {
 	//q3.description.save();
 	
 	//create Trigger and Interactions for quest 1
+	var parkplatz = new Item({
+		name: "Parkplatz",
+		position: [7.595781,51.969111],
+		buffer: 25.0,
+		icon: ""
+	});
+	parkplatz.save();
 	
-	var i1 = new Interaction();
-	var i1_t1 = new Trigger();
-		var i1_c1 = new Condition({
+	var q1_i1 = new Interaction();
+	
+	var q1_i1_a1 = new Action({
+		game : g,
+		type : "objectAction",
+		objectAction : {
+			"placeItemOnMap": true,
+			"item": parkplatz
+		}
+	});
+	q1_i1_a1.save();
+	q1_i1.actions.push(q1_i1_a1);
+	q1_i1.save();
+	
+	q1.tasks.push(q1_i1);
+	
+	var q1_i2 = new Interaction();
+	var q1_i2_t1 = new Trigger();
+		var q1_i2_t1_c1 = new Condition({
 			name: "Location-GEOInstitut", 
 			type: "locationCondition",
 			locationCondition: {
@@ -93,13 +117,14 @@ function ingest2 (user_id) {
 					"buffer": 25.0
 			}
 		});
-		i1_c1.save();
-	i1_t1.conditions.push(i1_c1);
-	i1.trigger.push(i1_t1);
-	i1_t1.save();
-	i1.save();
+		q1_i2_t1_c1.save();
+	q1_i2_t1.conditions.push(q1_i2_t1_c1);
+	q1_i2_t1.save();
+	
+	q1_i2.trigger.push(q1_i2_t1);
+	q1_i2.save();
 	//no action since we just want them to go to the starting place
-	q1.tasks.push(i1);
+	q1.tasks.push(q1_i2);
 	
 	var qe1 = new QuestEvent();
 	var qe1_c =  new Content({
@@ -120,7 +145,7 @@ function ingest2 (user_id) {
 		}
 	});
 	qe1_a1.save();
-	qe1.actions.push(qe_a1);
+	qe1.actions.push(qe1_a1);
 	//make available new
 	var qe1_a2 = new Action({
 		game : g,
@@ -130,6 +155,7 @@ function ingest2 (user_id) {
 			"quest": q2
 		}
 	});
+	qe1_a2.save();
 	qe1.actions.push(qe1_a2);
 	qe1.save();
 	q1.questEvent = qe1;
@@ -138,7 +164,7 @@ function ingest2 (user_id) {
 	//###############################
 	//# Quest 2 Bushalte -> Ampel
 	//###############################
-	var q2_i1 = new Interation(); //no condition just set item
+	var q2_i1 = new Interaction(); //no condition just set item
 	//show map item for next --> maybe it would have been better to define some "quest setup actions"
 	var bus = new Item({
 		name: "Bushaltestelle",
@@ -231,13 +257,7 @@ function ingest2 (user_id) {
 	//# Quest 3 - back
 	//##################
 	//show map item for next --> maybe it would have been better to define some "quest setup actions"
-	var parkplatz = new Item({
-		name: "Parkplatz",
-		position: [7.595781,51.969111],
-		buffer: 25.0,
-		icon: ""
-	});
-	parkplatz.save();
+
 	var q3_i1 = new Interaction();
 	var q3_i1_t1 = new Trigger();
 		var i3_c1 = new Condition({
@@ -267,6 +287,7 @@ function ingest2 (user_id) {
 	q3_i1.save();
 	q3.tasks.push(q3_i1);
 	
+	var qe3 = new QuestEvent();
 	var qe3_c = new Content({
 		name : "Das Ende",
 		url : "",
@@ -301,22 +322,34 @@ function ingest2 (user_id) {
 	q3.questEvent = qe3;
 	q3.save();
 	
-	
+	g.components.initialQuests.push(q1);
 	g.components.quests.push(q1);
 	g.components.quests.push(q2);
 	g.components.quests.push(q3);
 	
+	/*
+	 * Role
+	 */
 	g.components.quests.push(q1);
-	var r1 = new Role();
-	r1.name = "IfGI Teilnehmer";
+	var r1 = new Role({
+		name : "IfGI Teilnehmer"
+	});
 	r1.save();
 	g.components.roles.push(r1);
+	
+	/*
+	 * Resource
+	 */
 	var res1 = new Resource({
 		name: "Punkte",
 		description: "Punkte werden für erfolgreich gelöste Aufgaben vergeben.",
 		value: 0
 	});
 	res1.save();
+	
+	/*
+	 * Property
+	 */
 	var prop1 = new Property({
 		name: "Bewegung",
 		value: 2,
@@ -331,6 +364,15 @@ function ingest2 (user_id) {
 	playerType1.save();
 	
 	g.save();
+	
+	/*
+	 * Modify user / owner
+	 */
+	User.findById(user_id).exec(function(err, user) {
+		user.games.owned.push(g);
+		user.games.subscribed.push(g);
+		user.save();
+	})
 }
 
 module.exports = ingest2;

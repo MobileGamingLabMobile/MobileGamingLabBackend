@@ -12,6 +12,7 @@ var Role = require("../models/role");
 var Player = require("../models/player");
 var Resource = require("../models/resource");
 var Property = require("../models/properties");
+var User = require("../models/user");
 
 function ingest (user_id) {
 	var g = new Game();
@@ -127,28 +128,51 @@ function ingest (user_id) {
 		q1.questEvent = qe1;
 	q1.save();
 	g.components.quests.push(q1);
-		var r1 = new Role();
-		r1.name = "Teilnehmer";
-		r1.save();
+	g.components.initialQuests.push(q1);
+	
+	/*
+	 *	Role
+	 */
+	var r1 = new Role();
+	r1.name = "Teilnehmer";
+	r1.save();
 	g.components.roles.push(r1);
-		var res1 = new Resource({
-			name: "Punkte",
-			description: "Punkte werden für erfolgreich gelöste Aufgaben vergeben.",
-			value: 0
-		});
-		res1.save();
-		var prop1 = new Property({
-			name: "Bewegung",
-			value: 2,
-			type: "int"
-		});
-		prop1.save();
+	
+	/*
+	 * Resource
+	 */
+	var res1 = new Resource({
+		name: "Punkte",
+		description: "Punkte werden für erfolgreich gelöste Aufgaben vergeben.",
+		value: 0
+	});
+	res1.save();
 		
-		var playerType1 = new Player();
-		playerType1.role.push(r1);
-		playerType1.resource.push(res1);
-		playerType1.properties.push(prop1);
-		playerType1.save();
+	/*
+	 * Property
+	 */
+	var prop1 = new Property({
+		name: "Bewegung",
+		value: 2,
+		type: "int"
+	});
+	prop1.save();
+		
+	/*
+	 * Player
+	 */
+	var playerType1 = new Player();
+	playerType1.role.push(r1);
+	playerType1.resource.push(res1);
+	playerType1.properties.push(prop1);
+	playerType1.save();
+	
 	g.save();
+	
+	User.findById(user_id).exec(function(err, user) {
+		user.games.owned.push(g);
+		user.games.subscribed.push(g);
+		user.save();
+	})
 }
 module.exports = ingest;

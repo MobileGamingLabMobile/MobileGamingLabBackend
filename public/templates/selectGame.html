@@ -1,0 +1,44 @@
+<div class="wrapper">
+    <div ng-controller="selectGameController as gameselect">
+		<!-- nav bar -->
+		<nav class="top-bar" data-topbar role="navigation">
+			<div class="large-2 columns left">
+				<img src="img/unicorn01.png" width="60" height="60" style="margin:0px auto;display:block">
+			</div>
+			<div class="large-2 columns right">
+				<a ng-click="gameselect.profile()">
+					<img src="img/profilbild.svg" width="40" height="40" style="margin:3px auto;display:block">
+				</a>
+			</div>
+			<div class="large-2 columns right">
+				<a > <!-- add the link to the editor -->
+					<img src="img/editor_icon.svg" width="40" height="40" style="margin:3px auto;display:block">
+				</a>
+			</div>
+		</nav>
+		<!-- content -->
+        <div class="panel" ng-init="gameselect.loadAllgame()">
+            <dl class="sub-nav">
+                <dd ng-class="{active: gameselect.isSelected(3)}">
+                    <a id="b03" class="button radius" ng-click="gameselect.loadAllgame()">Alle Spiele</a>
+                </dd>
+                <dd ng-class="{active: gameselect.isSelected(1)}">
+                    <a class="button radius" ng-click="gameselect.loadSgame()">Abonnierte Spiele</a>
+                </dd>
+                <dd ng-class="{active: gameselect.isSelected(2)}">
+                    <a class="button radius" ng-click="gameselect.loadOgame()">eigene Spiele</a>
+                </dd>
+            </dl>
+            <!-- table for all games-->
+            <div id="tab03" class="panel" ng-show="gameselect.isSelected(3)">
+            </div>
+            <!-- table for subscribed games-->
+            <div id="tab01" class="panel ng-hide" ng-show="gameselect.isSelected(1)">
+            </div>
+            <!-- table for owned games-->
+            <div id="tab02" class="panel ng-hide" ng-show="gameselect.isSelected(2)">
+            </div>
+        </div>
+		<a href="#impressum">Hilfe</a>
+    </div>
+</div>
