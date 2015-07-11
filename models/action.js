@@ -89,7 +89,7 @@ var actionSchema = mongoose.Schema({
 actionSchema.methods.execute=function(client_key,progress,callback){
 	var Quest = require("../models/quest");
     var logger=log4js.getLogger("models");
-    console.log("HEY OVER HERE "+progress)
+    
     logger.trace('action.execute executed');
     logger.trace(this);
     switch(this.type) {
@@ -98,9 +98,8 @@ actionSchema.methods.execute=function(client_key,progress,callback){
 			    var progressAction=this.progressAction;
 			    var quest_id= progressAction.quest;
 			    Quest.findById(quest_id).populate("description").exec(function(err,q){
-			    		console.log(progressAction)
 						if(progressAction.unlock){
-							progress.unlock(q._id);
+							progress.unlockQuest(q._id);
 						}
 						callback(err,q);
 						logger.trace("Quest of ProgressAction: "+q);
