@@ -92,7 +92,7 @@ actionSchema.methods.execute=function(client_key,progress,callback){
     
     
     logger.trace('action.execute executed');
-    logger.trace(this);
+    logger.trace("this:"+this);
     switch(this.type) {
 	    case "progressAction":
 			if(this.progressAction.quest!=null){
@@ -120,7 +120,7 @@ actionSchema.methods.execute=function(client_key,progress,callback){
 			
 			if(objectAction.placeItemOnMap){ //place on map
 				//find item and return it
-			    Item.findById(mapItem).exec(function(err,item){
+			    Item.find({"_id":mapItem}).exec(function(err,item){
 					var engineMethods = require("../GameEngine/EngineMethods");
 					var result = {};
 					result.operation = "add";
