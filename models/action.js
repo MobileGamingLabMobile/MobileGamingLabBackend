@@ -87,9 +87,9 @@ var actionSchema = mongoose.Schema({
 // methods ======================
 
 actionSchema.methods.execute=function(client_key,progress,callback){
-	var Quest = require("../models/quest");
+    var Quest = require("../models/quest");
     var logger=log4js.getLogger("models");
-    
+    var engineMethods = require("../GameEngine/EngineMethods");
     
     logger.trace('action.execute executed');
     logger.trace("this:"+this);
@@ -121,7 +121,7 @@ actionSchema.methods.execute=function(client_key,progress,callback){
 			if(objectAction.placeItemOnMap){ //place on map
 				//find item and return it
 			    Item.find({"_id":mapItem}).exec(function(err,item){
-					var engineMethods = require("../GameEngine/EngineMethods");
+					
 					var result = {};
 					result.operation = "add";
 					result.item = item;
@@ -131,7 +131,7 @@ actionSchema.methods.execute=function(client_key,progress,callback){
 				var result = {};
 				result.operation = "remove";
 				result.item = mapItem;
-				engineMathods.sendUpdatedData(client_key,"MapItem", result);
+				engineMethods.sendUpdatedData(client_key,"MapItem", result);
 			}
 			break;
 	    default: throw ("the type "+this.type+" does not extists");

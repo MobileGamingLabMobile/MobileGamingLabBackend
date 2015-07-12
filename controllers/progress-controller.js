@@ -349,7 +349,7 @@ function constructor () {
     function pushCondition(list,conditions,i,type,callback){
 		logger.trace("condition._id: "+conditions[i]);
 		Condition.find({_id:conditions[i]}).exec(function(err,condition){
-		    if(condition){
+		    if(condition.length!=0){
 				var condition=condition[0];
 				logger.trace("condition types: typeCondition:"+condition.type+" typeCompare: "+type);
 				if(condition.type==type){
