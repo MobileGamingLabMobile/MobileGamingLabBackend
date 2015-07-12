@@ -89,7 +89,7 @@ var actionSchema = mongoose.Schema({
 actionSchema.methods.execute=function(client_key,progress,callback){
 	var Quest = require("../models/quest");
     var logger=log4js.getLogger("models");
-    logger.setLevel("ERROR");
+    
     
     logger.trace('action.execute executed');
     logger.trace(this);

@@ -73,8 +73,7 @@ require('./routes/game.js')(app, jwtauth);
 *Logger
 **/
  log4js = require('log4js');
- log4js.loadAppender('file');
- log4js.addAppender(log4js.appenders.file('config/logging.json'), 'engine');
+ log4js.configure('config/logging.json',{});
  
 /**
 * Sockets

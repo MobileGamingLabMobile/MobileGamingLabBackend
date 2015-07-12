@@ -9,7 +9,6 @@
  */
 function constructor () {
 	logger = log4js.getLogger("progressController");
-	logger.setLevel("ERROR");
 	
     var Quest = require("../models/quest");
     var Condition = require("../models/condition");

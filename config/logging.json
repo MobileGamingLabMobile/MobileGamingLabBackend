@@ -4,7 +4,7 @@
 			"type":"console",
 			"layout":{
 				"type":"pattern",
-				"pattern":"%d %p %c - %m"
+				"pattern":"[%d{ISO8601}] %[%p%] [%[%c%]] - %m%n"
 			}
 		}
 	],

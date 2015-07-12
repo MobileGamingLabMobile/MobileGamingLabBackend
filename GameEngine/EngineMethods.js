@@ -11,7 +11,6 @@ exports=module.exports={};
 testValues_Condition=function(values,type,client_key,progress){
     
     var logger=log4js.getLogger("testValues_Condition");
-	logger.setLevel("ERROR");
     
     logger.trace('testValues_condition executed');
     //get the conditions of the active quest
@@ -72,7 +71,6 @@ testAllConditionsFinished=function(trigger,progress){
 
 testAllTriggers_Triggered=function(interaction,progress){
     var logger=log4js.getLogger("testValues_Condition");
-	logger.setLevel("ERROR");
     
     logger.trace('testAllTriggers_Triggered executed');
     var interactionTrigger=interaction.trigger;
@@ -93,7 +91,6 @@ testAllTriggers_Triggered=function(interaction,progress){
 findAllTriggersWithCondition=function(condition_id,progress){
     var conditionID=condition_id.toString();
     var logger=log4js.getLogger("testValues_Condition");
-    logger.setLevel("ERROR");
     
     logger.trace('findAllTriggersWithCondition executed');
     var triggerList= progress.getAllTriggers();
