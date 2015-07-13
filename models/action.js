@@ -131,7 +131,7 @@ actionSchema.methods.execute=function(client_key,progress,callback){
 				var result = {};
 				result.operation = "remove";
 				result.item = mapItem;
-				engineMathods.sendUpdatedData(client_key,"MapItem", result);
+				engineMethods.sendUpdatedData(client_key,"MapItem", result);
 			}
 			break;
 	    default: throw ("the type "+this.type+" does not extists");

@@ -8,8 +8,6 @@
  *  @author Florian Lahn 
  */
 function constructor () {
-	logger = log4js.getLogger("progressController");
-	logger.setLevel("ERROR");
 	
     var Quest = require("../models/quest");
     var Condition = require("../models/condition");
@@ -137,6 +135,9 @@ function constructor () {
      * @memberOf controller
      */
     controller.finishCondition = function(condition_id) {
+    	logger = log4js.getLogger("progressController");
+    	logger.setLevel("ERROR");
+    	
 		var conditionID=condition_id.toString();
 		logger.trace('Controller.finishCondition executed');
 		logger.trace('conditionID: '+conditionID);
@@ -162,6 +163,9 @@ function constructor () {
      * @memberOf controller
      */
     controller.isConditionFinished = function(condition_id) {
+    	logger = log4js.getLogger("progressController");
+    	logger.setLevel("ERROR");
+    	
 		logger.trace('Controller.isConditionFinished executed');
 		var conditionID=condition_id.toString();
 	
@@ -226,6 +230,9 @@ function constructor () {
      * 
      */
     controller.getAllTriggers = function() {
+    	logger = log4js.getLogger("progressController");
+    	logger.setLevel("ERROR");
+    	
 		logger.trace('getAllTriggers executed');
 		var list=[];
 		for (var i = 0; i < controller.activeQuest.tasks.length; i++) {
@@ -335,7 +342,8 @@ function constructor () {
      * @memberOf controller
      */
     controller.getConditionsByType = function(type,callback) {
-		
+    	logger = log4js.getLogger("progressController");
+    	logger.setLevel("ERROR");
 		
 		logger.trace('getConditions executed');
 		var conditions = controller.conditions;
@@ -348,16 +356,20 @@ function constructor () {
     }
     
     function pushCondition(list,conditions,i,type,callback){
+    	logger = log4js.getLogger("progressController");
+    	logger.setLevel("ERROR");
+    	
 		logger.trace("condition._id: "+conditions[i]);
-		Condition.find({_id:conditions[i]}).exec(function(err,condition){
+		Condition.findById(conditions[i]).exec(function(err,condition){
 		    if(condition){
-				var condition=condition[0];
-				logger.trace("condition types: typeCondition:"+condition.type+" typeCompare: "+type);
+				//var condition=condition[0];
+				//logger.trace("condition types: typeCondition:"+condition.type+" typeCompare: "+type);
 				if(condition.type==type){
 				    logger.trace("condition found"+condition);
 				    list.push(condition);
 				}
 		    }
+		    
 		    if(i<(conditions.length-1)){
 		    	return pushCondition(list,conditions,i+1,type,callback)
 		    } else{
