@@ -272,7 +272,22 @@ function ingest2 (user_id) {
 	//# Quest 3 - back
 	//##################
 	//show map item for next --> maybe it would have been better to define some "quest setup actions"
-
+	var q3_i2 = new Interaction();
+	
+	var q3_i2_a1 = new Action({
+		game : g,
+		type : "objectAction",
+		objectAction : {
+			"placeItemOnMap": true,
+			"item": parkplatz
+		}
+	});
+	q3_i2_a1.save();
+	q3_i2.actions.push(q3_i2_a1);
+	q3_i2.save();
+	q3.tasks.push(q3_i2);
+	
+	
 	var q3_i1 = new Interaction();
 	var q3_i1_t1 = new Trigger();
 		var i3_c1 = new Condition({
