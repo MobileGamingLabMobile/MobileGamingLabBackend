@@ -10,6 +10,7 @@ var groupController = require("../controllers/group-controller.js");
 var itemController = require("../controllers/item-controller.js");
 var objectController = require("../controllers/object-controller.js");
 var resourceController = require("../controllers/resource-controller.js");
+var interactionController = require("../controllers/interaction-controller.js");
 
 module.exports = function(app,jwtauth) {
 
@@ -511,7 +512,7 @@ module.exports = function(app,jwtauth) {
 	*	qid : quest id
 	*/
 	app.put("/editor/interaction", jwtauth.auth, function(req,res){
-		if (req.body.game_id){
+		if (req.body.quest_id){
 			interactionController.newInteraction(req.body.quest_id, res);
 		}
 	});

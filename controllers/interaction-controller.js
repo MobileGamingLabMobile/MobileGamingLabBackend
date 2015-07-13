@@ -1,10 +1,10 @@
 var Interaction = require("../models/interaction.js");
 var Action = require("../models/action.js");
 var Trigger = require("../models/trigger.js");
-var Quesdt = require("../models/quest.js");
+var Quest = require("../models/quest.js");
 
 // create new interaction-controller
-var new interactionController = {};
+var interactionController = {}
 
 // error handling message
 error = function(res, message) {
@@ -14,7 +14,7 @@ error = function(res, message) {
 	});
 }
 
-/*	NEWINTERACTION - methode (NOT YET TESTED)
+/*	NEWINTERACTION - methode
 *	quest_id	   : quest.id the interaction should be related to
 *	res            : response
 */
@@ -34,7 +34,7 @@ interactionController.newInteraction = function(quest_id, res) {
 		// connecting the interaction_id to the quest
 		Quest.findById(quest_id, function(err, quest) {
 			// pushing interaction_id to the interaction array of the quest
-			quest.tasks.push(interaction_id);
+			quest.tasks.push(interaction._id);
 			quest.save();
 		});
 
@@ -47,7 +47,7 @@ interactionController.newInteraction = function(quest_id, res) {
 	});
 }
 
-/*	GETINTERACTION - methode (NOT YET TESTED)
+/*	GETINTERACTION - methode
 *	interaction_id : interaction.id
 *	res            : response
 */
@@ -70,7 +70,7 @@ interactionController.getInteraction = function(interaction_id, res) {
 	});
 }
 
-/*	DELETEINTERACTION - methode (NOT YET TESTED)
+/*	DELETEINTERACTION - methode
 *	interaction_id : interaction.id of the interaction to delete
 *	deep      : variable to clearify whether all references should be deleted too
 *	quest_id   : quest.id the interaction is related to
@@ -118,7 +118,7 @@ interactionController.deleteInteraction = function(interaction_id, deep, quest_i
 	});			
 }
 
-/*	ADDTRIGGER (NOT YET TESTED)
+/*	ADDTRIGGER
 *	interaction_id : interaction.id
 *	trigger_id     : trigger.id to add to interaction
 *	res            : response
@@ -203,7 +203,6 @@ interactionController.removeTrigger = function(interaction_id, trigger_id, res) 
 			});
 			// response of the interaction object
 			return res.json(interaction);
-			});
 }
 
 /* 	REMOVEACTION (NOT YET TESTED)
@@ -223,7 +222,6 @@ interactionController.removeAction = function(interaction_id, action_id, res) {
 			});
 			// response of the interaction object
 			return res.json(interaction);
-			});
 }
 
 
