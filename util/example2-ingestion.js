@@ -17,7 +17,7 @@ var User = require("../models/user");
 function ingest2 (user_id) {
 	var g = new Game();
 	g.metadata = {
-			"name": "IfGI Hunt",
+			"name": "IfGI-Demo Hunt",
 			"description": "Folge einigen Wegpunkten und betrachte das GEO Gebäude von verschiedenen Seiten",
 			"category"		: ["Schnitzeljagd"], 
 			"owner": user_id,
@@ -107,6 +107,7 @@ function ingest2 (user_id) {
 	
 	q1.tasks.push(q1_i1);
 	
+	//Second is the go-to interaction
 	var q1_i2 = new Interaction();
 	var q1_i2_t1 = new Trigger();
 		var q1_i2_t1_c1 = new Condition({
@@ -120,8 +121,20 @@ function ingest2 (user_id) {
 		q1_i2_t1_c1.save();
 	q1_i2_t1.conditions.push(q1_i2_t1_c1);
 	q1_i2_t1.save();
-	
 	q1_i2.trigger.push(q1_i2_t1);
+	
+	var q1_i2_a1 = new Action({
+		game : g,
+		type : "objectAction",
+		objectAction : {
+			"removeItem": true,
+			"item": parkplatz
+		}
+	});
+	q1_i2_a1.save();
+	q1_i2.actions.push(q1_i2_a1);
+	
+	
 	q1_i2.save();
 	//no action since we just want them to go to the starting place
 	q1.tasks.push(q1_i2);
@@ -186,6 +199,7 @@ function ingest2 (user_id) {
 	q2_i1.save();
 	q2.tasks.push(q2_i1);
 	
+	//go-to
 	var q2_i2 = new Interaction();
 	var q2_i2_t1 = new Trigger();
 		var q2_i2_c1 = new Condition({
@@ -227,6 +241,17 @@ function ingest2 (user_id) {
 	qe2_c.save();
 	qe2.sequence.push(qe2_c);
 	
+	var qe2_a2 = new Action({
+		game : g,
+		type : "progressAction",
+		progressAction : {
+			"finish": true,
+			"quest": q2
+		}
+	});
+	qe2_a2.save();
+	qe2.actions.push(qe2_a2);
+	
 	//make available new
 	var qe2_a1 = new Action({
 		game : g,
@@ -237,18 +262,8 @@ function ingest2 (user_id) {
 		}
 	});
 	qe2_a1.save();
-	
 	qe2.actions.push(qe2_a1);
-	var qe2_a2 = new Action({
-		game : g,
-		type : "progressAction",
-		progressAction : {
-			"finish": true,
-			"quest": q2
-		}
-	})
-	qe2_a2.save();
-	qe2.actions.push(qe2_a2);
+	
 	qe2.save();
 	q2.questEvent = qe2;
 	q2.save();
@@ -294,6 +309,7 @@ function ingest2 (user_id) {
 		type : "text",
 		html : "Du hast alle Aufgaben bravurös gemeistert und somit endet auch das Spiel."
 	});
+	qe3_c.save();
 	qe3.sequence.push(qe3_c);
 	//finish old
 	var qe3_a1 = new Action({

@@ -357,6 +357,7 @@ function constructor () {
 				    list.push(condition);
 				}
 		    }
+		    
 		    if(i<(conditions.length-1)){
 		    	return pushCondition(list,conditions,i+1,type,callback)
 		    } else{

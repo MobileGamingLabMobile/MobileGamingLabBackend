@@ -229,7 +229,7 @@
 		    		access_token: sessionStorage.getItem("token")
 		    	},
 		   success: function(data) {
-		   $('#message').html(html);
+		   $('#message').html(JSON.stringify(data));
 		   }
 		});
     }
@@ -241,7 +241,7 @@
 		    		access_token: sessionStorage.getItem("token")
 		    	},
 		   success: function(data) {
-		   $('#message').html(html);
+		   $('#message').html(JSON.stringify(data));
 		   }
 		});
     }
