@@ -8,6 +8,7 @@ var plot = require('./plot.js');
 var action = require("./action.js");
 var Role = require("./role.js");
 var Player = require("./player.js");
+var deepPopulate = require("mongoose-deep-populate");
 
 // define the schema for our game model
 var gameSchema = mongoose.Schema({
@@ -83,4 +84,38 @@ var gameSchema = mongoose.Schema({
 
 // methods ======================
 // create the model for games and expose it to our app
+gameSchema.plugin(deepPopulate);
+
+gameSchema.pre("remove", function(next) {
+	//roles
+	for (var  i = 0; i < this.components.roles.length; i++) {
+		var role = this.components.roles[i];
+		role.remove();
+	}
+	//resource
+	for (var  i = 0; i < this.components.resource.length; i++) {
+		var resource = this.components.resource[i];
+		resource.remove();
+	}
+	//items
+	for (var  i = 0; i < this.components.items.length; i++) {
+		var item = this.components.items;
+		item.remove();
+	}
+	
+	//player
+	for (var j = 0; j < this.components.players.length; j++) {
+		var player = this.components.players[j];
+		player.remove();
+	}
+	
+	//quests
+	for (var  i = 0; i < this.components.quests.length; i++) {
+		var quest = this.components.quests[i];
+		quest.remove();
+	}
+	
+	next();
+})
+
 module.exports = mongoose.model('Game', gameSchema);

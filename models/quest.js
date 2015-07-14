@@ -9,20 +9,20 @@ var deepPopulate = require("mongoose-deep-populate");
 var questSchema = mongoose.Schema({
     title: String,
     requirements :[{
-	type: mongoose.Schema.Types.ObjectId,
-	ref: 'Trigger'
+		type: mongoose.Schema.Types.ObjectId,
+		ref: 'Trigger'
     }],
     description : {//wollten wir evtl als HTML realisieren, innerhalb von Content
-	type: mongoose.Schema.Types.ObjectId,
-	ref: 'Content'
+		type: mongoose.Schema.Types.ObjectId,
+		ref: 'Content'
     },
     tasks :[{
-	type: mongoose.Schema.Types.ObjectId,
-	ref: 'Interaction'
+		type: mongoose.Schema.Types.ObjectId,
+		ref: 'Interaction'
     }],
     questEvent :{
-	type: mongoose.Schema.Types.ObjectId,
-	ref: 'QuestEvent'
+		type: mongoose.Schema.Types.ObjectId,
+		ref: 'QuestEvent'
     },
     available :Boolean,
     started :Boolean,
@@ -30,6 +30,20 @@ var questSchema = mongoose.Schema({
 });
 //methods ======================
 questSchema.plugin(deepPopulate);
+questSchema.pre("remove",function(next){
+	if (this.description) this.description.remove();
+	if (this.questEvent) this.questEvent.remove();
 
+	for (var j = 0; j < this.tasks.length; j++) {
+		var interaction = this.tasks[j];
+		interaction.remove();
+	}
+	//requirements
+	for (var j = 0; j < this.requirements.length; j++) {
+		var trigger = this.requirements[j];
+		trigger.remove();
+	}
+	next();
+});
 //create the model for quest
 module.exports = mongoose.model('Quest', questSchema);

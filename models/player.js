@@ -44,5 +44,17 @@ var playerSchema = mongoose.Schema({
 });
 
 // methods ======================
+playerSchema.pre("remove", function(next) {
+	for (var k= 0; k < this.properties.length; k++) {
+		var property = this.properties[k];
+		property.remove();
+	}
+	
+	for (var k=0; k < this.groups.length; k++) {
+		var group = this.groups[k];
+		group.remove();
+	}
+	next();
+});
 // create the model for player
 module.exports = mongoose.model('Player', playerSchema);

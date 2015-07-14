@@ -44,5 +44,18 @@ interactionSchema.methods.interact=function(client_key,progress){
     	
 };
 
+interactionSchema.pre("remove",function(next){
+	for (var k = 0; k < this.trigger.length; k++) {
+		var trigger = this.trigger[k];
+		trigger.remove();
+	}
+	//action
+	for (var k = 0; k < this.actions.length; k++) {
+		var action = this.actions[k];
+		action.remove();
+	}
+	next();
+})
+
 
 module.exports = mongoose.model('Interaction', interactionSchema);

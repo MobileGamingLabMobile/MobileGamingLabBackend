@@ -23,17 +23,11 @@ module.exports = function(app,jwtauth) {
 	 * and where they are handled.
 	 */
 	
-	/**
-	 * This function renders a very basic login screen.
-	 */
-	app.get("/", function(req,res){
-		res.render("login.html");
-	});
 	
 	/**
 	 * This route will open the editor view, which is also very basic for now.
 	 */
-	app.get("/editor",jwtauth.auth,function(req,res){
+	app.get("/editor",function(req,res){
 		res.render("editor.html");
 	});
 	

@@ -3,6 +3,7 @@ var User = require("../models/user.js");
 var Comment = require("../models/comment.js");
 var Action = require("../models/action");
 var actionController = require ("./action-controller");
+var GameSession = require("../models/gamesession");
 
 var gameController = {};
 
@@ -40,26 +41,56 @@ gameController.newGame = function(id,res) {
 }
 
 gameController.deleteGame = function(game_id, user_id, res) {
-	Game.findById(game_id, function(err, game){
+	Game.findById(game_id).deepPopulate("components.roles " +
+			"components.resource " +
+			"componente.items " +
+			"components.quests.description " +
+			"components.quests.questEvent.sequence "+
+			"components.quests.questEvent.actions "+
+			"components.quests.tasks.trigger.conditions "+
+			"components.quests.tasks.actions "+
+			"components.players.properties "+
+			"components.players.groups "+
+			"metadata.comments").exec(function(err, game){
 		if (err) {
 			return res.json({
 				success:false,
 				message: "Not found."
 			});
 		}
-		var game_owner = game.metadata.owner.toString();
-		if (game_owner != user_id) {
-			return res.json({
-				success: false,
-				message: "No permission to delete this game, you are not the owner."
+		if (game) {
+			var game_owner = game.metadata.owner.toString();
+			if (game_owner != user_id) {
+				return res.json({
+					success: false,
+					message: "No permission to delete this game, you are not the owner."
+				});
+			}
+			User.findById(game.metadata.owner, function(err, user){
+				var index = user.games.owned.indexOf(game_id);
+				var index2 = user.games.subscribed.indexOf(game_id);
+				if (index > 0) user.games.owned.splice(index,1);
+				if (index2 > 0) user.games.subscribed.splice(index2,1);
+				user.save();
 			});
+
+			game.remove();
 		}
-		User.findById(game.metadata.owner, function(err, user){
-			var index = user.games.owned.indexOf(game_owner);
-			user.games.owned.splice(index,1);
-			user.save();
+		//remove gamesessions
+		GameSession.find({"game": game_id}).populate("players").exec(function(err, sessions){
+			for (var k = 0; k < sessions.length; k++) {
+				var gs = sessions[k];
+				for (var i = 0; i < gs.players.length; i++) {
+					var pi = gs.players[i];
+					pi.remove();
+				}
+				gs.remove();
+			}
+			
 		});
-		Game.remove({_id: game_id}, null).exec();
+		
+		//Game.remove({_id: game_id}, null).exec();
+		
 		res.json({
 			success: true,
 			message: "Game successfully deleted."

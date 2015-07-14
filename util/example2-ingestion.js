@@ -90,6 +90,7 @@ function ingest2 (user_id) {
 		icon: ""
 	});
 	parkplatz.save();
+	g.components.items.push(parkplatz);
 	
 	var q1_i1 = new Interaction();
 	
@@ -186,6 +187,7 @@ function ingest2 (user_id) {
 		icon: ""
 	});
 	bus.save();
+	g.components.items.push(bus);
 	var q2_i1_a1 = new Action({
 		game : g,
 		type : "objectAction",
@@ -377,6 +379,7 @@ function ingest2 (user_id) {
 		value: 0
 	});
 	res1.save();
+	g.components.resource.push(res1);
 	
 	/*
 	 * Property
@@ -394,6 +397,7 @@ function ingest2 (user_id) {
 	playerType1.properties.push(prop1);
 	playerType1.save();
 	
+	g.components.players.push(playerType1);
 	g.save();
 	
 	/*
