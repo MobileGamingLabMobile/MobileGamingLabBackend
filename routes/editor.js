@@ -300,7 +300,7 @@ module.exports = function(app,jwtauth) {
 	 * type: String
 	 * game_id: String
 	 */
-	app.put("/editor/action/", jwtauth.auth, function(req,res) {
+	app.put("/editor/action", jwtauth.auth, function(req,res) {
 		if (!req.body.type) {
 			return res.json({
 				success: false,
@@ -322,6 +322,14 @@ module.exports = function(app,jwtauth) {
 	 */
 	app.get("/editor/action/:aid",jwtauth.auth, function(req,res) {
 		actionController.getAction(req.params.aid, res);
+	})
+	
+	/**
+	 * Edit created action
+	 * data
+	 */
+	app.put("/editor/action/:aid",jwtauth.auth, function(req,res) {
+		actionController.modifyAction(req.params.aid,req.body.data, res);
 	})
 	
 	/**

@@ -83,6 +83,7 @@ actionController.getAction = function(action_id, res) {
 }
 
 actionController.modifyAction = function(action_id,object, res) {
+	
 	Action.findById(action_id, function(err, action) {
 		actionType = object.type;
 		if (!actionType) {
@@ -92,6 +93,7 @@ actionController.modifyAction = function(action_id,object, res) {
 			})
 		}
 		innerAction = object[actionType];
+		
 		
 		if (action[actionType]) { //if there already is an object, then loop through and check for updates
 			ct = action[actionType];
@@ -105,11 +107,11 @@ actionController.modifyAction = function(action_id,object, res) {
 			action[actionType] = innerAction;
 		}
 		action.save(function(err){
-			if (err) return error(res, "Database problem while saving modifications on condition");
+			if (err) return error(res, "Database problem while saving modifications on action");
 			
 			res.json({
 				success: true,
-				message: "Condition successfully modified"
+				message: "Action successfully modified"
 			});
 		});
 	});
