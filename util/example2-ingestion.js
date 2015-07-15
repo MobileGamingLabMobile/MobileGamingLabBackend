@@ -19,7 +19,7 @@ function ingest2 (user_id) {
 	g.metadata = {
 			"name": "Demo Spiel",
 			"description": "Folge einigen Wegpunkten und betrachte das GEO Gebäude von verschiedenen Seiten",
-			"category"		: ["Schnitzeljagd"], 
+			"category"		: ["DEMO","Schnitzeljagd"], 
 			"owner": user_id,
 			"published"		: true,
 			"publishedDate"	: 1436268147192,
