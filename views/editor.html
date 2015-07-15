@@ -2,11 +2,11 @@
 	<head>
 		<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
 	</head>
-	<body onLoad="init()">
+	<body>
 		<fieldset>
 			<legend>Login</legend>
 			<div id = "menu" style="display: inline-block; vertical-align: top;">
-			<form id="loginForm" method="post" action="http://localhost:8080/login">
+			<form id="loginForm">
 				<label>Email:</label>
 				<input type="text" name="email"></input><br/>
 				<label>Passwort:</label>
@@ -20,6 +20,7 @@
 				<legend>User-Management</legend>
 				<button onClick="logout()">Logout</button>
 				<button onClick="getOwned()">Eigene Spiele</button>
+				<button onClick="ingestGame2()">Beispiel Spiel</button>
 			</fieldset>
 		</div>
 		<div id="games_owned">
@@ -33,6 +34,14 @@
 				<div id="game_list"></div>
 			</fieldset>
 		</div>
+		<br/>
+		<fieldset>
+			<legend>Quests</legend>
+			<div id = "quest_functinos" style="display: inline;">
+				<button onClick="newQuest()">Neue Quest</button>
+			</div>
+			<div id="quest_list"></div>
+		</fieldset>
 		<br/>
 		<div>
 			<fieldset>
@@ -69,8 +78,8 @@
 		function login(event) {
 			event.preventDefault();	
 			var form = $(this);
-			var action = form.attr("action"),
-			method = form.attr("method"),
+			var action = host+"/login";
+			method = "POST";
 			data   = form.serialize();
 			
 			$.ajax({
@@ -79,23 +88,13 @@
 				data : data
 			}).done(function (data) {
 				sessionStorage.setItem("token", data.token);
+				$.ajaxSetup({
+					beforeSend: function(xhr) {
+						xhr.setRequestHeader("x-access-token",sessionStorage.getItem("token"))
+					}
+				});
 			}).always(function (data) {
 				$("#message").text(data.message);
-				
-				if (data && data.success) {
-					window.location.replace(host+"/editor?access_token="+sessionStorage.getItem("token"));
-				}
-			});
-		}
-		
-		function init() {
-			$("#selected_game").val("");
-			//since we are logged in and we have stored the token in the browser session,
-			// we can setup the authorization once and for all :D
-			$.ajaxSetup({
-				beforeSend: function(xhr) {
-					xhr.setRequestHeader("x-access-token",sessionStorage.getItem("token"))
-				}
 			});
 		}
 		
@@ -198,6 +197,10 @@
 				text: "Bearbeiten",
 				click: selectGame
 			}));
+			game_div.append($("<button>",{
+				text: "Löschen",
+				click: deleteGame
+			}));
 			//put into a fieldset
 			fs = $("<fieldset>",{
 				style: "display: inline-block; padding:10px;font-weight: bold;"
@@ -279,7 +282,78 @@
 		}
 		
 		function newGame(event) {
-			
+			$.ajax({
+				url: host+"/editor/game/",
+				type: "post",
+				data: {
+					"operation": "new"
+				}
+			}).done(function(data){
+				if (data.success) {
+					var list_node = $("#game_list");
+					var gbox = addGameBox(data.game);
+					list_node.append(gbox);
+				}
+			}).always(function (data) {
+				$("#message").text(data.message);
+			});
 		}
+		
+		function newQuest(event) {
+			var game_id = $("#selected_game").val()
+			if (game_id) {
+				$.ajax({
+					url: host+"/editor/quest/",
+					type: "put",
+					data: {
+						game_id: game_id
+					}
+				}).done(function(data){
+					if (data.success) {
+						var list_node = $("#quest_list");
+						var qbox = $("<div>", {html: JSON.stringify(data.quest)});
+						list_node.append(qbox);
+					}
+				}).always(function (data) {
+					$("#message").text(data.message);
+				});
+			} else {
+				$("#message").text("select game first");
+			}
+		}
+
+		
+		function deleteGame(event) {
+			parent_node =  $(event.target).parent();
+			game_id = parent_node.attr("id");
+			$.ajax({
+				url: host+"/editor/game/",
+				type: "post",
+				data: {
+					"operation": "delete",
+					"game_id": game_id
+				}
+			}).done(function(data){
+				if (data.success) {
+					parent_node.parent().remove();
+					
+				}
+			}).always(function (data) {
+				$("#message").text(data.message);
+			});
+		}
+		
+	    function ingestGame2() {
+			$.ajax({
+			   url: host+"/editor/game/ingest2",
+			   type: 'PUT',
+			   data:{
+			    		access_token: sessionStorage.getItem("token")
+			    	},
+			   success: function(data) {
+			   $('#message').html(JSON.stringify(data));
+			   }
+			});
+	    }
 	</script>
 </html>

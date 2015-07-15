@@ -17,7 +17,7 @@ var User = require("../models/user");
 function ingest2 (user_id) {
 	var g = new Game();
 	g.metadata = {
-			"name": "IfGI-Demo Hunt",
+			"name": "Demo Spiel",
 			"description": "Folge einigen Wegpunkten und betrachte das GEO Gebäude von verschiedenen Seiten",
 			"category"		: ["Schnitzeljagd"], 
 			"owner": user_id,

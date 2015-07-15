@@ -445,12 +445,11 @@ module.exports = function(app,jwtauth) {
 
 
 	/** NEWITEM
-	*	iid : item id
 	*	gid : game id
 	*/
 	app.put("/editor/item",jwtauth.auth,function(req,res){
 		if (req.body.game_id){
-			itemController.newItem(req.params.iid, req.body.game_id, res);
+			itemController.newItem(req.body.game_id, res);
 		}
 	});
 
@@ -470,16 +469,10 @@ module.exports = function(app,jwtauth) {
 
 	/** EDITITEM
 	*	iid : item id
+	*	data (item object)
 	*/
-	app.post("/editor/item/:iid", jwtauth.auth, function(req,res){
-		var operation = req.body.operation;
-		if (operation == "name") {
-			var name = {};
-			if (req.body.name && req.body.name != "") {
-				name = req.body.name;
-			}
-			itemController.editItem(req.iid, name, req, res);
-		}
+	app.put("/editor/item/:iid", jwtauth.auth, function(req,res){
+		itemController.editItem(req.params.iid, req.body.data, res);
 	});
 
 
@@ -509,7 +502,7 @@ module.exports = function(app,jwtauth) {
 
 
 	/** NEWINTERACTION
-	*	qid : quest id
+	*	quest id: String
 	*/
 	app.put("/editor/interaction", jwtauth.auth, function(req,res){
 		if (req.body.quest_id){

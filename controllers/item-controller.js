@@ -18,7 +18,7 @@ error = function(res, message) {
 *		game the item is referenced to
 *	res	    : response
 */
-itemController.newItem = function(item_id, game_id, res) {
+itemController.newItem = function(game_id, res) {
 	// new item object
 	var newItem = new Item();
 
@@ -85,27 +85,26 @@ itemController.editItem = function(item_id, item_data, res) {
 			});
 		}
 		//take all the attributes of the input and push it into the db
-		mcopy = item.metadata;
 		for (key in item_data) {
 			value = item_data[key];
 			if (value) { //only change if provided and not the same as stored
-				if (value != mcopy[key]) {
-					mcopy[key] = value;
+				if (value != item[key]) {
+					item[key] = value;
 				}					
 			}
 		}
-		Item.metadata = mcopy;
-		Item.save(function(err) {
+
+		item.save(function(err) {
 			// error response
 			if (err) return res.json({
 				success:false,
 				message: "Can't save item."
-			});					
-		});
-		// success response
-		res.json({
-			success: true,
-			message: "Item successfully edited."
+			});	
+			// success response
+			res.json({
+				success: true,
+				message: "Item successfully edited."
+			});
 		});
 	});
 }

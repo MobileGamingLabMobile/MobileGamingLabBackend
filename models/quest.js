@@ -26,7 +26,8 @@ var questSchema = mongoose.Schema({
     },
     available :Boolean,
     started :Boolean,
-    finished :Boolean
+    finished :Boolean,
+    initial: Boolean
 });
 //methods ======================
 questSchema.plugin(deepPopulate);

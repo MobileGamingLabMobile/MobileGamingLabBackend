@@ -1,6 +1,7 @@
 var Quest = require("../models/quest");
 var Content = require("../models/content");
 var Game = require("../models/game");
+var QuestEvent = require("../models/questEvent");
 
 var questController = {};
 
@@ -29,22 +30,26 @@ questController.newQuest = function(game_id, user_id, res) {
 			});
 		}
 		description = new Content();
-		description.save(function (err, des){
-			nq.description = des._id;
-			nq.save(function(err, quest) {
-				game.components.quests.push(quest._id);
-				
-				game.save();
-				
+		description.save();
+		questEvent = new QuestEvent();
+		questEvent.save();
+		
+		nq.description = description;
+		nq.questEvent = questEvent;
+		nq.save(function(err, quest) {
+			game.components.quests.push(quest);
+			
+			game.save();
+			
+			quest.populate("description questEvent", function(err, q) {
 				res.json({
 					success: true,
 					message: "New Quest successfully created.",
-					quest: quest
+					quest: q
 				});
-			});
+			})
+			
 		});
-		
-		
 	});
 }
 
@@ -73,6 +78,19 @@ questController.editQuest = function(quest_id,object,res) {
 			if (value) { //only change if provided and not the same as stored
 				if (value != quest[key]) {
 					quest[key] = value;
+				}
+			}
+			
+			//if the quest is marked as initial add quest to initials in the game
+			if (key =="initial") {
+				if (value) {
+					Game.find({"components.quests":quest._id}, function(err, games){
+						var game = games[0];
+						if (game.components.initialQuests.indexOf(quest._id) < 0) {
+							game.components.initialQuests.push(quest);
+							game.save();
+						}
+					});
 				}
 				
 			}
