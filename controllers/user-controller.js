@@ -1,5 +1,6 @@
 var User = require('../models/user');
 var Game = require("../models/game");
+var GameSession = require("../models/gamesession");
 
 var userController = {};
 
@@ -166,6 +167,18 @@ userController.unsubscribe = function(user_id, game_id, res) {
 	//TODO check if subscribed
 	User.findById(user_id, function(err, user) {
 		var pos = user.games.subscribed.indexOf(game_id);
+		
+		GameSession.find({$and: [{"game":game_id},{"owner":user_id}]}).populate("players").exec(function(err, sessions){
+			var session = sessions[0];
+			if (err || !session) {
+				return error(res, "Database error while deleting")
+			}
+			if (session.owner._id != user._id) {
+				return error(res, "Can't delete game session. You are not the owner")
+			}
+			
+			session.remove();
+		});
 		
 		user.games.subscribed.splice(pos,1);
 		user.save();

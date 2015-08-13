@@ -60,4 +60,10 @@ gameSessionSchema.plugin(deepPopulate,{
 	}
 });
 
+gameSessionSchema.pre("remove",function(next){
+	for (var i = 0; i < this.players.length; i++) {
+		this.players[i].remove()
+	}
+})
+
 module.exports = mongoose.model('GameSession', gameSessionSchema);
