@@ -1,0 +1,359 @@
+<html>
+	<head>
+		<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
+	</head>
+	<body>
+		<fieldset>
+			<legend>Login</legend>
+			<div id = "menu" style="display: inline-block; vertical-align: top;">
+			<form id="loginForm">
+				<label>Email:</label>
+				<input type="text" name="email"></input><br/>
+				<label>Passwort:</label>
+				<input type="password" name="password"></input><br/>
+				<input type="submit" value="Absenden"></input>
+			</form>
+		</div>
+		</fieldset>
+		<div>
+			<fieldset>
+				<legend>User-Management</legend>
+				<button onClick="logout()">Logout</button>
+				<button onClick="getOwned()">Eigene Spiele</button>
+				<button onClick="ingestGame2()">Beispiel Spiel</button>
+			</fieldset>
+		</div>
+		<div id="games_owned">
+			<br/>
+			<div><label>Ausgewähltes Spiel:</label><input type="text" disabled=true id="selected_game"></input></div>
+			<fieldset>
+				<legend>Eigene Spiele</legend>
+				<div id="game_functions" style="display: inline;">
+					<button onClick="newGame()">Neues Spiel</button>
+				</div>
+				<div id="game_list"></div>
+			</fieldset>
+		</div>
+		<br/>
+		<fieldset>
+			<legend>Quests</legend>
+			<div id = "quest_functinos" style="display: inline;">
+				<button onClick="newQuest()">Neue Quest</button>
+			</div>
+			<div id="quest_list"></div>
+		</fieldset>
+		<br/>
+		<div>
+			<fieldset>
+				<legend>Aktionen</legend>
+				<fieldset>
+					<div id="actions_methods" style="display: inline-block;">
+						<div>
+							<label for="type">Aktionstyp:</label> 
+							<select name="type" id="new_action_type">
+								<option value="timeAction">Zeit</option>
+								<option value="progressAction">Fortschritt</option>
+								<option value="objectAction">Objekt</option>
+								<option value="groupAction">Gruppe</option>
+							</select><br/>
+							<button onClick="newAction()">Neue Aktion</button>
+						</div>
+					</div>
+				</fieldset>
+				<fieldset>
+					<div id="action_list"></div>
+				</fieldset>
+			</fieldset>
+		</div>
+		<div id="message"></div>
+	</body>
+	<script>
+		//var host = "http://giv-mgl.uni-muenster.de:8080";
+		var host = "http://localhost:8080";
+		
+		$(document).ready(function() {
+			$("#loginForm").submit(login);
+		});
+		
+		function login(event) {
+			event.preventDefault();	
+			var form = $(this);
+			var action = host+"/login";
+			method = "POST";
+			data   = form.serialize();
+			
+			$.ajax({
+				url : action,
+				type : method,
+				data : data
+			}).done(function (data) {
+				sessionStorage.setItem("token", data.token);
+				$.ajaxSetup({
+					beforeSend: function(xhr) {
+						xhr.setRequestHeader("x-access-token",sessionStorage.getItem("token"))
+					}
+				});
+			}).always(function (data) {
+				$("#message").text(data.message);
+			});
+		}
+		
+		function logout(event) {
+			$.ajax({
+				url: host+"/logout",
+				type: "post",
+				data: {
+					access_token: sessionStorage.getItem("token")
+				}
+			}).done(function(data){
+				if(data.success) {
+					sessionStorage.removeItem("token");
+					window.location.replace(host+"/");
+				}
+			}).always(function (data) {
+				$("#message").text(data.message);
+			});
+		}
+		
+		function getOwned(event) {
+			$.ajax({
+				url: host+"/user/games/owned",
+				type: "get"
+			}).done(function(data){
+				if (data.success) {
+					var list_node = $("#game_list");
+					list_node.empty();
+					for (index in data.games) {
+						
+						var game_div = addGameBox(data.games[index]);
+
+						list_node.append(game_div);
+					}
+				}
+			}).always(function (data) {
+				$("#message").text(data.message);
+			});
+		}
+		function deleteAction(event) {
+			parent_node =  $(event.target).parent();
+			action_id = parent_node.attr("id");
+			$.ajax({
+				url: host+"/editor/action/"+action_id,
+				type: "delete"
+			}).done(function(data){
+				if (data.success) {
+					parent_node.remove();
+				}
+			}).always(function (data) {
+				$("#message").text(JSON.stringify(data.message));
+			});
+		}
+		
+		function addGameBox(game) {
+			var game_div = $("<div>", {
+				id: game._id
+			});
+			for (mi in game.metadata) {
+				var row = $("<div>");
+				row.append("<label>"+mi+"</label>");
+				
+				//input
+				if (!(game.metadata[mi] instanceof Array)) {
+					var field
+					switch (typeof game.metadata[mi]) {
+						case "boolean":
+							field = $("<input>",{
+								type: "checkbox",
+								checked: game.metadata[mi]
+							});
+							
+							break;
+						default:
+							field = $("<input>",{
+								type: "text",
+								value: game.metadata[mi]
+							});
+							break;
+					}
+					row.append(field);
+				} else {
+					var select = $("<select>",{
+						size: game.metadata[mi].length,
+						multiple: true
+					});
+					for (bla in game.metadata[mi]) {
+						val = game.metadata[mi][bla];
+						var opt = $("<option>", {
+							text: val,
+							val: val,
+						});
+						select.append(opt);
+					}
+					row.append(select);
+				}
+				row.appendTo(game_div);
+			}
+			game_div.append($("<button>",{
+				text: "Bearbeiten",
+				click: selectGame
+			}));
+			game_div.append($("<button>",{
+				text: "Löschen",
+				click: deleteGame
+			}));
+			//put into a fieldset
+			fs = $("<fieldset>",{
+				style: "display: inline-block; padding:10px;font-weight: bold;"
+			});
+			fs.append($("<legend>",{
+				html: "ID: "+game._id,
+			}));
+			fs.append(game_div)
+			return fs;
+		}
+		
+		function selectGame(event) {
+			parent_node =  $(event.target).parent();
+			game_id = parent_node.attr('id');
+			$("#selected_game").val(game_id);
+			$("#action_list").empty();
+			$.ajax({
+				url: host+"/editor/"+game_id+"/actions",
+				type: "get"
+			}).done(function(data){
+				if (data.success) {
+					var list_node = $("#action_list");
+					for (i in data.actions) {
+						visualize_action(data.actions[i], list_node);
+					}
+					
+				}
+			}).always(function (data) {
+				$("#message").text(data.message);
+			});
+		}
+		
+		function newAction(event) {
+			$.ajax({
+				url: host+"/editor/action/",
+				type: "put",
+				data: {
+					type: $("#new_action_type").val(),
+					game_id: $("#selected_game").val()
+				}
+			}).done(function(data){
+				if (data.success) {
+					var list_node = $("#action_list");
+					visualize_action(data.action, list_node)
+				}
+			}).always(function (data) {
+				$("#message").text(data.message);
+			});
+		}
+		
+		function visualize_action (action, parent) {
+			//var action_div = $("<div>");
+			fs = $("<fieldset>",{
+				id: action._id,
+				style: "display: inline-block; padding:10px;"
+			});
+			$("<legend>",{
+				html: action._id
+			}).appendTo(fs);
+
+			$("<label>",{
+				html: "Typ:"
+			}).appendTo(fs);
+			$("<input>",{
+				type: "text",
+				disabled: true,
+				val: action.type
+			}).appendTo(fs);
+			fs.append("<br/>");
+			
+			del_button = $("<button>", {
+				text: "Lösche Aktion",
+				click: deleteAction
+			});
+			fs.append(del_button);
+			
+			//action_div.append(fs);
+			parent.append(fs);
+		}
+		
+		function newGame(event) {
+			$.ajax({
+				url: host+"/editor/game/",
+				type: "post",
+				data: {
+					"operation": "new"
+				}
+			}).done(function(data){
+				if (data.success) {
+					var list_node = $("#game_list");
+					var gbox = addGameBox(data.game);
+					list_node.append(gbox);
+				}
+			}).always(function (data) {
+				$("#message").text(data.message);
+			});
+		}
+		
+		function newQuest(event) {
+			var game_id = $("#selected_game").val()
+			if (game_id) {
+				$.ajax({
+					url: host+"/editor/quest/",
+					type: "put",
+					data: {
+						game_id: game_id
+					}
+				}).done(function(data){
+					if (data.success) {
+						var list_node = $("#quest_list");
+						var qbox = $("<div>", {html: JSON.stringify(data.quest)});
+						list_node.append(qbox);
+					}
+				}).always(function (data) {
+					$("#message").text(data.message);
+				});
+			} else {
+				$("#message").text("select game first");
+			}
+		}
+
+		
+		function deleteGame(event) {
+			parent_node =  $(event.target).parent();
+			game_id = parent_node.attr("id");
+			$.ajax({
+				url: host+"/editor/game/",
+				type: "post",
+				data: {
+					"operation": "delete",
+					"game_id": game_id
+				}
+			}).done(function(data){
+				if (data.success) {
+					parent_node.parent().remove();
+					
+				}
+			}).always(function (data) {
+				$("#message").text(data.message);
+			});
+		}
+		
+	    function ingestGame2() {
+			$.ajax({
+			   url: host+"/editor/game/ingest2",
+			   type: 'PUT',
+			   data:{
+			    		access_token: sessionStorage.getItem("token")
+			    	},
+			   success: function(data) {
+			   $('#message').html(JSON.stringify(data));
+			   }
+			});
+	    }
+	</script>
+</html>

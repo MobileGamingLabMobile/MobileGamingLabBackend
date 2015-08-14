@@ -1,0 +1,59 @@
+<div ng-controller="signUpController as  ctrSign">
+	<!-- content panel for registration-->
+	<nav class="top-bar" data-topbar role="navigation">
+		<div class="small-2 columns left">
+			<img src="img/unicorn01.png" width="60" height="60" style="margin:0px auto;display:block">
+		</div>
+	</nav>
+	<div class="panel">
+		<br><br>
+		<div class="large-12 centered columns">
+			<h2><b>Mobile Gaming Lab</b></h2>
+		</div>
+		<br>
+		<div class="row">
+			<div class="large-12 centered columns">
+				<h4>Registrierung</h4>
+			</div>
+		</div>
+		<br>
+		<ul class="large-block-grid-3">
+			<li>
+			</li>
+			<li>
+				<form name="signupform" novalidate>
+					<div data-alert class="alert-box alert" ng-show="error" >
+						{{message}}
+					</div>
+					<!-- email field. required. -->
+					<span style="color:red" ng-show="signupform.email.$invalid - email && signupform.email.$dirty">
+						Bitte geben Sie eine gültige E-mail Adresse an!
+					</span>
+					<input type="email" id="email" name="email" placeholder="E-mail" ng-model="email" required>
+					<!-- password field. required. -->
+					<span style="color:red" ng-show="(signupform.password.$invalid && signupform.password.$dirty)">
+						Bitte geben Sie ein gültiges Passwort an!
+					</span>
+					<span style="color:red" ng-show="notsame() && signupform.password2.$dirty && signupform.password.$dirty">
+						Die Passwörter stimmen nicht überein!
+					</span>
+					<span style="color:green" ng-hide="signupform.password2.$pristine || signupform.password2.$invalid || notsame()">
+						Die Passwörter stimmen überein!
+					</span><br>
+					<input type="password" id="password" name="password" placeholder="Password" ng-model="password" required>
+
+					<!-- password field again. required. -->
+					<input type="password" id="password2" name="password2" placeholder="Password Wiederholung" ng-model="password2" required>
+					<br>
+					<!-- Button for register -->
+					<a class="button small" ng-disabled="signupform.$invalid || notsame()" ng-click="submit()">Registrieren</a>
+					<div style="text-align: left;">oder <a href="#/">signup</a></div>
+				</form>
+
+			</li>
+			<li>
+
+			</li>
+		</ul>
+	</div>
+</div>

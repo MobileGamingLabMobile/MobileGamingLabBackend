@@ -1,0 +1,352 @@
+<html>
+<head>
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+<!--<script src="http://giv-mgl.uni-muenster.de:3030/socket.io/socket.io.js"></script> -->
+<script src="http://localhost:3030/socket.io/socket.io.js"></script>
+<script>
+	var host = "http://localhost:8080";
+	var sockethost = 'http://localhost:3030';
+	//var host = "http://giv-mgl.uni-muenster.de:3030/";
+	var socket;
+ 	function register(){
+ 	   $.ajax({
+ 	      url: host+"/signup",
+ 	      type: 'POST',
+ 	      data:{
+ 	 	        email: $("#email").val(),
+	    		password: $("#passwd").val()
+ 	       	},
+ 	      success: function(data) {
+ 	       var html = '<li>' + data.message + '</li>';
+ 	        
+ 	          		$('#message').html(html);
+ 	      }
+ 	   });
+ 	 	}
+ 	function writeMessage(data){
+        var html = '<li>' + data.message + '</li>';
+     
+        $('#message').html(html);
+    }
+    
+    function addOptions(games) {
+    	for(var i = 0; i < games.length; i++) {
+    		id = games[i]._id;
+    		name = games[i].metadata.name;
+    		$("#games").append(
+    			new Option(name, id)
+    		);
+    	}
+    }
+    
+    function addRoles(roles) {
+    	for(var i = 0; i < roles.length; i++) {
+    		id = roles[i]._id;
+    		name = roles[i].name;
+    		$("#roles").append(
+    			new Option(name,id)
+    		);
+    	}
+    }
+    
+    function addQuests(quests) {
+    	clearQuestList();
+    	for(var i = 0; i < quests.length; i++) {
+    		id = quests[i]._id
+    		name = quests[i].title;
+    		$("#available_quests").append(
+    			new Option(name,id)
+    		);
+    	}
+    }
+    
+    function clearList() {
+    	$("#games option").remove();
+    }
+    
+    function clearRoleList() {
+    	$("#roles option").remove();
+    }
+    
+    function clearQuestList() {
+    	$("#available_quests option").remove();
+    }
+    
+    function getSelected() {
+    	return $("#games option:selected").val();
+    }
+    
+    function getSelectedRole() {
+    	return $("#roles option:selected").val();
+    }
+    function getSelectedQuest() {
+    	return $("#available_quests option:selected").val();
+    }
+    
+    function selectRole() {
+    	var selRole = getSelectedRole();
+    	$.post(host+"/session/"+sessionStorage.getItem("session")+"/selectRole", {
+    		access_token: sessionStorage.getItem("token"),
+    		role_id: selRole
+    	}, function(data) {
+    		writeMessage(data);
+    		
+    		if (data.status == "selected") {
+    			connectToSocket();
+    		}
+			addQuests(data.playerInstance.availableQuests);
+			
+    		console.log("Role selected: "+JSON.stringify(data.playerInstance));
+    	});
+    }
+    
+    
+    function activateQuest() {
+    	socket.emit("Quest", {
+    		operation: "active",
+    		quest: getSelectedQuest()
+    	})
+    }
+    function finishQuest() {
+    	socket.emit("Quest", {
+    		operation: "finish",
+    		quest: getSelectedQuest()
+    	})
+    }
+    
+    function play() {
+    	$.post(host+"/"+getSelected()+"/play", {
+    		access_token: sessionStorage.getItem("token")
+    	}, function(data) {
+    		if(data.success) {
+    			switch (data.status) {
+    				case "started":
+    					var gameSession = data.gameSession;
+		    			var roles = data.gameSession.roles;
+		    			clearRoleList();
+		    			addRoles(roles);
+		    			sessionStorage.setItem("session",data.gameSession._id);
+		    			if (data.gameSession && data.gameSession.players.length > 0) {
+		    				connectToSocket();
+		   			    }
+    					break;
+    				case "selected":
+    				case "resume":
+    					addQuests(data.playerInstance.availableQuests);
+		    			sessionStorage.setItem("session",data.playerInstance.gameSession);
+		    			connectToSocket();
+						console.log("Game resumed: "+JSON.stringify(data.playerInstance))
+    					break;
+    			}
+    		}
+    		writeMessage(data);
+    	})
+    }
+    
+    function connectToSocket() {
+    	if (socket) socket = null;
+    			
+		socket = io.connect(sockethost);
+		socket.emit("authenticate",{
+			"access_token":sessionStorage.getItem("token"),
+			"gameSessionID":sessionStorage.getItem("session")
+		 });
+		socket.on('message', writeMessage);
+		socket.on('Quest',function(data){
+			switch(data.operation) {
+				case "finished": 
+					$("#"+data.quest._id).remove();
+					break;
+				case "available":
+					addQuests([data.quest]);
+					break;
+			}		
+			$("#questChannel").text("Quest Event from server:"+JSON.stringify(data,null,"\t"));
+			
+		});
+		socket.on('MapItem',function(data){		
+			$("#mapItemChannel").text("MapItem Event from server:\n"+JSON.stringify(data,null,"\t"));
+			
+		});
+		socket.on('QuestEvent',function(data){		
+			$("#questEventChannel").text("QuestEvent Event from server:\n"+JSON.stringify(data,null,"\t"));
+			
+		});
+    }
+    
+    function removeSession() {
+    
+    	$.post(host+"/session/"+sessionStorage.getItem("session")+"/remove", {
+    		access_token: sessionStorage.getItem("token")
+    	}, function(data) {
+    		writeMessage(data)
+    	});
+    }
+    
+    function login() {
+	    $.post(host+"/login",{
+	    	email: $("#email").val(),
+	    	password: $("#passwd").val()
+	    },function(data){
+	    	var html = "<li>"+data.message+"</li>";
+	    	if(data.success) {
+	    		sessionStorage.setItem("token",data.token);
+		    	
+	     		$.get(host+"/user/games/subscribed?access_token="+sessionStorage.getItem("token"),
+	     			function(data){
+	     				if (data.success) {
+	     					clearList();
+	     					addOptions(data.games);
+	     				}
+	     			}
+	     		);
+	        	
+	    	}
+	    	$('#message').html(html);
+	    });
+    }
+    function testLocationCondition() {
+	    var x =  $("#coordx").val();
+	    var y = $("#coordy").val();
+	    var data = {
+    		x:x,
+    		y: y
+    	};
+    	
+    	socket.emit("Player", data);
+    	$("#playerChannel").text(JSON.stringify(data,null,"\t"));
+    }
+    function clearDatabase() {
+    	socket.emit("clearDatabase", {
+    	
+    	});
+    }
+   
+	function ingestGame() {
+		$.ajax({
+		   url: host+"/editor/game/ingest",
+		   type: 'PUT',
+		   data:{
+		    		access_token: sessionStorage.getItem("token")
+		    	},
+		   success: function(data) {
+		   $('#message').html(JSON.stringify(data));
+		   }
+		});
+    }
+    function ingestGame2() {
+		$.ajax({
+		   url: host+"/editor/game/ingest2",
+		   type: 'PUT',
+		   data:{
+		    		access_token: sessionStorage.getItem("token")
+		    	},
+		   success: function(data) {
+		   $('#message').html(JSON.stringify(data));
+		   }
+		});
+    }
+  	function subscribeGame(){
+      $.ajax({
+	   url: host+"/games/published",
+	   type: 'GET',
+	   data:{
+	    		access_token: sessionStorage.getItem("token")
+	    	},
+	   success: function(data) {
+	    var html = '<li>' + data.message + '</li>';
+	     html = html+'<li>' + data.games[0]._id + '</li>';
+	     var gameID=data.games[0]._id;
+        console.log('gameID'+gameID)
+	     $.ajax({
+		   url: host+"/games/"+gameID,
+		   type: 'POST',
+		   data:{
+		    		access_token: sessionStorage.getItem("token"),
+		    		operation:'subscribe'
+		    	},
+		   success: function(data) {
+		    var html = '<li>' + data.message + '</li>';
+		       		$('#message').html(html);
+		   }
+		});
+	       		
+	   }
+	});
+      }
+</script>
+</head>
+<body>
+	<fieldset>
+		<legend>Login</legend>
+		<label>Email:</label>
+		<input type="text" id="email"></input><br/>
+		<label>Password:</label>
+		<input type="password" id="passwd"></input><br/>
+		<button onClick="login()">Login</button>
+		<button onClick="register()">Register User</button><br/>
+	</fieldset>
+	
+	<fieldset>
+		<legend>Game Selection (Subscribed Games)</legend>
+		<select multiple id="games"></select><br/>
+		<button onClick="play()">Play Game</button><br/>
+		<button onClick="removeSession()">Delete Session</button><br/>
+	</fieldset>
+	<fieldset>
+		<legend>Role Selection</legend>
+		<select multiple id="roles"></select><br/>
+		<button onClick="selectRole()">Select Role</button><br/>
+	</fieldset>
+	<fieldset>
+		<legend>Utilities</legend>
+		<button onClick="ingestGame()">Create Example Game</button>
+		<button onClick="ingestGame2()">Create Example Game 2</button>
+		<button onClick="subscribeGame()">Subscribe Game</button>
+	</fieldset>
+	<fieldset>
+		<legend>Available Quests</legend>
+		<select multiple id="available_quests"></select><br/>
+		<button onClick="activateQuest()">Starte Quest</button>
+		<button onClick="finishQuest()">Beende Quest</button>
+	</fieldset>
+	<fieldset>
+		<legend>Socket</legend>
+		<label>X: </label>
+		<input type="text" id="coordx" value=7.22></input><br/>
+		<label>Y: </label>
+		<input type="text" id="coordy" value="52"></input><br/>
+		<button onClick="testLocationCondition()">Test LocationCondition</button><br/>
+	</fieldset>
+	<fieldset>
+		<legend>Server-Messages</legend>
+		<ul id="message"></ul>	
+	</fieldset>
+	<fieldset>
+		<legend>Channel Activities</legend>
+		<div style="display:inline-block;">
+			<fieldset>
+				<legend>Channel Player</legend>
+				<div id="playerChannel"></div>
+			</fieldset>
+			<fieldset>
+				<legend>Channel Quest</legend>
+				<div id="questChannel"></div>
+			</fieldset>
+			<fieldset>
+				<legend>Channel MapItem</legend>
+				<div id="mapItemChannel"></div>
+			</fieldset>
+			<fieldset>
+				<legend>Channel QuestEvent</legend>
+				<div id="questEventChannel"></div>
+			</fieldset>
+		</div>
+	</fieldset>
+	<pre style="height:150px;overflow-y: scroll;"id="output1"></pre>
+		<pre style="height:150px;overflow-y: scroll;"id="output2"></pre>
+	<button onClick="clearDatabase()">Clear Database</button><br/>
+	<br/>
+	
+</body>
+</html>

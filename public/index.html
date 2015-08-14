@@ -1,0 +1,42 @@
+<!-- index.html -->
+<!DOCTYPE html>
+<html ng-app="App">
+    <head>
+        
+        <link rel=icon href=favicon.ico sizes="16x16" type="image/png">
+
+        <link rel="stylesheet" href="lib/css/foundation.css">
+        
+        <!-- SCROLLS -->
+        <script src="lib/js/jquery.js"></script>
+		<!-- load jquery plugins-->
+		<script src="lib/js/jquery.rateyo.js"></script>
+		<link rel="stylesheet" href="lib/css/jquery.rateyo.css"/>
+		<script src="lib/js/jquery.dataTables.js"></script>
+		<link rel="stylesheet" href="lib/css/jquery.dataTables.css"/>
+		
+        <!-- load foundation -->
+        <script src="lib/js/foundation.js"></script>
+        <script src="lib/js/foundation.reveal.js"></script>
+        <!-- SPELLS -->
+        <!-- load angular and angular route via CDN -->
+        <script src="lib/js/angular.min.js"></script>
+        <script src="lib/js/angular-route.min.js"></script>
+
+        <script src="js/route.js"></script>
+        <script src="js/login.js"></script>
+        <script src="js/gameinfo.js"></script>
+        <script src="js/signup.js"></script>
+        <script src="js/gameselect.js"></script>
+        <script src="js/profile.js"></script>
+        <script src="js/changeprofile.js"></script>
+		<script src="js/impressum.js"></script>
+
+    </head>
+    <body>
+        <!-- MAIN CONTENT AND INJECTED VIEWS -->
+        <div id="main">
+            <div ng-view></div>
+        </div>
+    </body>
+</html>

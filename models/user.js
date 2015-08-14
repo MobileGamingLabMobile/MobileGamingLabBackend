@@ -1,7 +1,7 @@
 // app/models/user.js
 // load the things we need
-var mongoose = require('mongoose');
 var bcrypt   = require('bcrypt-nodejs');
+var game    = require('./game');
 
 // define the schema for our user model
 var userSchema = mongoose.Schema({
@@ -12,19 +12,34 @@ var userSchema = mongoose.Schema({
     	country		: String,
     	city		: String,
     	avatar		: Buffer
-    	
     },
-    login			: {
-    	email        : {
-        	type: String, //mandatory
-        	unique: true,
-        	required: true
+
+    login                       : {
+        email                   : {
+            type                : String, //mandatory
+            unique              : true,
+            required            : true
         }, //mandatory for registration
-        password     : String,
-        registration: Date, //will be set on registration
-    	session_key : String, //will be set on login
-    	last	:	Date //will be set on login
+        password                : {
+        	type : String,
+        	required : true
+        },
+        registration            : Date, //will be set on registration
+        session_key             : String, //will be set on login and removed on logout
+        last                    : Date //will be set on login
+    },
+
+    games           :{
+        owned       : [{
+			type:  mongoose.Schema.Types.ObjectId,
+			ref: 'Game'
+		}], // array of the games the user has product or is producing
+        subscribed  : [{
+			type:  mongoose.Schema.Types.ObjectId,
+			ref: 'Game'
+		}], // array of the games the user has subscribed
     }
+
 });
 
 // methods ======================

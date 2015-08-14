@@ -1,6 +1,22 @@
-var User = require('../models/user');
+var userController = require("../controllers/user-controller.js");
 
 module.exports = function(app, passport,jwtauth) {
+	/*
+	 * Hint: Every function in the execution chain carries the request and the request
+	 * document. Respectively "req" and "res".
+	 * The handling controller functions will use the response document to create the
+	 * response message from there. This way it is easier to see which routes are stated
+	 * and where they are handled.
+	 */
+	
+	/**
+	 * This function is used as  a middleware function in express for the login. It means
+	 * that the request document (req), the response document (req) and the callback.
+	 * function (next) are passed as parameters.
+	 * @param req the request document
+	 * @param res the response document
+	 * @param next the callback function
+	 */
 	 function login(req, res, next) {
 	  	  passport.authenticate('local-login', function(err, token, info) {
 			    if (err) {
@@ -17,6 +33,10 @@ module.exports = function(app, passport,jwtauth) {
 		  })(req,res,next);
 	  }
 	  
+	 /**
+	  * The signup function behaves as a express middleware function. It calls the
+	  * assigned passport signup function.
+	  */
 	  function signup(req,res,next){ 
 	  	passport.authenticate('local-signup', function(err,user,info){
 	  		if (err) {
@@ -37,114 +57,96 @@ module.exports = function(app, passport,jwtauth) {
     // =====================================
     // LOGIN ===============================
     // =====================================
-    //process the login form
+    /**
+     * This route listens on HTTP POST at "/login" and calls the implemented 
+     * login function. The parameters are either passed in the request body as a JSON
+     * object. In either case this object contains the parameters "success" (boolean)
+     * and "message" (string). If the signup and login was successful then the object contains
+     * also the parameters "token" (string) and "expires" (date).
+     * 
+     * @param email The email of the user as string
+     * @param password The password of the user as string
+     * @return JSON object
+     */
       app.post('/login', login);
 
     // =====================================
     // SIGNUP ==============================
     // =====================================
-    // process the signup form
+    /**
+     * This route listens on HTTP POST at "/signup" and calls first the signup function
+     * and if it is successful the login is called. The function return a JSON object 
+     * to the client. In either case this object contains the parameters "success" (boolean)
+     * and "message" (string). If the signup and login was successful then the object contains
+     * also the parameters "token" (string) and "expires" (date).
+     * 
+     * @param email The email of the user as string
+     * @param password The password of the user as string
+     * @return JSON object
+     */
     app.post('/signup', signup,login);
 
     // =====================================
     // PROFILE SECTION =====================
     // =====================================
-    // we will want this protected so you have to be logged in to visit
-    // we will use route middleware to verify this (the isLoggedIn function)
+    /**
+     * This route listens on HTTP GET at "/profile". For accessing the profile site
+     * the user needs to be authenticated which is checked before the controller
+     * function is called. For the authentication the access token is required that can be obtained after
+     * the login. It can be stated either in the header under the parameter "x-access-token" or in the
+     * document body at "access_token".
+     * @param access_token The token obtained after login as string.
+     */
     app.get('/profile', jwtauth.auth, function(req, res) {
-    	User.findById(req.user._id,function(err, user) {
-			if (err) {
-				return res.json({
-					success: false,
-					message: "Private profile not available."
-				});
-			}
-			var user = {};
-			user.profile = req.user.profile;
-			user.login = {};
-			user.login.email = req.user.login.email;
-			user.login.registration = req.user.login.registration;
-			user.login.last = req.user.login.last;
-			
-			return res.json({
-				success: true,
-				message: "Private profile successfully loaded.",
-				user: user
-			});
-    	});
+    	userController.getOwnProfile(req.user._id, res);
     });
     	
-    //public profile view with condition to be logged in
+    /**
+     * This route listens on HTTP GET at "/profile/:uid" where the :uid needs to be replaces
+     * by a valid user id. This route also needs authentication. This profile is the public
+     * profile which can be accessed to all registered users.
+     * 
+     * @param access_token The token obtained after login as string.
+     * @return JSON object
+     */
     app.get('/profile/:uid', jwtauth.auth, function(req, res){
-
-		User.findById(req.params.uid, function(err, user) {
-			if (err) {
-				return res.json({
-					success: false,
-					message: "Public profile not available. Reason undefined."
-				});
-			}
-			var resUser = {};
-			resUser.profile = user.profile;
-			
-			return res.json({
-				success: true,
-				message: "Public profile successfully loaded.",
-				user: resUser
-			});
-	    });
+    	user_id = req.params.uid;
+    	userController.getProfile(user_id, res);
     });
     // =====================================
     // Edit Profile ========================
     // =====================================
+    /**
+     * This function delegates the editProfile request to the designated controller class
+     * 
+     * @param access_token The token obtained after login as string.
+     * @param operation Allowed values are "profile", "avatar" and "login" (avatar and login are not implemented at the moment)
+     * @param name The name of the user (optional)
+     * @param profession The profession of the user (optional)
+     * @param country The country of a user (optional)
+     * @param city The city of a user (optional)
+     * @param JSONObject about the status
+     */
     app.post('/profile', jwtauth.auth, function(req,res) {
-    	var User = require('../models/user');
-    	if (req.body.operation === 'profile') {
-    		console.log("in operation profile")
-    		User.findById(req.user._id, function (err, user){
-        		var result = {};
-        		if (err) {
-        			result.message = err;
-        		}
-        		if (req.body.name != user.profile.name) {
-        			req.user.profile.name = user.profile.name = req.body.name;
-        		}
-        		if (user.profile.profession != req.body.profession) {
-        			req.user.profile.profession = user.profile.profession = req.body.profession;
-        		}
-        		if (user.profile.country != req.body.country) {
-        			req.user.profile.country = user.profile.country = req.body.country;
-        		}
-        		if (user.profile.city != req.body.city) {
-        			req.user.profile.city = user.profile.city = req.body.city;
-        		}
-        		var message = user.save(function(err){
-        			if (err) {
-        				result.message = "Can't change user.";
-        			}
-        		});
-        		if (message) {
-        			result.success = false;
-        			result.message = message;
-        		} else {
-        			result.success = true;
-        			
-        			//don't return everything of the user
-        			var selUser = {};
-        			selUser.profile = req.user.profile;
-        			selUser.login = {};
-        			selUser.login.email = req.user.login.email;
-        			selUser.login.last = req.user.login.last;
-        			selUser.login.registration = req.user.login.registration;
-        			
-        			result.user = selUser;
-        			result.message = "User successfully updated.";
-        		}
-        		return res.json(result);
-        	});
+    	var operation = req.body.operation;
+    	if (operation == "profile") {
+	    	var profile = {};
+	    	if (req.body.name && req.body.name != "") {
+				profile.name = req.body.name;
+			}
+			if (req.body.profession && req.body.profession != "") {
+				profile.profession = req.body.profession;
+			}
+			if (req.body.country && req.body.country != "") {
+				profile.country = req.body.country;
+			}
+			if (req.body.city && req.body.city != "") {
+				profile.city = req.body.city;
+			}
+			userController.editProfile(req.user._id,profile, req, res);
     	}
     	
-    	if (req.body.operation === 'avatar') {
+    	if (operation === 'avatar') {
     		return res.json({
     			success: false,
     			user : req.user,
@@ -152,7 +154,7 @@ module.exports = function(app, passport,jwtauth) {
     		});
     	}
     	
-    	if (req.body.operation === 'login') {
+    	if (operation === 'login') {
     		return res.json({
     			success: false,
     			user : req.user,
@@ -160,41 +162,55 @@ module.exports = function(app, passport,jwtauth) {
     		});
     	}
     });
-
+    
+    /**
+     * This route delegates the request for a list of the owned games of a user.
+     * 
+     * @param access_token The token obtained after login as string.
+     */
+    app.get("/user/games/owned", jwtauth.auth,function(req, res) {
+    	userController.getOwnedGames(req.user.id, res);
+    });
+    
+    /**
+     * This method delegates the request for all own subscribed games.
+     * 
+     * @param access_token The token obtained after login as string.
+     * @return JSONObject
+     */
+    app.get("/user/games/subscribed", jwtauth.auth,function(req, res) {
+    	userController.getSubscribedGames(req.user.id, res);
+    });
+    
+    /**
+     * This method delegates the request for retrieving all published games of a user.
+     * @param access_token
+     * @return JSONObject
+     */
+    app.get("/user/games/owned/:owner", jwtauth.auth,function(req, res) {
+    	userController.getOwnedPublishedGames(req.params.owner, res);
+    });
+    
+    /**
+     * This method delegates the request for all subscribed games of an user.
+     * @param access_token
+     * @return JSONObject
+     */
+    app.get("/user/games/subscribed/:owner", jwtauth.auth,function(req, res) {
+    	userController.getSubscribedGames(req.params.owner, res);
+    });
     
     // =====================================
     // LOGOUT ==============================
     // =====================================
+    /**
+     * This function delegates the logout request.
+     * 
+     * @param access_token
+     * @return JSONObject
+     */
     app.post('/logout', jwtauth.auth, function(req, res) {
-    	var User = require('../models/user');
-    	User.findById(req.user._id,function(err, user) {
-    		if (err) { 
-			return res.json({
-    				success: false,
-    				message: err
-			});
-		}
-    		
-    		user.login.session_key = "";
-    		user.save(function(err){
-    			if (err) {
-    				return res.json({
-						success: false,
-						message: "Can't delete session key at logout."
-					});
-    			}
-    			
-				res.json({
-	    				success: true,
-	    				message: "Successfully logged out."
-				});
-    		});
-    	});
+    	userController.logout(req.user._id,res);
     });
     
-    app.get('/loginTest', jwtauth.auth, function(req,res){
-    	res.json({
-    		message: "You did it!"
-		});
-    });
 };

@@ -1,24 +1,28 @@
 {
   "name": "mgl-backend",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "private": true,
   "scripts": {
     "start": "node app.js"
   },
-  "dependencies" : {
-	    "express" : "~4.0.0",           
-	    "ejs" : "~0.8.5",               
-	    "mongoose" : "~3.8.1",          
-	    "passport" : "~0.1.17",         
-	    "passport-local" : "~0.1.6",
-	    "connect-flash" : "*",
-	    "bcrypt-nodejs" : "latest",
-	    "morgan": "~1.0.0",
-	    "body-parser": "~1.0.0",
-	    "cookie-parser": "~1.0.0",
-	    "method-override": "~1.0.0",
-	    "express-session": "~1.0.0",
-	    "jwt-simple" : "*",
-	    "moment" : "*"
-  }	
+  "dependencies": {
+    "bcrypt-nodejs": "latest",
+    "body-parser": "~1.0.0",
+    "connect-flash": "*",
+    "cookie-parser": "~1.0.0",
+    "ejs": "~0.8.5",
+    "express": "~4.0.0",
+    "express-session": "~1.0.0",
+    "jwt-simple": "*",
+    "log4js": "*",
+    "method-override": "~1.0.0",
+    "moment": "*",
+    "mongoose": "~3.8.1",
+    "mongoose-deep-populate": "*",
+    "morgan": "~1.0.0",
+    "passport": "~0.1.17",
+    "passport-local": "~0.1.6",
+    "socket.io": "*",
+    "synchronize": "*"
+  }
 }

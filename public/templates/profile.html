@@ -1,0 +1,66 @@
+<div class="wrapper" ng-controller="profileController
+            as ctrProfile">
+    <nav class="top-bar" data-topbar role="navigation">
+        <div class="small-2 columns left">
+            <img src="img/unicorn01.png" width="60" height="60" style="margin:0px auto;display:block">
+        </div>
+        <div class="small-2 columns right">
+            <a ng-click="logout()" ng-show="userID"><img src="img/logout.svg" width="35" height="35" style="margin:3px auto;display:block"></a>
+        </div>
+        <div class="small-2 columns right">
+            <a href="#gameselection"><img src="img/gameselect_icon.svg" width="40" height="40" style="margin:3px auto;display:block"></a>
+        </div>
+        <div class="small-2 columns right">
+			<!-- add link of the editor -->
+            <a href="#profile"><img src="img/editor_icon.svg" width="40" height="40" style="margin:3px auto;display:block"></a>
+        </div>
+    </nav>
+    <header ng-init="ctrProfile.loaduser()">
+        <div class="panel" >
+            <br><br>
+            <div data-alert class="alert-box alert" ng-show="error" >
+                {{message}}
+            </div>
+            <!--Benutzerinformationen-->
+            <ul class="large-block-grid-2">
+                <li>
+                    <ul class="large-block-grid-2">
+                        <li>
+                            <img src="img/profilbild.svg" width="150" height="150" style="margin:10px auto;display:block">
+                        </li>
+                        <li>
+                            <p><b>{{users.profile.name}}</b></p>
+                            {{users.profile.profession}} <br>
+                            {{users.profile.country}} <br>
+                            {{users.profile.city}}<br><br>
+                            <div class="center">
+                                <a href="#changeProfile" class="button radius tiny expand" ng-show="userID">Profil bearbeiten</a>
+                            </div>
+                        </li>
+                    </ul>
+                </li>
+                <li>
+                    <div class="main" ng-init="ctrProfile.loadSgame()">
+                        <div class="panel">
+                            <dl class="sub-nav">
+                                <dd ng-class="{ active: ctrProfile.isSelected(1)}">
+                                    <a class="button radius" ng-click="ctrProfile.loadSgame()">Abonnements</a>
+                                </dd>
+                                <dd ng-class="{ active: ctrProfile.isSelected(2)}">
+                                    <a class="button radius" ng-click="ctrProfile.loadOgame()">Erstellt</a>
+                                </dd>
+                            </dl>
+                            <!-- table for subscribed games-->
+                            <div id="tab01" class="panel ng-hide" ng-show="ctrProfile.isSelected(1)">
+                            </div>
+                            <!-- table for owned games-->
+                            <div id="tab02" class="panel ng-hide" ng-show="ctrProfile.isSelected(2)">
+                            </div>
+                        </div>
+                    </div>
+                </li>
+            </ul>
+           <a href="#impressum">Hilfe</a>
+        </div>
+    </header>
+</div>

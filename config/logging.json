@@ -1,0 +1,17 @@
+{
+	"appenders":[
+		{
+			"type":"console",
+			"layout":{
+				"type":"pattern",
+				"pattern":"%d %p %c - %m"
+			}
+		}
+	],
+	"levels":{
+		"channel":"ERROR",
+		"testValues_Condition":"ERROR",
+		"progressController":"ERROR",
+		"models":"ERROR"
+	}
+}

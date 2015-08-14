@@ -1,0 +1,70 @@
+<div class="wrapper"  ng-controller="changeProfileController">
+    <nav class="top-bar" data-topbar role="navigation">
+        <div class="small-2 columns left">
+            <img src="img/unicorn01.png" width="60" height="60" style="margin:0px auto;display:block">
+        </div>
+        <div class="small-2 columns right">
+            <a ng-click="logout()" ng-show="userID"><img src="img/logout.svg" width="35" height="35" style="margin:3px auto;display:block"></a>
+        </div>
+        <div class="small-2 columns right">
+            <a href="#gameselection"><img src="img/gameselect_icon.svg" width="40" height="40" style="margin:3px auto;display:block"></a>
+        </div>
+        <div class="small-2 columns right">
+            <a href="#profile"><img src="img/profilbild.svg" width="40" height="40" style="margin:3px auto;display:block"></a>
+        </div>
+    </nav>
+    <header>
+        <div class="panel">
+            <div class="row">
+                <div class="small-12 columns">
+                    <h3>Benutzerangaben ändern</h3>
+                </div>
+                <div class="small-3 columns">
+                    <!-- <a href="#profile" class="button radius tiny expand">Profil löschen</a> -->
+                </div>
+            </div>
+            <!--Benutzerinformationen-->
+            <ul class="small-block-grid-1 medium-block-grid-1 large-block-grid-2">
+                <li>
+                    <form action="#" method="post" enctype="multipart/form-data">
+                        <img src="img/profilbild.svg" width="150" height="150" style="margin:0px auto;display:block">
+                        <!--<input name="Datei" type="file" accept="image/*" />
+                        <a href="#" class="button radius tiny">Hochladen</a>-->
+                    </form>
+                </li>
+                <li>
+                    <form name="profileform" novalidate>
+                        <div data-alert class="alert-box alert" ng-show="error" >
+                            {{message}}
+                        </div>
+                        <h4>Profil bearbeiten</h4>
+                        <input type="text" ng-model="newName" placeholder="Name"/>
+                        <input type="text" ng-model="newProfession" placeholder="Beruf"/>
+                        <input type="text" ng-model="newCountry" placeholder="Land"/>
+                        <input type="text" ng-model="newCity" placeholder="Stadt"/>
+                        <a class="button radius tiny " ng-click="submitProfile()" >Profil speichern</a>
+                    </form>
+<!--
+                    <h4>Passwort ändern</h4>
+                    <form name="loginform" novalidate>
+                        <!-- Serverseitig noch nicht implementiert -->
+<!--                        <span style="color:red" ng-show="loginform.newEmail.$invalid - email && loginform.newEmail.$dirty">
+                            Bitte geben Sie eine gültige E-mail Adresse an!
+                        </span>
+                        <input type="email" name="newEmail" ng-model="newEmail" placeholder="E-mail"/>
+                        <input type="password" ng-model="oldPassword" placeholder="Altes Passwort"/>
+                        <span style="color:red" ng-show="changeProfilectr.notsame() && loginform.newPassword2.$dirty">
+                            Die Passwörter stimmen nicht überein!
+                        </span>
+                        <input type="password" name="newPassword" ng-model="newPassword" placeholder="Neues Passwort"/>
+                        <input type="password" name="newPassword2" ng-model="newPassword2" placeholder="Wiederholung des neuen Passwortes"/>
+                        <a class="button radius tiny " ng-click="submitLogin()" ng-disabled="changeProfilectr.notsame()" >Login speichern</a>
+                    </form>  
+-->
+                </li>
+            </ul>
+            <br>
+            <a href="#impressum">Hilfe</a>
+        </div>
+    </header>
+</div>
