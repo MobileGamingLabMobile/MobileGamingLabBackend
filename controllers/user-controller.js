@@ -4,6 +4,15 @@ var GameSession = require("../models/gamesession");
 
 var userController = {};
 
+/**
+ * Finds and sends back the own profile of a user as part of the status object under
+ * the key "user".
+ * 
+ * @param id The user id
+ * @param res The response document
+ * 
+ * @memberOf userController
+ */
 userController.getOwnProfile = function(id, res) {
 	User.findById(id,function(err, u) {
 		if (err) {
@@ -29,6 +38,16 @@ userController.getOwnProfile = function(id, res) {
 	});
 }
 
+/**
+ * Fetches the profile of an user from the database. It will return the user.profile under the
+ * key "user".
+ * 
+ * @param id the user id
+ * @param res Response document
+ * @return JSON document about status and the user profile 
+ * 
+ * @memberOf userController
+ */
 userController.getProfile = function(id, res) {
 
 	User.findById(id, function(err, user) {
@@ -50,6 +69,18 @@ userController.getProfile = function(id, res) {
     });
 }
 
+/**
+ * With this function we can edit the user profile. Use one of the optional parameter
+ * to pass information to the system. At the end the client will receive the status object 
+ * with a copy of the modified user under the key "user"
+ * 
+ * @param id The user id to be looked up
+ * @param profile All the profile information that needs change in a JSONobject
+ * @param req The request document
+ * @param res The response document
+ * 
+ * @memberOf userController
+ */
 userController.editProfile = function(id, profile, req, res) {
 	User.findById(req.user._id, function (err, user){
 		var result = {};
@@ -94,6 +125,15 @@ userController.editProfile = function(id, profile, req, res) {
 	});
 }
 
+/**
+ * This function logs out the user stated by the id and erases the access_token stored in
+ * the database. It will send back the status object to the client.
+ * 
+ * @param id The user id
+ * @param res the response document
+ * 
+ * @memberOf userController
+ */
 userController.logout = function(id, res) {
 
 	User.findById(id,function(err, user) {
@@ -120,6 +160,15 @@ userController.logout = function(id, res) {
 	});
 }
 
+/**
+ * This method retrieves all owned games by a user as an information services and sends back the 
+ * status object with an array of games (without components) under the key "games".
+ * 
+ * @param user_id The user id
+ * @param res the response document
+ * 
+ * @memberOf userController
+ */
 userController.getOwnedGames = function(user_id, res) {
 	Game.find().where('metadata.owner').equals(user_id).select("-components").exec(function(err, games){
 		res.json({
@@ -130,6 +179,15 @@ userController.getOwnedGames = function(user_id, res) {
 	})
 }
 
+/**
+ * Lists all the published games that a user owns and sends them back to the client as part of
+ * the status document under the key "games" as an array of game objects without the components.
+ * 
+ * @param user_id The user id
+ * @param res the response document
+ * 
+ * @memberOf userController
+ */
 userController.getOwnedPublishedGames = function(user_id, res) {
 	Game.find().and([{"metadata.owner": user_id},{"metadata.published": true}]).select("-components").exec(function(err, games){
 		res.json({
@@ -140,6 +198,14 @@ userController.getOwnedPublishedGames = function(user_id, res) {
 	})
 }
 
+/**
+ * Retrieves all subscribed games of a user and sends back the array of games.
+ * 
+ * @param user_id The user id
+ * @param res the response document
+ * 
+ * @memberOf userController
+ */
 userController.getSubscribedGames = function(user_id,res) {
 	User.findById(user_id).populate("games.subscribed").exec(function(err, user) {
 		res.json({
@@ -150,6 +216,15 @@ userController.getSubscribedGames = function(user_id,res) {
 	});
 }
 
+/**
+ * Subscribes a user to a game and sends back the status object.
+ * 
+ * @param user_id The user id
+ * @param game_id The game id
+ * @param res the response document
+ * 
+ * @memberOf userController
+ */
 userController.subscribe = function(user_id, game_id, res) {
 	//TODO check if already subscribed
 	User.findById(user_id, function(err, user) {
@@ -163,6 +238,15 @@ userController.subscribe = function(user_id, game_id, res) {
 	})
 }
 
+/**
+ * Unsubscribes a user from a game and sends back the status object
+ * 
+ * @param user_id the user id
+ * @param game_id the game id
+ * @param res The response document
+ * 
+ * @memberOf userController
+ */
 userController.unsubscribe = function(user_id, game_id, res) {
 	//TODO check if subscribed
 	User.findById(user_id, function(err, user) {

@@ -24,48 +24,43 @@ module.exports = function(app,jwtauth) {
 	 */
 	
 	
-	/**
-	 * This route will open the editor view, which is also very basic for now.
+	/*
+	 * This route will open the editor view, which is  very basic for now.
 	 */
-	app.get("/editor",function(req,res){
-		res.render("editor.html");
-	});
+//	app.get("/editor",function(req,res){
+//		res.render("editor.html");
+//	});
 	
-	/**
+	/*
 	 * For demonstration purposes this route will ingest an example game into the
 	 * database.
 	 * 
 	 * param:
 	 * access_token: String
 	 */
-	app.put("/editor/game/ingest", jwtauth.auth,function(req,res){
-		ingestGame(req.user.id);
-		res.json({
-			success : true,
-			message: "The example game was successfully created"
-		})
-	});
-	app.put("/editor/game/ingest2", jwtauth.auth,function(req,res){
-		ingestGame2(req.user.id);
-		res.json({
-			success : true,
-			message: "The example game was successfully created"
-		})
-	});
+//	app.put("/editor/game/ingest", jwtauth.auth,function(req,res){
+//		ingestGame(req.user.id);
+//		res.json({
+//			success : true,
+//			message: "The example game was successfully created"
+//		})
+//	});
+//	app.put("/editor/game/ingest2", jwtauth.auth,function(req,res){
+//		ingestGame2(req.user.id);
+//		res.json({
+//			success : true,
+//			message: "The example game was successfully created"
+//		})
+//	});
 	
 	/**
-	 * endpoint to create, modify, publish or delete games
+	 * Delegates the requests to create, modify, publish, delete games or load the game components.
 	 * 
-	 * access_token: STRING
-	 * operation: STRING 
+	 * @param access_token The authentication string
+	 * @param operation: "new" | "edit" | "delete" | "publish" | "load"
 	 * 
-	 * game_id: STRING
-	 * meta_data: Object
-	 * {
-	 * name			: String,
-	 * description		: String, 
-	 * category		: [String]
-	 * }
+	 * @param game_id: The game id
+	 * @param meta_data: A JSON object containing the meta data
 	 */
 	app.post("/editor/game",jwtauth.auth,function(req, res){
 		var operation = req.body.operation.toLowerCase();
@@ -103,16 +98,21 @@ module.exports = function(app,jwtauth) {
 	});
 	
 	/**
-	 * access_token: String
-	 * deep: boolean
+	 * Delegates the request to delete a quest. On call ":qid" needs to be replaced by the
+	 * quesst id.
+	 * 
+	 * @param access_token The authentication string
+	 * @param deep Whether or not all sub objects shall be deleted
 	 */
 	app.delete("/editor/quest/:qid", function(req, res){
 		questController.deleteQuest(req.params.qid, req.body.deep, res);
 	});
 	
 	/**
-	 * access_token : STRING
-	 * game_id : STRING
+	 * Delegates the request to create a new and empty quest.
+	 * 
+	 * @param access_token The authentication string
+	 * @param game_id The game id
 	 */
 	app.put("/editor/quest", jwtauth.auth, function(req,res){
 		if (req.body.game_id) {
@@ -126,17 +126,22 @@ module.exports = function(app,jwtauth) {
 	});
 	
 	/**
-	 * acces_token
-	 * quest_meta : OBJECT with parameters else then the triggers, description or interaction, questEvent
+	 * Delegates the request to edit a quest by sending the meta data object as stated in the
+	 * schema definition.
+	 * 
+	 * @param acces_token The authentication string
+	 * @param quest_meta JSONObject with parameters else then the triggers, description or interaction, questEvent
 	 */
 	app.put("/editor/quest/:qid", jwtauth.auth, function(req,res){
 		questController.editQuest(req.params.qid,req.body.quest_meta,res);
 	});
 	
 	/**
-	 * access_token:
-	 * game_id:
-	 * content: CONTENT OBJECT
+	 * Delegates the request to edit the quest description by sending a content object. The parameter 
+	 * ":gid" needs to be replaced by the quest id on call.
+	 * 
+	 * @param acces_token The authentication string
+	 * @param content A content object
 	 */
 	app.put("/editor/quest/:qid/description",jwtauth.auth, function(req,res){
 		if (req.params.qid) {		
@@ -150,7 +155,10 @@ module.exports = function(app,jwtauth) {
 	});
 	
 	/**
-	 * access_token : STRING
+	 * Delegates the request to get a specific quest. The parameter 
+	 * ":gid" needs to be replaced by the quest id on call.
+	 * 
+	 * @param acces_token The authentication string
 	 */
 	app.get("/editor/quest/:qid", jwtauth.auth,function(req,res){
 			if (req.params.qid) {
@@ -164,13 +172,20 @@ module.exports = function(app,jwtauth) {
 	});
 	
 	/**
-	 * Creates a new Trigger object and returns it
-	 * access_token : String
+	 * Delegates the request to create a new Trigger object.
+	 * 
+	 * @param acces_token The authentication string
 	 */
 	app.put("/editor/trigger",jwtauth.auth,function(req,res){
 		triggerController.newTrigger(res);
 	});
 	
+	/**
+	 * Delegates the request to get a specific trigger. ":tid" needs to be
+	 * replaced by the trigger id on call.
+	 * 
+	 * @param acces_token The authentication string
+	 */
 	app.get("/editor/trigger/:tid",jwtauth.auth,function(req,res){
 		if (req.params.tid) {
 			triggerController.getTrigger(quest_id, res);
@@ -183,12 +198,12 @@ module.exports = function(app,jwtauth) {
 	});
 	
 	/**
-	 * Link or unlink a condition to a trigger.
+	 * Delegates the request to link or unlink a condition to a trigger.
 	 * 
-	 * access_token: String
-	 * operation: String (link_condition | unlink_condition)
-	 * trigger_id
-	 * condition_id
+	 * @param acces_token The authentication string
+	 * @param operation Allowed values: link_condition | unlink_condition
+	 * @param trigger_id The trigger id
+	 * @param condition_id The condition id
 	 */
 	app.post("/editor/trigger", jwtauth.auth,function(req,res){
 		operation = req.body.operation.toLowerCase();
@@ -210,10 +225,10 @@ module.exports = function(app,jwtauth) {
 	});
 	
 	/**
-	 * Creates a new Condition object
+	 * Delegates the request to create a new and empty Condition object.
 	 * 
-	 * access_token : STRING
-	 * type : STRING
+	 * @param acces_token The authentication string
+	 * @param type One of the supported types for a condition
 	 */
 	app.put("/editor/condition", jwtauth.auth,function(req,res){
 		conditionController.newCondition(req.body.type,res);
@@ -225,8 +240,11 @@ module.exports = function(app,jwtauth) {
 	});
 	
 	/**
-	 * access_token : STRING
-	 * condition: OBJECT (like in the data base schema)
+	 * Delegates the request to edit a condition. ":cid" needs to be replaced by a
+	 * condition id on call.
+	 * 
+	 * @param acces_token The authentication string
+	 * @param condition: Condition object (like in the data base schema)
 	 */
 	app.put("/editor/condition/:cid",jwtauth.auth,function(req,res) {
 		comment_id = req.params.cid;
@@ -237,34 +255,43 @@ module.exports = function(app,jwtauth) {
 	});
 	
 	/**
-	 * Creates new Event
+	 * Delegates the request to creates new and empty Event for a given quest. ":qid" needs to
+	 * be replaced by the quest id on call.
 	 * 
-	 * access_token
+	 * @param acces_token The authentication string
 	 */
 	app.put("/editor/quest/:qid/event",jwtauth.auth , function(req,res){
-		eventController.newEvent(req.params.qid,req.body.type,res);
+		eventController.newEvent(req.params.qid, res);
 	});
 	
 	/**
-	 * access_token
+	 * Delegates the request to delete a quest event. Replace ":eid" with the event id on call.
+	 * 
+	 * @param acces_token The authentication string
 	 */
 	app.delete("/editor/event/:eid",jwtauth.auth , function(req,res){
 		eventController.deleteEvent(req.params.eid,res);
 	});
 	
 	/**
-	 * access_token
+	 * Delegates the request to edit a quest event. Replace ":eid" with the event id on call.
+	 * 
+	 * @param acces_token The authentication string
 	 */
 	app.get("/editor/event/:eid",jwtauth.auth , function(req,res){
 		eventController.getEvent(req.params.eid,res);
 	})
 	
 	/**
-	 * access_token
-	 * operation : (link_content | unlink_content | link_function | unlink_function | edit)
-	 * sequence_id
-	 * function_id
-	 * event : QuestEvent object without sequence or functions
+	 * This route delegates the manipulation of an event object. Replace ":eid" with the event id on call.
+	 * It allows to either to "edit" the meta data of the event by sending the event object or
+	 * you can link or unlink content and functions by stating the content_id or the function_id.
+	 * 
+	 * @param acces_token The authentication string
+	 * @param operation One of the following choices (link_content | unlink_content | link_function | unlink_function | edit)
+	 * @param content_id The sequence id that needs to be linked 
+	 * @param function_id The function id that shall be linked to the event
+	 * @param event The QuestEvent object without content or functions
 	 */
 	app.post("/editor/event/:eid",jwtauth.auth , function(req,res){
 		operation = req.body.operation.toLowerCase();
@@ -295,10 +322,11 @@ module.exports = function(app,jwtauth) {
 	});
 	
 	/**
-	 * Create new action
+	 * Delegates the request to create a new and empty action
 	 * 
-	 * type: String
-	 * game_id: String
+	 * @param acces_token The authentication string
+	 * @param type The action type as stated in the documentation
+	 * @param game_id The game id under which the action is registered
 	 */
 	app.put("/editor/action", jwtauth.auth, function(req,res) {
 		if (!req.body.type) {
@@ -318,45 +346,58 @@ module.exports = function(app,jwtauth) {
 	});
 	
 	/**
-	 * Get created action
+	 * Delegates the request to return a created action. Replace ":aid" with the action id
+	 * on the call.
+	 * 
+	 * @param acces_token The authentication string
 	 */
 	app.get("/editor/action/:aid",jwtauth.auth, function(req,res) {
 		actionController.getAction(req.params.aid, res);
 	})
 	
 	/**
-	 * Edit created action
-	 * data
+	 * Delegates the request to edit a created action. Replace ":aid" with the action id
+	 * on the call.
+	 * 
+	 * @param acces_token The authentication string 
+	 * @param data An action object
 	 */
 	app.put("/editor/action/:aid",jwtauth.auth, function(req,res) {
 		actionController.modifyAction(req.params.aid,req.body.data, res);
 	})
 	
 	/**
-	 * Fetches the list of action for a game.
-	 * game_id 
+	 * Delegates the request to list all registered actions of a game.
+	 * 
+	 * @param acces_token The authentication string
+	 * @param game_id The game id 
 	 */
 	app.get("/editor/action/list", jwtauth.auth, function(req,res) {
 		gameController.listActions(req.body.game_id, res);
 	})
 	
 	/**
-	 * Delete an Action
+	 * Delegates the request to list all registered actions of a game. Replace ":gid" with
+	 * the game id.
+	 * 
+	 * @param acces_token The authentication string
+	 */
+	app.get("/editor/:gid/actions",jwtauth.auth, function(req,res){
+		gameController.listActions(req.params.gid, res);
+	});
+	
+	/**
+	 * Delegates the request to delete an action. Replace ":aid" with the action id
+	 * on the call.
+	 * 
+	 * @param acces_token The authentication string
 	 */
 	app.delete("/editor/action/:aid", jwtauth.auth, function(req,res) {
 		actionController.deleteAction(req.params.aid, res);
 	})
 	
-	/**
-	 * Creates a list of the associate action objects
-	 */
-	app.get("/editor/:gid/actions",jwtauth.auth, function(req,res){
-		gameController.listActions(req.params.gid, res);
-	});
-
-
-
 	/** NEWPLAYER
+	 * @param acces_token The authentication string
 	*	pid : player id
 	*	gid : game id
 	*/
@@ -367,6 +408,7 @@ module.exports = function(app,jwtauth) {
 	});
 
 	/** GETPLAYER
+	 * @param acces_token The authentication string
 	*	pid : player id
 	*/
 	app.get("/editor/player/:pid",jwtauth.auth,function(req, res){
@@ -374,6 +416,7 @@ module.exports = function(app,jwtauth) {
 	});
 
 	/** DELETEPLAYER
+	 * @param acces_token The authentication string
 	*	pid : player id
 	*	deep: if remove the deeper references
 	*/
@@ -382,6 +425,7 @@ module.exports = function(app,jwtauth) {
 	});
 
 	/** EDITPLAYER
+	 * @param acces_token The authentication string
 	*	pid : player id
 	*/
 	app.put("/editor/player/:pid",jwtauth.auth,function(req, res){
@@ -390,6 +434,7 @@ module.exports = function(app,jwtauth) {
 
 
 	/** NEWGROUP
+	 * @param acces_token The authentication string
 	*	gpid : group id
 	*	gid : game if
 	*/
@@ -400,6 +445,7 @@ module.exports = function(app,jwtauth) {
 	});
 
 	/** GETGROUP
+	 * @param acces_token The authentication string
 	*	gpid : group id
 	*/
 	app.get("/editor/group/:gid", jwtauth.auth, function(req, res){
@@ -407,6 +453,7 @@ module.exports = function(app,jwtauth) {
 	});
 
 	/** ADD/REMOVEGROUPMEMBER
+	 * @param acces_token The authentication string
 	*	gpid : group id
 	*/
 	app.post("/editor/group/member/:mid", jwtauth.auth, function(req, res){
@@ -420,6 +467,7 @@ module.exports = function(app,jwtauth) {
 	});
 
 	/** DELETEGROUP
+	 * @param acces_token The authentication string
 	*	gpid : group id
 	*/
 	app.delete("/editor/group/:gpid", jwtauth.auth, function(req, res){
@@ -428,9 +476,10 @@ module.exports = function(app,jwtauth) {
 
 
 	/** NEWOBJECT
-	*	oid : object id
-	*	gid : game id
-	*/
+	 * @param acces_token The authentication string
+	 *	oid : object id
+	 *	gid : game id
+	 */
 	app.put("/editor/object",jwtauth.auth,function(req, res){
 		if (req.body.game_id){
 			objectController.newObject(req.params.oid, req.body.game_id, res);
@@ -438,6 +487,7 @@ module.exports = function(app,jwtauth) {
 	});
 
 	/** GETOBJECT
+	 * @param acces_token The authentication string
 	*	oid : object id
 	*/
 	app.get("/editor/object/:oid", jwtauth.auth, function(req, res){
@@ -445,6 +495,7 @@ module.exports = function(app,jwtauth) {
 	});
 
 	/** DELETEOBJECT
+	 * @param acces_token The authentication string 
 	*	oid : object id
 	*/
 	app.delete("/editor/object/:oid", jwtauth.auth, function(req, res){
@@ -453,6 +504,7 @@ module.exports = function(app,jwtauth) {
 
 
 	/** NEWITEM
+	 * @param acces_token The authentication string
 	*	gid : game id
 	*/
 	app.put("/editor/item",jwtauth.auth,function(req,res){
@@ -462,6 +514,7 @@ module.exports = function(app,jwtauth) {
 	});
 
 	/** GETITEM
+	 * @param acces_token The authentication string
 	*	iid : item id
 	*/
 	app.get("/editor/item/:iid", jwtauth.auth, function(req,res){
@@ -469,6 +522,7 @@ module.exports = function(app,jwtauth) {
 	});
 
 	/** DELETEITEM
+	 * @param acces_token The authentication string
 	*	iid : item id
 	*/
 	app.delete("/editor/item/:iid", jwtauth.auth, function(req,res){
@@ -476,6 +530,7 @@ module.exports = function(app,jwtauth) {
 	});
 
 	/** EDITITEM
+	 * @param acces_token The authentication string
 	*	iid : item id
 	*	data (item object)
 	*/
@@ -485,6 +540,7 @@ module.exports = function(app,jwtauth) {
 
 
 	/** NEWRESOURCE
+	 * @param acces_token The authentication string
 	*	rid : resource id
 	*	gid : game id
 	*/
@@ -495,6 +551,7 @@ module.exports = function(app,jwtauth) {
 	});
 
 	/** GETRESOURCE
+	 * @param acces_token The authentication string
 	*	rid : resource id
 	*/
 	app.get("/editor/resource/:rid", jwtauth.auth, function(req,res){
@@ -502,6 +559,7 @@ module.exports = function(app,jwtauth) {
 	});
 
 	/** DELETERESOURCE
+	 * @param acces_token The authentication string
 	*	rid : resource id
 	*/
 	app.delete("/editor/resource/:rid", jwtauth.auth, function(req,res){
@@ -510,6 +568,7 @@ module.exports = function(app,jwtauth) {
 
 
 	/** NEWINTERACTION
+	 * @param acces_token The authentication string
 	*	quest id: String
 	*/
 	app.put("/editor/interaction", jwtauth.auth, function(req,res){
@@ -519,6 +578,7 @@ module.exports = function(app,jwtauth) {
 	});
 
 	/**	GETINTERACTION
+	 * @param acces_token The authentication string
 	*	iid : interaction id
 	*/
 	app.get("/editor/interaction/:iid", jwtauth.auth, function(req,res){
@@ -526,6 +586,7 @@ module.exports = function(app,jwtauth) {
 	});
 
 	/**	DELETEINTERACTION
+	 * @param acces_token The authentication string
 	*	iid : interaction id
 	*/
 	app.delete("/editor/interaction/:iid", jwtauth.auth, function(req,res){
@@ -533,6 +594,7 @@ module.exports = function(app,jwtauth) {
 	});
 
 	/** ADDTRIGGER OR ADDACTION
+	 * @param acces_token The authentication string
 	*	operation : should be trigger or action
 	*	trigger_id or action_id depend on what you want to add
 	*/
@@ -547,6 +609,7 @@ module.exports = function(app,jwtauth) {
 	});
 
 	/** REMOVETRIGGER OR REMOVEACTION
+	 * @param acces_token The authentication string
 	*	operation: should be trigger or action
 	*	trigger_id or action_id depend on what you want to remove
 	*/
@@ -561,7 +624,3 @@ module.exports = function(app,jwtauth) {
 	});
 
 };
-
-function isGameOwner(req, res) {
-	//TODO implement
-}

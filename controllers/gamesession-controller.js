@@ -20,17 +20,19 @@ error = function(res, message) {
 }
 
 /**
- * Starts a new game by creating a brand new game session.
- * owner: String // The owner id
- * game: String // The game id
- * res: Object // The response object created by Express passed from the route
- * 
- * returns:
+ * Starts a new game by creating a brand new game session. The object send back to the client
+ * looks like:
  * {
  * success: boolean,
  * message: String,
- * gameSession: Object + .roles: [{name: String},...]
+ * gameSession: GameSessionObject + .roles: [{name: String},...]
  * }
+ * The game session object will be extended by the available roles. At the end a function will be
+ * called to return the extended status object as JSON.
+ * 
+ * @param owner The owner id as string
+ * @param game The game id as string
+ * @param res The response object created by Express passed from the route
  */
 gameSessionController.startNewSession = function(owner, game, res) {
 	Game.findById(game).populate("components.quests")
@@ -56,9 +58,15 @@ gameSessionController.startNewSession = function(owner, game, res) {
 }
 
 /**
- * @param user String UserID
- * @param game String GameID
- * @param session Object GameSession
+ * This method lets the user resume a game session. Depending on the status the user either
+ * resumes the session directly or they still need to choose their role.
+ * If the game is resumed then the status object will contain the player instance, otherwise
+ * the game session is part of it containing the roles to choose from.
+ * 
+ * @param user The user id
+ * @param game the game id
+ * @param session GameSession object
+ * @param res The response object
  */
 gameSessionController.resumeSession = function (user, game,session, res) {
 		var pinst;
@@ -88,6 +96,14 @@ gameSessionController.resumeSession = function (user, game,session, res) {
 		
 }
 
+/**
+ * This function let the player play a game by either starting a new game session or by resuming
+ * a previous game state. The functions for for this are called automatically.
+ * 
+ * @param user the user id
+ * @param game the game id
+ * @param res the response document
+ */
 gameSessionController.play = function(user, game, res) {
 	GameSession.findOne({$and:
 		[{"game":game},{$or : 
@@ -103,6 +119,14 @@ gameSessionController.play = function(user, game, res) {
 	});
 }
 
+/**
+ * Ends a game session by deleting all stored information about the game session and the listed
+ * player instances. At the end a status object will be send back to the client.
+ * 
+ * @param user the user id
+ * @param sessionID the game session id
+ * @param res the response document.
+ */
 gameSessionController.endSession = function(user,sessionID,res) {
 	GameSession.findById(sessionID).populate("players").exec(function(err, session){
 		if (err || !session) {
@@ -122,7 +146,16 @@ gameSessionController.endSession = function(user,sessionID,res) {
 	});
 }
 
-
+/**
+ * This function allows a user to join a game by stating the session, the user and the chosen role. 
+ * At the end the user will get a status object at which their playerInstance will be appended. This
+ * player instance contains the available quest to the player.
+ * 
+ * @param session the game session id
+ * @param user the user id
+ * @param role_id the role id
+ * @param res the response document
+ */
 gameSessionController.joinGame = function(session, user, role_id,res) {
 	Player.findOne({role:role_id}).populate("role properties resource iventar.slot").exec(function(err, player){
 		var cp = player.toJSON();
@@ -166,7 +199,14 @@ gameSessionController.joinGame = function(session, user, role_id,res) {
 }
 
 /**
- * return the player for the selected role
+ * This function is intended to handle the select role request. That means after a player has decided
+ * to play a game they were asked to chose a role. This method will then create an instance of a player 
+ * designed by the editor (game player --> player instance)
+ * 
+ * @param user the user id
+ * @param sessionID the session id
+ * @param role_id the role id
+ * @param res the response document
  */
 gameSessionController.selectRole = function (user,sessionID,role_id,res) {
 	GameSession.findById(sessionID).populate("players").exec(function(err, session){
